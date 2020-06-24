@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Posts on My Blog</title>
+    <link>http://cshung.github.io/posts/</link>
+    <description>Recent content in Posts on My Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Wed, 24 Jun 2020 13:18:09 -0700</lastBuildDate>
+    
+	<atom:link href="http://cshung.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Placeholder</title>
+      <link>http://cshung.github.io/posts/placeholder/</link>
+      <pubDate>Wed, 24 Jun 2020 13:18:09 -0700</pubDate>
+      
+      <guid>http://cshung.github.io/posts/placeholder/</guid>
+      <description>Placeholder This is just a placeholder, the content is not available yet</description>
+    </item>
+    
+  </channel>
+</rss>
