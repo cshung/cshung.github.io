@@ -6,18 +6,20 @@
     <description>Recent content on My Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 24 Jun 2020 13:18:09 -0700</lastBuildDate>
+    <lastBuildDate>Thu, 25 Jun 2020 08:08:17 -0700</lastBuildDate>
     
 	<atom:link href="http://cshung.github.io/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
-      <title>Placeholder</title>
-      <link>http://cshung.github.io/posts/placeholder/</link>
-      <pubDate>Wed, 24 Jun 2020 13:18:09 -0700</pubDate>
+      <title>Introduction to ILCompiler.Reflection.ReadyToRun</title>
+      <link>http://cshung.github.io/posts/introduction-to-ilcompiler-reflection-readytorun/</link>
+      <pubDate>Thu, 25 Jun 2020 08:08:17 -0700</pubDate>
       
-      <guid>http://cshung.github.io/posts/placeholder/</guid>
-      <description>Placeholder This is just a placeholder, the content is not available yet</description>
+      <guid>http://cshung.github.io/posts/introduction-to-ilcompiler-reflection-readytorun/</guid>
+      <description>Introduction ILCompiler.Reflection.ReadyToRun.dll is a new library I introduced in late 2019. It is meant to make the data embedded in a ReadyToRun binary available for access.
+Background What is ReadyToRun? ReadyToRun is a new native compilation technology for .NET Core. For people who know about NGEN, it can be roughly thought as the .NET Core version of NGEN.
+What is native compilation? When a managed language (such as C#) is compiled, it is compiled into an intermediate language named MSIL.</description>
     </item>
     
   </channel>
