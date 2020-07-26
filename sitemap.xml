@@ -3,17 +3,22 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>http://cshung.github.io/posts/introduction-to-ilcompiler-reflection-readytorun/</loc>
-    <lastmod>2020-06-25T08:08:17-07:00</lastmod>
+    <loc>http://cshung.github.io/posts/ilspy-readytorun/</loc>
+    <lastmod>2020-07-25T19:50:22-07:00</lastmod>
   </url>
   
   <url>
     <loc>http://cshung.github.io/</loc>
-    <lastmod>2020-06-25T08:08:17-07:00</lastmod>
+    <lastmod>2020-07-25T19:50:22-07:00</lastmod>
   </url>
   
   <url>
     <loc>http://cshung.github.io/posts/</loc>
+    <lastmod>2020-07-25T19:50:22-07:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://cshung.github.io/posts/introduction-to-ilcompiler-reflection-readytorun/</loc>
     <lastmod>2020-06-25T08:08:17-07:00</lastmod>
   </url>
   

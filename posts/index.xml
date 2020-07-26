@@ -6,10 +6,20 @@
     <description>Recent content in Posts on My Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 25 Jun 2020 08:08:17 -0700</lastBuildDate>
+    <lastBuildDate>Sat, 25 Jul 2020 19:50:22 -0700</lastBuildDate>
     
 	<atom:link href="http://cshung.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>ILSpy.ReadyToRun</title>
+      <link>http://cshung.github.io/posts/ilspy-readytorun/</link>
+      <pubDate>Sat, 25 Jul 2020 19:50:22 -0700</pubDate>
+      
+      <guid>http://cshung.github.io/posts/ilspy-readytorun/</guid>
+      <description>Introduction ILSpy.ReadyToRun is my side project. It is a plugin in ILSpy that allow us to inspect the precompiled code in a ReadyToRun image. My vision is to make all information available in a ready to run image to be displayed in a human readable manner.
+What can it do? If you open a ReadyToRun image in ILSpy, it will show up exactly as it was. You can see all the types, the methods, and the decompiled C# code, as usual.</description>
+    </item>
     
     <item>
       <title>Introduction to ILCompiler.Reflection.ReadyToRun</title>
