@@ -18,6 +18,11 @@
   </url>
   
   <url>
+    <loc>http://cshung.github.io/posts/xv6-on-v86/</loc>
+    <lastmod>2020-06-28T09:27:30-07:00</lastmod>
+  </url>
+  
+  <url>
     <loc>http://cshung.github.io/posts/introduction-to-ilcompiler-reflection-readytorun/</loc>
     <lastmod>2020-06-25T08:08:17-07:00</lastmod>
   </url>

@@ -22,6 +22,16 @@ What can it do? If you open a ReadyToRun image in ILSpy, it will show up exactly
     </item>
     
     <item>
+      <title>Xv6 on v86</title>
+      <link>http://cshung.github.io/posts/xv6-on-v86/</link>
+      <pubDate>Sun, 28 Jun 2020 09:27:30 -0700</pubDate>
+      
+      <guid>http://cshung.github.io/posts/xv6-on-v86/</guid>
+      <description>Xv6 on v86 In this post, I will talk about my journey to get Xv6 running on v86. Xv6 is a unix-like teaching OS developed by MIT. v86 is an x86 virtual machine running on the browser developed by Fabian.
+The key characteristic of these two systems is that they are simple compared to their industrial-strength counterparts (compared to the Linux kernel or the QEMU emulator). Being simple, it is easy to understand.</description>
+    </item>
+    
+    <item>
       <title>Introduction to ILCompiler.Reflection.ReadyToRun</title>
       <link>http://cshung.github.io/posts/introduction-to-ilcompiler-reflection-readytorun/</link>
       <pubDate>Thu, 25 Jun 2020 08:08:17 -0700</pubDate>
