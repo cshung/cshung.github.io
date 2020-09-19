@@ -6,10 +6,19 @@
     <description>Recent content on My Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 25 Jul 2020 19:50:22 -0700</lastBuildDate>
+    <lastBuildDate>Mon, 31 Aug 2020 17:01:33 -0700</lastBuildDate>
     
 	<atom:link href="http://cshung.github.io/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Automate WinDBG</title>
+      <link>http://cshung.github.io/posts/automate-windbg/</link>
+      <pubDate>Mon, 31 Aug 2020 17:01:33 -0700</pubDate>
+      
+      <guid>http://cshung.github.io/posts/automate-windbg/</guid>
+      <description>Automate WinDBG WinDBG is a very convenient debugger, but typing the same command again and again is tiresome, especially during startup. GDB provided a mechanism to run some commands on startup through gdbinit. WinDBG has the equivalent, although it is not as clear. In this blog post, I am going to share how I automated WinDBG to run some commands on startup. For the impatient, just rush to the summary to get the commands.</description>
+    </item>
     
     <item>
       <title>ILSpy.ReadyToRun</title>
