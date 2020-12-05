@@ -6,10 +6,20 @@
     <description>Recent content in Posts on My Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 31 Aug 2020 17:01:33 -0700</lastBuildDate>
+    <lastBuildDate>Fri, 04 Dec 2020 11:52:15 -0800</lastBuildDate>
     
 	<atom:link href="http://cshung.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Debugging help for CoreCLR GC - Mono</title>
+      <link>http://cshung.github.io/posts/coreclrgc-mono/</link>
+      <pubDate>Fri, 04 Dec 2020 11:52:15 -0800</pubDate>
+      
+      <guid>http://cshung.github.io/posts/coreclrgc-mono/</guid>
+      <description>I was invited to help with debugging an issue in the CoreCLR GC - Mono project. In this blog entry, I am planning to describe the debugging process so that it can be repeated to move the project forward.
+What is CoreCLR GC - Mono? CoreCLR GC - Mono is an attempt to use CoreCLR&amp;rsquo;s GC to replace sgen, a simple generational garbage collector for Mono. The major goal of the project is to improve performance.</description>
+    </item>
     
     <item>
       <title>Automate WinDBG</title>

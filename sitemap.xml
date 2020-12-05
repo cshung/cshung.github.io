@@ -3,17 +3,22 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>http://cshung.github.io/posts/automate-windbg/</loc>
-    <lastmod>2020-08-31T17:01:33-07:00</lastmod>
+    <loc>http://cshung.github.io/posts/coreclrgc-mono/</loc>
+    <lastmod>2020-12-04T11:52:15-08:00</lastmod>
   </url>
   
   <url>
     <loc>http://cshung.github.io/</loc>
-    <lastmod>2020-08-31T17:01:33-07:00</lastmod>
+    <lastmod>2020-12-04T11:52:15-08:00</lastmod>
   </url>
   
   <url>
     <loc>http://cshung.github.io/posts/</loc>
+    <lastmod>2020-12-04T11:52:15-08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://cshung.github.io/posts/automate-windbg/</loc>
     <lastmod>2020-08-31T17:01:33-07:00</lastmod>
   </url>
   
