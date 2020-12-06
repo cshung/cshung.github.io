@@ -6,10 +6,21 @@
     <description>Recent content on My Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 04 Dec 2020 11:52:15 -0800</lastBuildDate>
+    <lastBuildDate>Sat, 05 Dec 2020 14:53:55 -0800</lastBuildDate>
     
 	<atom:link href="http://cshung.github.io/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Hello Reflection</title>
+      <link>http://cshung.github.io/posts/hello-reflection/</link>
+      <pubDate>Sat, 05 Dec 2020 14:53:55 -0800</pubDate>
+      
+      <guid>http://cshung.github.io/posts/hello-reflection/</guid>
+      <description>To get started using ILCompiler.Reflection.ReadyToRun, let&amp;rsquo;s construct a simple HelloWorld project. If you don&amp;rsquo;t know what it is, please take a look at the previous post.
+Getting started We will create a .NET Core console application. Create a folder named HelloReflection and invoke dotnet new console.
+C:\dev&amp;gt;mkdir HelloReflectionC:\dev&amp;gt;cd HelloReflectionC:\dev\HelloReflection&amp;gt;dotnet new consoleThe template &amp;quot;Console Application&amp;quot; was created successfully.Processing post-creation actions...Running &#39;dotnet restore&#39; on C:\dev\HelloReflection\HelloReflection.csproj...Determining projects to restore.</description>
+    </item>
     
     <item>
       <title>Debugging help for CoreCLR GC - Mono</title>
