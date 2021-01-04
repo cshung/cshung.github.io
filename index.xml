@@ -6,10 +6,20 @@
     <description>Recent content on My Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 05 Dec 2020 14:53:55 -0800</lastBuildDate>
+    <lastBuildDate>Mon, 04 Jan 2021 12:11:37 -0800</lastBuildDate>
     
 	<atom:link href="http://cshung.github.io/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>How CoreCLR GC understand objects (part 1)</title>
+      <link>http://cshung.github.io/posts/gc-objects-1/</link>
+      <pubDate>Mon, 04 Jan 2021 12:11:37 -0800</pubDate>
+      
+      <guid>http://cshung.github.io/posts/gc-objects-1/</guid>
+      <description>In this series of posts, I am going to explain how the GC understand objects. In this part, we will focus on size.
+Why does it matter? The GC expects the heap to be tightly packed with objects. It scans the heap by starting at the beginning of the heap and walk the object one-by-one by this simple algorithm. This is real code excerpt from gc.cpp line 22972 to 23002, out of dotnet/runtime repo, tag v5.</description>
+    </item>
     
     <item>
       <title>Hello Reflection</title>
