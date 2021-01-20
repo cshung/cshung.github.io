@@ -6,6 +6,8 @@
     
     <title>Debugging help for CoreCLR GC - Mono | My Blog</title>
     <meta name="viewport" content="width=device-width,minimum-scale=1">
+    <meta name="description" content="I was invited to help with debugging an issue in the CoreCLR GC - Mono project. In this blog entry, I am planning to describe the debugging process so that it can be repeated to move the project forward.
+What is CoreCLR GC - Mono? CoreCLR GC - Mono is an attempt to use CoreCLR&rsquo;s GC to replace sgen, a simple generational garbage collector for Mono. The major goal of the project is to improve performance.">
     <meta name="generator" content="Hugo 0.73.0-DEV" />
     
     
@@ -13,11 +15,14 @@
     
 
     
-    
-      <link href="/dist/css/app.4fc0b62e4b82c997bb0041217cd6b979.css" rel="stylesheet">
-    
 
-    
+  
+  
+    <link rel="stylesheet" href="/ananke/dist/main.css_5c99d70a7725bacd4c701e995b969fea.css" >
+  
+
+
+
 
     
       
@@ -51,7 +56,8 @@ What is CoreCLR GC - Mono? CoreCLR GC - Mono is an attempt to use CoreCLR&rsquo;
   </head>
 
   <body class="ma0 avenir bg-near-white">
-
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <script>mermaid.initialize({startOnLoad:true});</script>
     
    
   
@@ -278,11 +284,6 @@ Andrew: mt-&gt;RawGetComponentSize() = 8
 </div>
   </div>
 </footer>
-
-    
-
-  <script src="/dist/js/app.3fc0f988d21662902933.js"></script>
-
 
   </body>
 </html>

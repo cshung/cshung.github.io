@@ -6,6 +6,8 @@
     
     <title>How CoreCLR GC understand objects (part 1) | My Blog</title>
     <meta name="viewport" content="width=device-width,minimum-scale=1">
+    <meta name="description" content="In this series of posts, I am going to explain how the GC understand objects. In this part, we will focus on size.
+Why does it matter? The GC expects the heap to be tightly packed with objects. It scans the heap by starting at the beginning of the heap and walk the object one-by-one by this simple algorithm. This is real code excerpt from gc.cpp line 22972 to 23002, out of dotnet/runtime repo, tag v5.">
     <meta name="generator" content="Hugo 0.73.0-DEV" />
     
     
@@ -13,11 +15,14 @@
     
 
     
-    
-      <link href="/dist/css/app.4fc0b62e4b82c997bb0041217cd6b979.css" rel="stylesheet">
-    
 
-    
+  
+  
+    <link rel="stylesheet" href="/ananke/dist/main.css_5c99d70a7725bacd4c701e995b969fea.css" >
+  
+
+
+
 
     
       
@@ -51,7 +56,8 @@ Why does it matter? The GC expects the heap to be tightly packed with objects. I
   </head>
 
   <body class="ma0 avenir bg-near-white">
-
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <script>mermaid.initialize({startOnLoad:true});</script>
     
    
   
@@ -233,11 +239,6 @@ size_t <span style="color:#a6e22e">Align</span> (size_t nbytes, <span style="col
 </div>
   </div>
 </footer>
-
-    
-
-  <script src="/dist/js/app.3fc0f988d21662902933.js"></script>
-
 
   </body>
 </html>

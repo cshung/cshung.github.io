@@ -6,6 +6,7 @@
     
     <title>Generation Aware Analysis | My Blog</title>
     <meta name="viewport" content="width=device-width,minimum-scale=1">
+    <meta name="description" content="The problem? The .NET GC is generational, it makes the assumption that allocations are broadly divided into two classes, either they are short-lived (e.g. temporary objects) or they are long-lived (e.g. constants, caches for repeated uses). This assumption is often true, but once in a while, that&rsquo;s not true, often due to programmer mistakes. If a pile of objects meant for short term usage is leaked into gen2, that can cost a short term spike in ephemeral GC latency, and a long term memory cost for storing them.">
     <meta name="generator" content="Hugo 0.73.0-DEV" />
     
     
@@ -13,11 +14,14 @@
     
 
     
-    
-      <link href="/dist/css/app.4fc0b62e4b82c997bb0041217cd6b979.css" rel="stylesheet">
-    
 
-    
+  
+  
+    <link rel="stylesheet" href="/ananke/dist/main.css_5c99d70a7725bacd4c701e995b969fea.css" >
+  
+
+
+
 
     
       
@@ -48,7 +52,8 @@
   </head>
 
   <body class="ma0 avenir bg-near-white">
-
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <script>mermaid.initialize({startOnLoad:true});</script>
     
    
   
@@ -287,11 +292,6 @@ set COMPLUS_GCGenAnalysisIndex=3E8
 </div>
   </div>
 </footer>
-
-    
-
-  <script src="/dist/js/app.3fc0f988d21662902933.js"></script>
-
 
   </body>
 </html>
