@@ -22,6 +22,16 @@ Discovery In a routine update of the ILCompiler.Reflection.ReadyToRun.dll for IL
     </item>
     
     <item>
+      <title>POH Tuning (Part 1 - What is my pinned object heap size?)</title>
+      <link>http://cshung.github.io/posts/poh-tuning-1/</link>
+      <pubDate>Fri, 15 Jan 2021 11:18:17 -0800</pubDate>
+      
+      <guid>http://cshung.github.io/posts/poh-tuning-1/</guid>
+      <description>In this series, I am going to talk about my work to tune the pinned object heap. The first step to tuning is to understand how it performs now. Unfortunately, the tools for analyzing the performance is incomplete.
+Pinned Object Heap size (and the event tracing mechanisms) With the tools available in .NET 5 time frame, we did not know the size of the pinned object heap. We had the information in the trace, but we did not have the parser to understand them.</description>
+    </item>
+    
+    <item>
       <title>Generation Aware Analysis</title>
       <link>http://cshung.github.io/posts/generation-aware-analysis/</link>
       <pubDate>Tue, 05 Jan 2021 14:47:10 -0800</pubDate>

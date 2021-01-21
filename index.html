@@ -158,14 +158,15 @@ Discovery In a routine update of the ILCompiler.Reflection.ReadyToRun.dll for IL
       
       <div class="blah w-100">
         <h1 class="f3 fw1 athelas mt0 lh-title">
-          <a href="http://cshung.github.io/posts/generation-aware-analysis/" class="color-inherit dim link">
-            Generation Aware Analysis
+          <a href="http://cshung.github.io/posts/poh-tuning-1/" class="color-inherit dim link">
+            POH Tuning (Part 1 - What is my pinned object heap size?)
             </a>
         </h1>
         <div class="f6 f5-l lh-copy nested-copy-line-height nested-links">
-          The problem? The .NET GC is generational, it makes the assumption that allocations are broadly divided into two classes, either they are short-lived (e.g. temporary objects) or they are long-lived (e.g. constants, caches for repeated uses). This assumption is often true, but once in a while, that&rsquo;s not true, often due to programmer mistakes. If a pile of objects meant for short term usage is leaked into gen2, that can cost a short term spike in ephemeral GC latency, and a long term memory cost for storing them.
+          In this series, I am going to talk about my work to tune the pinned object heap. The first step to tuning is to understand how it performs now. Unfortunately, the tools for analyzing the performance is incomplete.
+Pinned Object Heap size (and the event tracing mechanisms) With the tools available in .NET 5 time frame, we did not know the size of the pinned object heap. We had the information in the trace, but we did not have the parser to understand them.
         </div>
-          <a href="http://cshung.github.io/posts/generation-aware-analysis/" class="ba b--moon-gray bg-light-gray br2 color-inherit dib f7 hover-bg-moon-gray link mt2 ph2 pv1">read more</a>
+          <a href="http://cshung.github.io/posts/poh-tuning-1/" class="ba b--moon-gray bg-light-gray br2 color-inherit dib f7 hover-bg-moon-gray link mt2 ph2 pv1">read more</a>
         
       </div>
     </div>
@@ -182,15 +183,14 @@ Discovery In a routine update of the ILCompiler.Reflection.ReadyToRun.dll for IL
       
       <div class="blah w-100">
         <h1 class="f3 fw1 athelas mt0 lh-title">
-          <a href="http://cshung.github.io/posts/gc-objects-2/" class="color-inherit dim link">
-            How CoreCLR GC understand objects (part 2)
+          <a href="http://cshung.github.io/posts/generation-aware-analysis/" class="color-inherit dim link">
+            Generation Aware Analysis
             </a>
         </h1>
         <div class="f6 f5-l lh-copy nested-copy-line-height nested-links">
-          In addition to size described in an earlier post, it is also important for the GC to know where the pointers are in an object. This is because in the mark phase, we need to traverse the object graph. Here is a function for the mark phase in gc.cpp line 19415-19452.
-Where is the code that perform the traversal? //this method assumes that *po is in the [low. high[ range void gc_heap::mark_object_simple (uint8_t** po THREAD_NUMBER_DCL) { uint8_t* o = *po; /* some code that does not change o or po */ if (gc_mark1 (o)) { /* some code that does not change o or po */ { go_through_object_cl (method_table(o), o, s, poo, { uint8_t* oo = *poo; /* some code to recursively mark oo */ } ); } } } Imagine this is run during the mark phase, if we discover an unmarked object, then we traverse into its pointers and recursively mark the objects it points to.
+          The problem? The .NET GC is generational, it makes the assumption that allocations are broadly divided into two classes, either they are short-lived (e.g. temporary objects) or they are long-lived (e.g. constants, caches for repeated uses). This assumption is often true, but once in a while, that&rsquo;s not true, often due to programmer mistakes. If a pile of objects meant for short term usage is leaked into gen2, that can cost a short term spike in ephemeral GC latency, and a long term memory cost for storing them.
         </div>
-          <a href="http://cshung.github.io/posts/gc-objects-2/" class="ba b--moon-gray bg-light-gray br2 color-inherit dib f7 hover-bg-moon-gray link mt2 ph2 pv1">read more</a>
+          <a href="http://cshung.github.io/posts/generation-aware-analysis/" class="ba b--moon-gray bg-light-gray br2 color-inherit dib f7 hover-bg-moon-gray link mt2 ph2 pv1">read more</a>
         
       </div>
     </div>
@@ -207,6 +207,12 @@ Where is the code that perform the traversal? //this method assumes that *po is 
         
         
           <h2 class="f5 fw4 mb4 dib mr3">
+            <a href="http://cshung.github.io/posts/gc-objects-2/" class="link black dim">
+              How CoreCLR GC understand objects (part 2)
+            </a>
+          </h2>
+        
+          <h2 class="f5 fw4 mb4 dib mr3">
             <a href="http://cshung.github.io/posts/gc-objects-1/" class="link black dim">
               How CoreCLR GC understand objects (part 1)
             </a>
@@ -221,12 +227,6 @@ Where is the code that perform the traversal? //this method assumes that *po is 
           <h2 class="f5 fw4 mb4 dib mr3">
             <a href="http://cshung.github.io/posts/coreclrgc-mono/" class="link black dim">
               Debugging help for CoreCLR GC - Mono
-            </a>
-          </h2>
-        
-          <h2 class="f5 fw4 mb4 dib mr3">
-            <a href="http://cshung.github.io/posts/automate-windbg/" class="link black dim">
-              Automate WinDBG
             </a>
           </h2>
         
