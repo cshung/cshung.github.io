@@ -6,10 +6,20 @@
     <description>Recent content on My Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 18 Jan 2021 13:25:05 -0800</lastBuildDate>
+    <lastBuildDate>Mon, 01 Mar 2021 19:55:26 -0800</lastBuildDate>
     
 	<atom:link href="http://cshung.github.io/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>POH Tuning (Part 2 - What am I running?)</title>
+      <link>http://cshung.github.io/posts/poh-tuning-2/</link>
+      <pubDate>Mon, 01 Mar 2021 19:55:26 -0800</pubDate>
+      
+      <guid>http://cshung.github.io/posts/poh-tuning-2/</guid>
+      <description>In the last post, we talk about the event tracing infrastructure, it allows us to measure the metrics we wanted to study when we run the program. But what program do we want to run? The program that we will run is called a benchmark. In this post, I will look into the details of the benchmark program.
+Overview The program that we will run is called GCPerfSim. As its name suggests, it simulates workload for the GC to understand its performance.</description>
+    </item>
     
     <item>
       <title>Debug Info Debugging</title>

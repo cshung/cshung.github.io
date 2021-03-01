@@ -39,7 +39,7 @@
 <meta property="og:description" content="" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="http://cshung.github.io/" />
-<meta property="og:updated_time" content="2021-01-18T13:25:05-08:00" />
+<meta property="og:updated_time" content="2021-03-01T19:55:26-08:00" />
 <meta itemprop="name" content="My Blog">
 <meta itemprop="description" content=""><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="My Blog"/>
@@ -135,6 +135,31 @@
       
       <div class="blah w-100">
         <h1 class="f3 fw1 athelas mt0 lh-title">
+          <a href="http://cshung.github.io/posts/poh-tuning-2/" class="color-inherit dim link">
+            POH Tuning (Part 2 - What am I running?)
+            </a>
+        </h1>
+        <div class="f6 f5-l lh-copy nested-copy-line-height nested-links">
+          In the last post, we talk about the event tracing infrastructure, it allows us to measure the metrics we wanted to study when we run the program. But what program do we want to run? The program that we will run is called a benchmark. In this post, I will look into the details of the benchmark program.
+Overview The program that we will run is called GCPerfSim. As its name suggests, it simulates workload for the GC to understand its performance.
+        </div>
+          <a href="http://cshung.github.io/posts/poh-tuning-2/" class="ba b--moon-gray bg-light-gray br2 color-inherit dib f7 hover-bg-moon-gray link mt2 ph2 pv1">read more</a>
+        
+      </div>
+    </div>
+  </div>
+</article>
+
+          </div>
+        
+          <div class="relative w-100 mb4">
+            
+<article class="bb b--black-10">
+  <div class="db pv4 ph3 ph0-l no-underline dark-gray">
+    <div class="flex flex-column flex-row-ns">
+      
+      <div class="blah w-100">
+        <h1 class="f3 fw1 athelas mt0 lh-title">
           <a href="http://cshung.github.io/posts/debug-info-debugging/" class="color-inherit dim link">
             Debug Info Debugging
             </a>
@@ -177,36 +202,18 @@ Pinned Object Heap size (and the event tracing mechanisms) With the tools availa
 
           </div>
         
-          <div class="relative w-100 mb4">
-            
-<article class="bb b--black-10">
-  <div class="db pv4 ph3 ph0-l no-underline dark-gray">
-    <div class="flex flex-column flex-row-ns">
-      
-      <div class="blah w-100">
-        <h1 class="f3 fw1 athelas mt0 lh-title">
-          <a href="http://cshung.github.io/posts/generation-aware-analysis/" class="color-inherit dim link">
-            Generation Aware Analysis
-            </a>
-        </h1>
-        <div class="f6 f5-l lh-copy nested-copy-line-height nested-links">
-          The problem? The .NET GC is generational, it makes the assumption that allocations are broadly divided into two classes, either they are short-lived (e.g. temporary objects) or they are long-lived (e.g. constants, caches for repeated uses). This assumption is often true, but once in a while, that&rsquo;s not true, often due to programmer mistakes. If a pile of objects meant for short term usage is leaked into gen2, that can cost a short term spike in ephemeral GC latency, and a long term memory cost for storing them.
-        </div>
-          <a href="http://cshung.github.io/posts/generation-aware-analysis/" class="ba b--moon-gray bg-light-gray br2 color-inherit dib f7 hover-bg-moon-gray link mt2 ph2 pv1">read more</a>
-        
-      </div>
-    </div>
-  </div>
-</article>
-
-          </div>
-        
       </section>
 
       
       <section class="w-100">
         <h1 class="f3">More</h1>
         
+        
+          <h2 class="f5 fw4 mb4 dib mr3">
+            <a href="http://cshung.github.io/posts/generation-aware-analysis/" class="link black dim">
+              Generation Aware Analysis
+            </a>
+          </h2>
         
           <h2 class="f5 fw4 mb4 dib mr3">
             <a href="http://cshung.github.io/posts/gc-objects-2/" class="link black dim">
@@ -223,12 +230,6 @@ Pinned Object Heap size (and the event tracing mechanisms) With the tools availa
           <h2 class="f5 fw4 mb4 dib mr3">
             <a href="http://cshung.github.io/posts/hello-reflection/" class="link black dim">
               Hello Reflection
-            </a>
-          </h2>
-        
-          <h2 class="f5 fw4 mb4 dib mr3">
-            <a href="http://cshung.github.io/posts/coreclrgc-mono/" class="link black dim">
-              Debugging help for CoreCLR GC - Mono
             </a>
           </h2>
         
