@@ -6,10 +6,20 @@
     <description>Recent content on My Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 01 Mar 2021 19:55:26 -0800</lastBuildDate>
+    <lastBuildDate>Mon, 01 Mar 2021 20:55:26 -0800</lastBuildDate>
     
 	<atom:link href="http://cshung.github.io/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>POH Tuning (Part 3 - Other statistical properties)</title>
+      <link>http://cshung.github.io/posts/poh-tuning-3/</link>
+      <pubDate>Mon, 01 Mar 2021 20:55:26 -0800</pubDate>
+      
+      <guid>http://cshung.github.io/posts/poh-tuning-3/</guid>
+      <description>In the last post, we discussed what the benchmark does and how the weights are computed. In this post, we will talk about some other interesting statistical properties. The lesson learned here is that we know how objects behave in the benchmark, and we can use this to judge whether or not the benchmark actually matches with real-life use cases.
+Object lifetime In this previous post, we know about an object&amp;rsquo;s life cycle.</description>
+    </item>
     
     <item>
       <title>POH Tuning (Part 2 - What am I running?)</title>
