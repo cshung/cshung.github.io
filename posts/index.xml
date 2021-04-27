@@ -6,10 +6,41 @@
     <description>Recent content in Posts on My Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 01 Mar 2021 20:55:26 -0800</lastBuildDate>
+    <lastBuildDate>Wed, 21 Apr 2021 12:57:39 -0700</lastBuildDate>
     
 	<atom:link href="http://cshung.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Git Merge Squash</title>
+      <link>http://cshung.github.io/posts/git-merge-squash/</link>
+      <pubDate>Wed, 21 Apr 2021 12:57:39 -0700</pubDate>
+      
+      <guid>http://cshung.github.io/posts/git-merge-squash/</guid>
+      <description>Git Merge Squash This is a short article documenting my process of reusing someone else&amp;rsquo;s change. It is not particularly easy and therefore I would like a document to remember how I did it.
+The problem? Imagine my partner and I were working on the same repository. I am working on a feature and he is working on a fix that I need. However, for whatever reasons, my partner couldn&amp;rsquo;t merge the fix in, but I would really like to apply his change in my code base so that my scenario work (at least locally), how should I do it?</description>
+    </item>
+    
+    <item>
+      <title>POH Tuning 5 (Part 5 - A surprising result)</title>
+      <link>http://cshung.github.io/posts/poh-tuning-5/</link>
+      <pubDate>Mon, 08 Mar 2021 10:57:05 -0800</pubDate>
+      
+      <guid>http://cshung.github.io/posts/poh-tuning-5/</guid>
+      <description>Top level result After running, we can use the Jupyter notebook to analyze the result. The result is surprising. To make the data easy to analyze, they are available as pandas data frame. For those who are unfamiliar with pandas, a data frame is really just a table.
+To use the notebook to get to the data frame, we need to run the first cell (as it required to setup the functions), and then we can run the cell calling the get_test_metrics_numbers_for_jupyter function, there should be exactly one such cell.</description>
+    </item>
+    
+    <item>
+      <title>POH Tuning (Part 4 - Benchmark design and the performance infrastructure)</title>
+      <link>http://cshung.github.io/posts/poh-tuning-4/</link>
+      <pubDate>Fri, 05 Mar 2021 19:55:26 -0800</pubDate>
+      
+      <guid>http://cshung.github.io/posts/poh-tuning-4/</guid>
+      <description>Benchmark design Armed with the knowledge about how the allocation ratios works in the previous post. Now we can design our benchmarks. My goal is to produce a pair of benchmarks so that I can compare pinning objects by using the old pinned handle, or by the new pinned object heap.
+In the pinned handle case, we can have a general design like this:
+Out of 1,000 objects in the SOH, \( a \) of them survives and \( b \) of them are pinned.</description>
+    </item>
     
     <item>
       <title>POH Tuning (Part 3 - Other statistical properties)</title>

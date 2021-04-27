@@ -39,7 +39,7 @@
 <meta property="og:description" content="" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="http://cshung.github.io/" />
-<meta property="og:updated_time" content="2021-03-01T20:55:26-08:00" />
+<meta property="og:updated_time" content="2021-04-21T12:57:39-07:00" />
 <meta itemprop="name" content="My Blog">
 <meta itemprop="description" content=""><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="My Blog"/>
@@ -135,15 +135,15 @@
       
       <div class="blah w-100">
         <h1 class="f3 fw1 athelas mt0 lh-title">
-          <a href="http://cshung.github.io/posts/poh-tuning-3/" class="color-inherit dim link">
-            POH Tuning (Part 3 - Other statistical properties)
+          <a href="http://cshung.github.io/posts/git-merge-squash/" class="color-inherit dim link">
+            Git Merge Squash
             </a>
         </h1>
         <div class="f6 f5-l lh-copy nested-copy-line-height nested-links">
-          In the last post, we discussed what the benchmark does and how the weights are computed. In this post, we will talk about some other interesting statistical properties. The lesson learned here is that we know how objects behave in the benchmark, and we can use this to judge whether or not the benchmark actually matches with real-life use cases.
-Object lifetime In this previous post, we know about an object&rsquo;s life cycle.
+          Git Merge Squash This is a short article documenting my process of reusing someone else&rsquo;s change. It is not particularly easy and therefore I would like a document to remember how I did it.
+The problem? Imagine my partner and I were working on the same repository. I am working on a feature and he is working on a fix that I need. However, for whatever reasons, my partner couldn&rsquo;t merge the fix in, but I would really like to apply his change in my code base so that my scenario work (at least locally), how should I do it?
         </div>
-          <a href="http://cshung.github.io/posts/poh-tuning-3/" class="ba b--moon-gray bg-light-gray br2 color-inherit dib f7 hover-bg-moon-gray link mt2 ph2 pv1">read more</a>
+          <a href="http://cshung.github.io/posts/git-merge-squash/" class="ba b--moon-gray bg-light-gray br2 color-inherit dib f7 hover-bg-moon-gray link mt2 ph2 pv1">read more</a>
         
       </div>
     </div>
@@ -160,15 +160,15 @@ Object lifetime In this previous post, we know about an object&rsquo;s life cycl
       
       <div class="blah w-100">
         <h1 class="f3 fw1 athelas mt0 lh-title">
-          <a href="http://cshung.github.io/posts/poh-tuning-2/" class="color-inherit dim link">
-            POH Tuning (Part 2 - What am I running?)
+          <a href="http://cshung.github.io/posts/poh-tuning-5/" class="color-inherit dim link">
+            POH Tuning 5 (Part 5 - A surprising result)
             </a>
         </h1>
         <div class="f6 f5-l lh-copy nested-copy-line-height nested-links">
-          In the last post, we talk about the event tracing infrastructure, it allows us to measure the metrics we wanted to study when we run the program. But what program do we want to run? The program that we will run is called a benchmark. In this post, I will look into the details of the benchmark program.
-Overview The program that we will run is called GCPerfSim. As its name suggests, it simulates workload for the GC to understand its performance.
+          Top level result After running, we can use the Jupyter notebook to analyze the result. The result is surprising. To make the data easy to analyze, they are available as pandas data frame. For those who are unfamiliar with pandas, a data frame is really just a table.
+To use the notebook to get to the data frame, we need to run the first cell (as it required to setup the functions), and then we can run the cell calling the get_test_metrics_numbers_for_jupyter function, there should be exactly one such cell.
         </div>
-          <a href="http://cshung.github.io/posts/poh-tuning-2/" class="ba b--moon-gray bg-light-gray br2 color-inherit dib f7 hover-bg-moon-gray link mt2 ph2 pv1">read more</a>
+          <a href="http://cshung.github.io/posts/poh-tuning-5/" class="ba b--moon-gray bg-light-gray br2 color-inherit dib f7 hover-bg-moon-gray link mt2 ph2 pv1">read more</a>
         
       </div>
     </div>
@@ -185,15 +185,16 @@ Overview The program that we will run is called GCPerfSim. As its name suggests,
       
       <div class="blah w-100">
         <h1 class="f3 fw1 athelas mt0 lh-title">
-          <a href="http://cshung.github.io/posts/debug-info-debugging/" class="color-inherit dim link">
-            Debug Info Debugging
+          <a href="http://cshung.github.io/posts/poh-tuning-4/" class="color-inherit dim link">
+            POH Tuning (Part 4 - Benchmark design and the performance infrastructure)
             </a>
         </h1>
         <div class="f6 f5-l lh-copy nested-copy-line-height nested-links">
-          Recently, I have found an anomaly in the debug info generated by the ready to run compiler. In this post, I will talk about how I found it and how I debugged it.
-Discovery In a routine update of the ILCompiler.Reflection.ReadyToRun.dll for ILSpy, I turned on the STRESS mode I introduced in a recent commit to test whether or not the new version can disassemble all the methods in System.Private.CoreLib. To my surprise, it failed with this exception.
+          Benchmark design Armed with the knowledge about how the allocation ratios works in the previous post. Now we can design our benchmarks. My goal is to produce a pair of benchmarks so that I can compare pinning objects by using the old pinned handle, or by the new pinned object heap.
+In the pinned handle case, we can have a general design like this:
+Out of 1,000 objects in the SOH, \( a \) of them survives and \( b \) of them are pinned.
         </div>
-          <a href="http://cshung.github.io/posts/debug-info-debugging/" class="ba b--moon-gray bg-light-gray br2 color-inherit dib f7 hover-bg-moon-gray link mt2 ph2 pv1">read more</a>
+          <a href="http://cshung.github.io/posts/poh-tuning-4/" class="ba b--moon-gray bg-light-gray br2 color-inherit dib f7 hover-bg-moon-gray link mt2 ph2 pv1">read more</a>
         
       </div>
     </div>
@@ -210,26 +211,26 @@ Discovery In a routine update of the ILCompiler.Reflection.ReadyToRun.dll for IL
         
         
           <h2 class="f5 fw4 mb4 dib mr3">
+            <a href="http://cshung.github.io/posts/poh-tuning-3/" class="link black dim">
+              POH Tuning (Part 3 - Other statistical properties)
+            </a>
+          </h2>
+        
+          <h2 class="f5 fw4 mb4 dib mr3">
+            <a href="http://cshung.github.io/posts/poh-tuning-2/" class="link black dim">
+              POH Tuning (Part 2 - What am I running?)
+            </a>
+          </h2>
+        
+          <h2 class="f5 fw4 mb4 dib mr3">
+            <a href="http://cshung.github.io/posts/debug-info-debugging/" class="link black dim">
+              Debug Info Debugging
+            </a>
+          </h2>
+        
+          <h2 class="f5 fw4 mb4 dib mr3">
             <a href="http://cshung.github.io/posts/poh-tuning-1/" class="link black dim">
               POH Tuning (Part 1 - What is my pinned object heap size?)
-            </a>
-          </h2>
-        
-          <h2 class="f5 fw4 mb4 dib mr3">
-            <a href="http://cshung.github.io/posts/generation-aware-analysis/" class="link black dim">
-              Generation Aware Analysis
-            </a>
-          </h2>
-        
-          <h2 class="f5 fw4 mb4 dib mr3">
-            <a href="http://cshung.github.io/posts/gc-objects-2/" class="link black dim">
-              How CoreCLR GC understand objects (part 2)
-            </a>
-          </h2>
-        
-          <h2 class="f5 fw4 mb4 dib mr3">
-            <a href="http://cshung.github.io/posts/gc-objects-1/" class="link black dim">
-              How CoreCLR GC understand objects (part 1)
             </a>
           </h2>
         

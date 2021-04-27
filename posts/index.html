@@ -39,7 +39,7 @@
 <meta property="og:description" content="" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="http://cshung.github.io/posts/" />
-<meta property="og:updated_time" content="2021-03-01T20:55:26-08:00" />
+<meta property="og:updated_time" content="2021-04-21T12:57:39-07:00" />
 <meta itemprop="name" content="Posts">
 <meta itemprop="description" content=""><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Posts"/>
@@ -103,6 +103,55 @@
   <article class="pa3 pa4-ns nested-copy-line-height nested-img">
     <section class="cf ph3 ph5-l pv3 pv4-l f4 tc-l center measure-wide lh-copy mid-gray"></section>
     <section class="flex-ns flex-wrap justify-around mt5">
+      
+        <div class="relative w-100 w-30-l mb4 bg-white"><div class="relative w-100 mb4 bg-white nested-copy-line-height">
+  <div class="bg-white mb3 pa4 gray overflow-hidden">
+    <span class="f6 db">Posts</span>
+    <h1 class="f3 near-black">
+      <a href="http://cshung.github.io/posts/git-merge-squash/" class="link black dim">
+        Git Merge Squash
+      </a>
+    </h1>
+    <div class="nested-links f5 lh-copy nested-copy-line-height">
+      Git Merge Squash This is a short article documenting my process of reusing someone else&rsquo;s change. It is not particularly easy and therefore I would like a document to remember how I did it.
+The problem? Imagine my partner and I were working on the same repository. I am working on a feature and he is working on a fix that I need. However, for whatever reasons, my partner couldn&rsquo;t merge the fix in, but I would really like to apply his change in my code base so that my scenario work (at least locally), how should I do it?
+    </div>
+  </div>
+</div>
+</div>
+      
+        <div class="relative w-100 w-30-l mb4 bg-white"><div class="relative w-100 mb4 bg-white nested-copy-line-height">
+  <div class="bg-white mb3 pa4 gray overflow-hidden">
+    <span class="f6 db">Posts</span>
+    <h1 class="f3 near-black">
+      <a href="http://cshung.github.io/posts/poh-tuning-5/" class="link black dim">
+        POH Tuning 5 (Part 5 - A surprising result)
+      </a>
+    </h1>
+    <div class="nested-links f5 lh-copy nested-copy-line-height">
+      Top level result After running, we can use the Jupyter notebook to analyze the result. The result is surprising. To make the data easy to analyze, they are available as pandas data frame. For those who are unfamiliar with pandas, a data frame is really just a table.
+To use the notebook to get to the data frame, we need to run the first cell (as it required to setup the functions), and then we can run the cell calling the get_test_metrics_numbers_for_jupyter function, there should be exactly one such cell.
+    </div>
+  </div>
+</div>
+</div>
+      
+        <div class="relative w-100 w-30-l mb4 bg-white"><div class="relative w-100 mb4 bg-white nested-copy-line-height">
+  <div class="bg-white mb3 pa4 gray overflow-hidden">
+    <span class="f6 db">Posts</span>
+    <h1 class="f3 near-black">
+      <a href="http://cshung.github.io/posts/poh-tuning-4/" class="link black dim">
+        POH Tuning (Part 4 - Benchmark design and the performance infrastructure)
+      </a>
+    </h1>
+    <div class="nested-links f5 lh-copy nested-copy-line-height">
+      Benchmark design Armed with the knowledge about how the allocation ratios works in the previous post. Now we can design our benchmarks. My goal is to produce a pair of benchmarks so that I can compare pinning objects by using the old pinned handle, or by the new pinned object heap.
+In the pinned handle case, we can have a general design like this:
+Out of 1,000 objects in the SOH, \( a \) of them survives and \( b \) of them are pinned.
+    </div>
+  </div>
+</div>
+</div>
       
         <div class="relative w-100 w-30-l mb4 bg-white"><div class="relative w-100 mb4 bg-white nested-copy-line-height">
   <div class="bg-white mb3 pa4 gray overflow-hidden">
@@ -210,54 +259,6 @@ Where is the code that perform the traversal? //this method assumes that *po is 
     <div class="nested-links f5 lh-copy nested-copy-line-height">
       In this series of posts, I am going to explain how the GC understand objects. In this part, we will focus on size.
 Why does it matter? The GC expects the heap to be tightly packed with objects. It scans the heap by starting at the beginning of the heap and walk the object one-by-one by this simple algorithm. This is real code excerpt from gc.cpp line 22972 to 23002, out of dotnet/runtime repo, tag v5.
-    </div>
-  </div>
-</div>
-</div>
-      
-        <div class="relative w-100 w-30-l mb4 bg-white"><div class="relative w-100 mb4 bg-white nested-copy-line-height">
-  <div class="bg-white mb3 pa4 gray overflow-hidden">
-    <span class="f6 db">Posts</span>
-    <h1 class="f3 near-black">
-      <a href="http://cshung.github.io/posts/hello-reflection/" class="link black dim">
-        Hello Reflection
-      </a>
-    </h1>
-    <div class="nested-links f5 lh-copy nested-copy-line-height">
-      To get started using ILCompiler.Reflection.ReadyToRun, let&rsquo;s construct a simple HelloWorld project. If you don&rsquo;t know what it is, please take a look at the previous post.
-Getting started We will create a .NET Core console application. Create a folder named HelloReflection and invoke dotnet new console.
-C:\dev&gt;mkdir HelloReflectionC:\dev&gt;cd HelloReflectionC:\dev\HelloReflection&gt;dotnet new consoleThe template &quot;Console Application&quot; was created successfully.Processing post-creation actions...Running 'dotnet restore' on C:\dev\HelloReflection\HelloReflection.csproj...Determining projects to restore.
-    </div>
-  </div>
-</div>
-</div>
-      
-        <div class="relative w-100 w-30-l mb4 bg-white"><div class="relative w-100 mb4 bg-white nested-copy-line-height">
-  <div class="bg-white mb3 pa4 gray overflow-hidden">
-    <span class="f6 db">Posts</span>
-    <h1 class="f3 near-black">
-      <a href="http://cshung.github.io/posts/coreclrgc-mono/" class="link black dim">
-        Debugging help for CoreCLR GC - Mono
-      </a>
-    </h1>
-    <div class="nested-links f5 lh-copy nested-copy-line-height">
-      I was invited to help with debugging an issue in the CoreCLR GC - Mono project. In this blog entry, I am planning to describe the debugging process so that it can be repeated to move the project forward.
-What is CoreCLR GC - Mono? CoreCLR GC - Mono is an attempt to use CoreCLR&rsquo;s GC to replace sgen, a simple generational garbage collector for Mono. The major goal of the project is to improve performance.
-    </div>
-  </div>
-</div>
-</div>
-      
-        <div class="relative w-100 w-30-l mb4 bg-white"><div class="relative w-100 mb4 bg-white nested-copy-line-height">
-  <div class="bg-white mb3 pa4 gray overflow-hidden">
-    <span class="f6 db">Posts</span>
-    <h1 class="f3 near-black">
-      <a href="http://cshung.github.io/posts/automate-windbg/" class="link black dim">
-        Automate WinDBG
-      </a>
-    </h1>
-    <div class="nested-links f5 lh-copy nested-copy-line-height">
-      Automate WinDBG WinDBG is a very convenient debugger, but typing the same command again and again is tiresome, especially during startup. GDB provided a mechanism to run some commands on startup through gdbinit. WinDBG has the equivalent, although it is not as clear. In this blog post, I am going to share how I automated WinDBG to run some commands on startup. For the impatient, just rush to the summary to get the commands.
     </div>
   </div>
 </div>
