@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    
+    <title>Understanding the card table | My Blog</title>
+    <meta name="viewport" content="width=device-width,minimum-scale=1">
+    <meta name="description" content="Understanding the card table A card table is used in a generational GC to discover cross-generational pointers. Let&rsquo;s get started with the generation GC problem first.
+Generational GC It is observed allocations typically divides into two classes. Either they are short-lived or they are long lived. To efficiently use the memory, we would like to be able to reclaim the space of the short lived object relatively fast without having to worry about the long lived ones.">
+    <meta name="generator" content="Hugo 0.73.0-DEV" />
+    
+    
+      <META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
+    
+
+    
+
+  
+  
+    <link rel="stylesheet" href="/ananke/dist/main.css_5c99d70a7725bacd4c701e995b969fea.css" >
+  
+
+
+
+
+    
+      
+
+    
+
+    
+    
+    <meta property="og:title" content="Understanding the card table" />
+<meta property="og:description" content="Understanding the card table A card table is used in a generational GC to discover cross-generational pointers. Let&rsquo;s get started with the generation GC problem first.
+Generational GC It is observed allocations typically divides into two classes. Either they are short-lived or they are long lived. To efficiently use the memory, we would like to be able to reclaim the space of the short lived object relatively fast without having to worry about the long lived ones." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://cshung.github.io/posts/card/" />
+<meta property="article:published_time" content="2021-04-17T00:00:00-08:00" />
+<meta property="article:modified_time" content="2021-04-17T00:00:00-08:00" />
+<meta itemprop="name" content="Understanding the card table">
+<meta itemprop="description" content="Understanding the card table A card table is used in a generational GC to discover cross-generational pointers. Let&rsquo;s get started with the generation GC problem first.
+Generational GC It is observed allocations typically divides into two classes. Either they are short-lived or they are long lived. To efficiently use the memory, we would like to be able to reclaim the space of the short lived object relatively fast without having to worry about the long lived ones.">
+<meta itemprop="datePublished" content="2021-04-17T00:00:00-08:00" />
+<meta itemprop="dateModified" content="2021-04-17T00:00:00-08:00" />
+<meta itemprop="wordCount" content="675">
+
+
+
+<meta itemprop="keywords" content="" /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Understanding the card table"/>
+<meta name="twitter:description" content="Understanding the card table A card table is used in a generational GC to discover cross-generational pointers. Let&rsquo;s get started with the generation GC problem first.
+Generational GC It is observed allocations typically divides into two classes. Either they are short-lived or they are long lived. To efficiently use the memory, we would like to be able to reclaim the space of the short lived object relatively fast without having to worry about the long lived ones."/>
+
+	
+  </head>
+
+  <body class="ma0 avenir bg-near-white">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <script>mermaid.initialize({startOnLoad:true});</script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+   
+  
+
+  <header>
+    <div class="bg-black">
+      <nav class="pv3 ph3 ph4-ns" role="navigation">
+  <div class="flex-l justify-between items-center center">
+    <a href="/" class="f3 fw2 hover-white no-underline white-90 dib">
+      
+        My Blog
+      
+    </a>
+    <div class="flex-l items-center">
+      
+
+      
+      
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    </div>
+  </div>
+</nav>
+
+    </div>
+  </header>
+
+
+
+    <main class="pb7" role="main">
+      
+  
+  <article class="flex-l flex-wrap justify-between mw8 center ph3">
+    <header class="mt4 w-100">
+      <aside class="instapaper_ignoref b helvetica tracked">
+          
+        POSTS
+      </aside>
+      
+
+
+
+
+  <div id="sharing" class="mt3">
+
+    
+    <a href="https://www.facebook.com/sharer.php?u=http://cshung.github.io/posts/card/" class="facebook no-underline" aria-label="share on Facebook">
+      <svg height="32px"  style="enable-background:new 0 0 67 67;" version="1.1" viewBox="0 0 67 67" width="32px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path d="M28.765,50.32h6.744V33.998h4.499l0.596-5.624h-5.095  l0.007-2.816c0-1.466,0.14-2.253,2.244-2.253h2.812V17.68h-4.5c-5.405,0-7.307,2.729-7.307,7.317v3.377h-3.369v5.625h3.369V50.32z   M33,64C16.432,64,3,50.569,3,34S16.432,4,33,4s30,13.431,30,30S49.568,64,33,64z" style="fill-rule:evenodd;clip-rule:evenodd;"/></svg>
+
+    </a>
+
+    
+    
+    <a href="https://twitter.com/share?url=http://cshung.github.io/posts/card/&amp;text=Understanding%20the%20card%20table" class="twitter no-underline" aria-label="share on Twitter">
+      <svg height="32px"  style="enable-background:new 0 0 67 67;" version="1.1" viewBox="0 0 67 67" width="32px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path d="M37.167,22.283c-2.619,0.953-4.274,3.411-4.086,6.101  l0.063,1.038l-1.048-0.127c-3.813-0.487-7.145-2.139-9.974-4.915l-1.383-1.377l-0.356,1.017c-0.754,2.267-0.272,4.661,1.299,6.271  c0.838,0.89,0.649,1.017-0.796,0.487c-0.503-0.169-0.943-0.296-0.985-0.233c-0.146,0.149,0.356,2.076,0.754,2.839  c0.545,1.06,1.655,2.097,2.871,2.712l1.027,0.487l-1.215,0.021c-1.173,0-1.215,0.021-1.089,0.467  c0.419,1.377,2.074,2.839,3.918,3.475l1.299,0.444l-1.131,0.678c-1.676,0.976-3.646,1.526-5.616,1.568  C19.775,43.256,19,43.341,19,43.405c0,0.211,2.557,1.397,4.044,1.864c4.463,1.377,9.765,0.783,13.746-1.568  c2.829-1.673,5.657-5,6.978-8.221c0.713-1.716,1.425-4.851,1.425-6.354c0-0.975,0.063-1.102,1.236-2.267  c0.692-0.678,1.341-1.419,1.467-1.631c0.21-0.403,0.188-0.403-0.88-0.043c-1.781,0.636-2.033,0.551-1.152-0.402  c0.649-0.678,1.425-1.907,1.425-2.267c0-0.063-0.314,0.042-0.671,0.233c-0.377,0.212-1.215,0.53-1.844,0.72l-1.131,0.361l-1.027-0.7  c-0.566-0.381-1.361-0.805-1.781-0.932C39.766,21.902,38.131,21.944,37.167,22.283z M33,64C16.432,64,3,50.569,3,34S16.432,4,33,4  s30,13.431,30,30S49.568,64,33,64z" style="fill-rule:evenodd;clip-rule:evenodd;fill:;"/></svg>
+
+    </a>
+
+    
+    <a href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http://cshung.github.io/posts/card/&amp;title=Understanding%20the%20card%20table" class="linkedin no-underline" aria-label="share on LinkedIn">
+      <svg  height="32px"  style="enable-background:new 0 0 65 65;" version="1.1" viewBox="0 0 65 65" width="32px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <path d="M50.837,48.137V36.425c0-6.275-3.35-9.195-7.816-9.195  c-3.604,0-5.219,1.983-6.119,3.374V27.71h-6.79c0.09,1.917,0,20.427,0,20.427h6.79V36.729c0-0.609,0.044-1.219,0.224-1.655  c0.49-1.22,1.607-2.483,3.482-2.483c2.458,0,3.44,1.873,3.44,4.618v10.929H50.837z M22.959,24.922c2.367,0,3.842-1.57,3.842-3.531  c-0.044-2.003-1.475-3.528-3.797-3.528s-3.841,1.524-3.841,3.528c0,1.961,1.474,3.531,3.753,3.531H22.959z M34,64  C17.432,64,4,50.568,4,34C4,17.431,17.432,4,34,4s30,13.431,30,30C64,50.568,50.568,64,34,64z M26.354,48.137V27.71h-6.789v20.427  H26.354z" style="fill-rule:evenodd;clip-rule:evenodd;fill:;"/>
+</svg>
+
+    </a>
+  </div>
+
+
+      <h1 class="f1 athelas mt3 mb1">Understanding the card table</h1>
+      
+      
+      <time class="f6 mv4 dib tracked" datetime="2021-04-17T00:00:00-08:00">April 17, 2021</time>
+
+      
+      
+    </header>
+    <div class="nested-copy-line-height lh-copy serif f4 nested-links nested-img mid-gray pr4-l w-two-thirds-l"><h1 id="understanding-the-card-table">Understanding the card table</h1>
+<p>A card table is used in a generational GC to discover cross-generational pointers. Let&rsquo;s get started with the generation GC problem first.</p>
+<h2 id="generational-gc">Generational GC</h2>
+<p>It is observed allocations typically divides into two classes. Either they are short-lived or they are long lived. To efficiently use the memory, we would like to be able to reclaim the space of the short lived object relatively fast without having to worry about the long lived ones. Ideally, we can have a GC that only collect the young generation. How do we do that? We do the usual mark and sweep. In the sweep phase, we can focus on the young generation only, and reclaim the memory into free lists as we see unmarked object.</p>
+<p>But how do we make the <code>mark_phase</code> run faster? To truly determine if an object is free and subject to collection, we have to be sure that there is no reference to that object from <strong>anywhere</strong>. That includes the potential for long lived object to have a reference to the short lived ones. That is a sad news, because we cannot shrink the <code>mark_phase</code> to explore only young objects.</p>
+<p>Fortunately, there is a cure. Suppose we do young generation GC frequently, then the long lived objects don&rsquo;t have a chance to change too much. Suppose those changes are small relative to all the long lived objects, it make senses to just go through the changes.</p>
+<h2 id="recording-changes">Recording changes</h2>
+<p>To record change, we need to be able to intercept writes. We do that by making sure all changes to references go through a function called the write barrier. Since this is happening for all writes, we would like the overhead to be as small as possible. To do that, we introduce the card table.</p>
+<h2 id="card-table">Card table</h2>
+<p>Like the brick table, we divide the heap range into cards. Each card is represented by a single bit in the card table to indicate whether or not it <em>could</em> contain a cross generational pointer.</p>
+<p>The logic of translating an address to a card is similar:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#66d9ef">inline</span>
+<span style="color:#66d9ef">uint8_t</span><span style="color:#f92672">*</span> gc_heap<span style="color:#f92672">::</span>card_address (size_t card)
+{
+    <span style="color:#66d9ef">return</span>  (<span style="color:#66d9ef">uint8_t</span><span style="color:#f92672">*</span>) (card_size <span style="color:#f92672">*</span> card);
+}
+
+<span style="color:#66d9ef">inline</span>
+size_t gc_heap<span style="color:#f92672">::</span>card_of ( <span style="color:#66d9ef">uint8_t</span><span style="color:#f92672">*</span> object)
+{
+    <span style="color:#66d9ef">return</span> (size_t)(object) <span style="color:#f92672">/</span> card_size;
+}
+</code></pre></div><p>The key difference from the brick table is that we do not adjust for the lowest address, this is explained by the <code>translate_card</code> function.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#66d9ef">uint32_t</span><span style="color:#f92672">*</span> <span style="color:#a6e22e">translate_card_table</span> (<span style="color:#66d9ef">uint32_t</span><span style="color:#f92672">*</span> ct)
+{
+    <span style="color:#66d9ef">return</span> (<span style="color:#66d9ef">uint32_t</span><span style="color:#f92672">*</span>)((<span style="color:#66d9ef">uint8_t</span><span style="color:#f92672">*</span>)ct <span style="color:#f92672">-</span> card_word (gcard_of (card_table_lowest_address (ct))) <span style="color:#f92672">*</span> <span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">uint32_t</span>));
+}
+</code></pre></div><p>So instead of adding complexity in the address to card conversion routine, we simply move the base address of the card table itself instead so that the card table can be indexed using an unadjusted card number, that helps simplify the write barrier logic.</p>
+<h2 id="marking-the-cards">Marking the cards</h2>
+<p>Now we know the card table tell use which card could contain the cross generational pointer. During <code>mark_phase</code>, we can go through the marked cards. Each marked card correspond to an address range, therefore we can find an object (through the brick table!) on that address range, and go through the pointers there. That make sure we cover all the references to the younger generation objects.</p>
+<h2 id="clearing-the-cards">Clearing the cards</h2>
+<p>If we do not clear the cards, they will eventually accumulate and the whole older generation could contain lower generation objects. That just defeats the purpose. Therefore we need to be aggressive with clearing the cards. A good opportunity to clear the card is once the card is marked, but there will be a problem as illustrated in this sequence of operations:</p>
+<ol>
+<li>A new generation 0 object <code>New</code> is created,</li>
+<li>An old generation 2 object <code>Old</code> is referencing <code>New</code>.</li>
+<li>A generation 0 GC occurred.</li>
+<li>A generation 1 GC occurred.</li>
+</ol>
+<p>If we reset the card containing <code>Old</code> during the <code>mark_phase</code> of step 3. We will miss that cross generation pointer from <code>Old</code> to <code>New</code> during step 4. Turn out a cross generational pointer might be introduced in various ways. We could introduce it during promotion and demotion, we have to make sure the card table is updated in those cases as well.</p>
+<ul class="pa0">
+  
+</ul>
+<div class="mt6 instapaper_ignoref">
+      
+      
+      </div>
+    </div>
+
+    <aside class="w-30-l mt6-l">
+
+
+
+
+</aside>
+
+  </article>
+
+    </main>
+    <footer class="bg-black bottom-0 w-100 pa3" role="contentinfo">
+  <div class="flex justify-between">
+  <a class="f4 fw4 hover-white no-underline white-70 dn dib-ns pv2 ph3" href="http://cshung.github.io/" >
+    &copy;  My Blog 2021 
+  </a>
+    <div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+  </div>
+</footer>
+
+    <div style="display:none">
+    <script type="text/javascript" src="https://www.free-counters.org/count/86pd"></script><br><a href='http://www.counter-zaehler.de'>besucherzähler ip</a> <script type='text/javascript'     src='https://whomania.com/ctr?id=695d5b016077d10ada0ea41fc87e54f2421f8966'></script>
+    </div>
+  </body>
+
+</html>

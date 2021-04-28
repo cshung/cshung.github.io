@@ -124,6 +124,38 @@ The problem? Imagine my partner and I were working on the same repository. I am 
   <div class="bg-white mb3 pa4 gray overflow-hidden">
     <span class="f6 db">Posts</span>
     <h1 class="f3 near-black">
+      <a href="http://cshung.github.io/posts/brick/" class="link black dim">
+        Understanding the brick table
+      </a>
+    </h1>
+    <div class="nested-links f5 lh-copy nested-copy-line-height">
+      Understanding the brick table A brick table is a data structure that helps finding an object in the heap. To begin with the discussion, it makes sense to clarify what does finding an object mean.
+What is the find object problem? There are various situation that we are given a random pointer inside the heap, and we wanted to find the pointer to the object that is using the address.
+    </div>
+  </div>
+</div>
+</div>
+      
+        <div class="relative w-100 w-30-l mb4 bg-white"><div class="relative w-100 mb4 bg-white nested-copy-line-height">
+  <div class="bg-white mb3 pa4 gray overflow-hidden">
+    <span class="f6 db">Posts</span>
+    <h1 class="f3 near-black">
+      <a href="http://cshung.github.io/posts/card/" class="link black dim">
+        Understanding the card table
+      </a>
+    </h1>
+    <div class="nested-links f5 lh-copy nested-copy-line-height">
+      Understanding the card table A card table is used in a generational GC to discover cross-generational pointers. Let&rsquo;s get started with the generation GC problem first.
+Generational GC It is observed allocations typically divides into two classes. Either they are short-lived or they are long lived. To efficiently use the memory, we would like to be able to reclaim the space of the short lived object relatively fast without having to worry about the long lived ones.
+    </div>
+  </div>
+</div>
+</div>
+      
+        <div class="relative w-100 w-30-l mb4 bg-white"><div class="relative w-100 mb4 bg-white nested-copy-line-height">
+  <div class="bg-white mb3 pa4 gray overflow-hidden">
+    <span class="f6 db">Posts</span>
+    <h1 class="f3 near-black">
       <a href="http://cshung.github.io/posts/poh-tuning-5/" class="link black dim">
         POH Tuning 5 (Part 5 - A surprising result)
       </a>
@@ -227,38 +259,6 @@ Pinned Object Heap size (and the event tracing mechanisms) With the tools availa
     </h1>
     <div class="nested-links f5 lh-copy nested-copy-line-height">
       The problem? The .NET GC is generational, it makes the assumption that allocations are broadly divided into two classes, either they are short-lived (e.g. temporary objects) or they are long-lived (e.g. constants, caches for repeated uses). This assumption is often true, but once in a while, that&rsquo;s not true, often due to programmer mistakes. If a pile of objects meant for short term usage is leaked into gen2, that can cost a short term spike in ephemeral GC latency, and a long term memory cost for storing them.
-    </div>
-  </div>
-</div>
-</div>
-      
-        <div class="relative w-100 w-30-l mb4 bg-white"><div class="relative w-100 mb4 bg-white nested-copy-line-height">
-  <div class="bg-white mb3 pa4 gray overflow-hidden">
-    <span class="f6 db">Posts</span>
-    <h1 class="f3 near-black">
-      <a href="http://cshung.github.io/posts/gc-objects-2/" class="link black dim">
-        How CoreCLR GC understand objects (part 2)
-      </a>
-    </h1>
-    <div class="nested-links f5 lh-copy nested-copy-line-height">
-      In addition to size described in an earlier post, it is also important for the GC to know where the pointers are in an object. This is because in the mark phase, we need to traverse the object graph. Here is a function for the mark phase in gc.cpp line 19415-19452.
-Where is the code that perform the traversal? //this method assumes that *po is in the [low. high[ range void gc_heap::mark_object_simple (uint8_t** po THREAD_NUMBER_DCL) { uint8_t* o = *po; /* some code that does not change o or po */ if (gc_mark1 (o)) { /* some code that does not change o or po */ { go_through_object_cl (method_table(o), o, s, poo, { uint8_t* oo = *poo; /* some code to recursively mark oo */ } ); } } } Imagine this is run during the mark phase, if we discover an unmarked object, then we traverse into its pointers and recursively mark the objects it points to.
-    </div>
-  </div>
-</div>
-</div>
-      
-        <div class="relative w-100 w-30-l mb4 bg-white"><div class="relative w-100 mb4 bg-white nested-copy-line-height">
-  <div class="bg-white mb3 pa4 gray overflow-hidden">
-    <span class="f6 db">Posts</span>
-    <h1 class="f3 near-black">
-      <a href="http://cshung.github.io/posts/gc-objects-1/" class="link black dim">
-        How CoreCLR GC understand objects (part 1)
-      </a>
-    </h1>
-    <div class="nested-links f5 lh-copy nested-copy-line-height">
-      In this series of posts, I am going to explain how the GC understand objects. In this part, we will focus on size.
-Why does it matter? The GC expects the heap to be tightly packed with objects. It scans the heap by starting at the beginning of the heap and walk the object one-by-one by this simple algorithm. This is real code excerpt from gc.cpp line 22972 to 23002, out of dotnet/runtime repo, tag v5.
     </div>
   </div>
 </div>
