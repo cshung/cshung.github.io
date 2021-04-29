@@ -42,13 +42,24 @@ Generational GC It is observed allocations typically divides into two classes. E
     </item>
     
     <item>
-      <title>POH Tuning 5 (Part 5 - A surprising result)</title>
+      <title>POH Tuning (Part 5 - Preliminary results)</title>
       <link>http://cshung.github.io/posts/poh-tuning-5/</link>
       <pubDate>Mon, 08 Mar 2021 10:57:05 -0800</pubDate>
       
       <guid>http://cshung.github.io/posts/poh-tuning-5/</guid>
       <description>Top level result After running, we can use the Jupyter notebook to analyze the result. The result is surprising. To make the data easy to analyze, they are available as pandas data frame. For those who are unfamiliar with pandas, a data frame is really just a table.
 To use the notebook to get to the data frame, we need to run the first cell (as it required to setup the functions), and then we can run the cell calling the get_test_metrics_numbers_for_jupyter function, there should be exactly one such cell.</description>
+    </item>
+    
+    <item>
+      <title>POH Tuning (Part 6 - Varying the benchmark)</title>
+      <link>http://cshung.github.io/posts/poh-tuning-6/</link>
+      <pubDate>Mon, 08 Mar 2021 10:57:05 -0800</pubDate>
+      
+      <guid>http://cshung.github.io/posts/poh-tuning-6/</guid>
+      <description>Varying the benchmark In the last post, we showed that in a particular scenario, allocating pinned objects on pinned object heap is a better choice from both the speed perspective and the heap size perspective. How about other scenarios?
+In part 4, we already discussed the criterion what is feasible to test under GCPerfSim, so we will simply generate all the possibilities here with this simple Python script
+for a in range(1, 100): if 1000 % a == 0: for b in range(1, a): if a % b == 0: if ((1000 - b) % (a - b) == 0): pin_sohsi = 1000 // a pin_sohpi = a // b poh_sohsi = (1000 - b) // (a - b) poh_pohar = b print(&amp;#34; 2gb_pin_%s_%s:&amp;#34; % (a, b)); print(&amp;#34; arguments:&amp;#34;); print(&amp;#34; tc: 6&amp;#34;); print(&amp;#34; tagb: 100&amp;#34;); print(&amp;#34; tlgb: 2&amp;#34;); print(&amp;#34; lohar: 0&amp;#34;); print(&amp;#34; pohar: 0&amp;#34;); print(&amp;#34; sohsr: 100-4000&amp;#34;); print(&amp;#34; pohsr: 100-4000&amp;#34;); print(&amp;#34; sohsi: %s&amp;#34; % pin_sohsi); print(&amp;#34; lohsi: 0&amp;#34;); print(&amp;#34; pohsi: 0&amp;#34;); print(&amp;#34; sohpi: %s&amp;#34; % pin_sohpi); print(&amp;#34; lohpi: 0&amp;#34;); print(&amp;#34; sohfi: 0&amp;#34;); print(&amp;#34; lohfi: 0&amp;#34;); print(&amp;#34; pohfi: 0&amp;#34;); print(&amp;#34; allocType: reference&amp;#34;); print(&amp;#34; testKind: time&amp;#34;); print(&amp;#34; 2gb_poh_%s_%s:&amp;#34; % (a, b)); print(&amp;#34; arguments:&amp;#34;); print(&amp;#34; tc: 6&amp;#34;); print(&amp;#34; tagb: 100&amp;#34;); print(&amp;#34; tlgb: 2&amp;#34;); print(&amp;#34; lohar: 0&amp;#34;); print(&amp;#34; pohar: %s&amp;#34; % poh_pohar); print(&amp;#34; sohsr: 100-4000&amp;#34;); print(&amp;#34; pohsr: 100-4000&amp;#34;); print(&amp;#34; sohsi: %s&amp;#34; % poh_sohsi); print(&amp;#34; lohsi: 0&amp;#34;); print(&amp;#34; pohsi: 1&amp;#34;); print(&amp;#34; sohpi: 0&amp;#34;); print(&amp;#34; lohpi: 0&amp;#34;); print(&amp;#34; sohfi: 0&amp;#34;); print(&amp;#34; lohfi: 0&amp;#34;); print(&amp;#34; pohfi: 0&amp;#34;); print(&amp;#34; allocType: reference&amp;#34;); print(&amp;#34; testKind: time&amp;#34;); Preprocessing the result As usual, we can create a pandas data frame for all the runs.</description>
     </item>
     
     <item>

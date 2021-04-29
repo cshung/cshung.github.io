@@ -157,12 +157,29 @@ Generational GC It is observed allocations typically divides into two classes. E
     <span class="f6 db">Posts</span>
     <h1 class="f3 near-black">
       <a href="http://cshung.github.io/posts/poh-tuning-5/" class="link black dim">
-        POH Tuning 5 (Part 5 - A surprising result)
+        POH Tuning (Part 5 - Preliminary results)
       </a>
     </h1>
     <div class="nested-links f5 lh-copy nested-copy-line-height">
       Top level result After running, we can use the Jupyter notebook to analyze the result. The result is surprising. To make the data easy to analyze, they are available as pandas data frame. For those who are unfamiliar with pandas, a data frame is really just a table.
 To use the notebook to get to the data frame, we need to run the first cell (as it required to setup the functions), and then we can run the cell calling the get_test_metrics_numbers_for_jupyter function, there should be exactly one such cell.
+    </div>
+  </div>
+</div>
+</div>
+      
+        <div class="relative w-100 w-30-l mb4 bg-white"><div class="relative w-100 mb4 bg-white nested-copy-line-height">
+  <div class="bg-white mb3 pa4 gray overflow-hidden">
+    <span class="f6 db">Posts</span>
+    <h1 class="f3 near-black">
+      <a href="http://cshung.github.io/posts/poh-tuning-6/" class="link black dim">
+        POH Tuning (Part 6 - Varying the benchmark)
+      </a>
+    </h1>
+    <div class="nested-links f5 lh-copy nested-copy-line-height">
+      Varying the benchmark In the last post, we showed that in a particular scenario, allocating pinned objects on pinned object heap is a better choice from both the speed perspective and the heap size perspective. How about other scenarios?
+In part 4, we already discussed the criterion what is feasible to test under GCPerfSim, so we will simply generate all the possibilities here with this simple Python script
+for a in range(1, 100): if 1000 % a == 0: for b in range(1, a): if a % b == 0: if ((1000 - b) % (a - b) == 0): pin_sohsi = 1000 // a pin_sohpi = a // b poh_sohsi = (1000 - b) // (a - b) poh_pohar = b print(&#34; 2gb_pin_%s_%s:&#34; % (a, b)); print(&#34; arguments:&#34;); print(&#34; tc: 6&#34;); print(&#34; tagb: 100&#34;); print(&#34; tlgb: 2&#34;); print(&#34; lohar: 0&#34;); print(&#34; pohar: 0&#34;); print(&#34; sohsr: 100-4000&#34;); print(&#34; pohsr: 100-4000&#34;); print(&#34; sohsi: %s&#34; % pin_sohsi); print(&#34; lohsi: 0&#34;); print(&#34; pohsi: 0&#34;); print(&#34; sohpi: %s&#34; % pin_sohpi); print(&#34; lohpi: 0&#34;); print(&#34; sohfi: 0&#34;); print(&#34; lohfi: 0&#34;); print(&#34; pohfi: 0&#34;); print(&#34; allocType: reference&#34;); print(&#34; testKind: time&#34;); print(&#34; 2gb_poh_%s_%s:&#34; % (a, b)); print(&#34; arguments:&#34;); print(&#34; tc: 6&#34;); print(&#34; tagb: 100&#34;); print(&#34; tlgb: 2&#34;); print(&#34; lohar: 0&#34;); print(&#34; pohar: %s&#34; % poh_pohar); print(&#34; sohsr: 100-4000&#34;); print(&#34; pohsr: 100-4000&#34;); print(&#34; sohsi: %s&#34; % poh_sohsi); print(&#34; lohsi: 0&#34;); print(&#34; pohsi: 1&#34;); print(&#34; sohpi: 0&#34;); print(&#34; lohpi: 0&#34;); print(&#34; sohfi: 0&#34;); print(&#34; lohfi: 0&#34;); print(&#34; pohfi: 0&#34;); print(&#34; allocType: reference&#34;); print(&#34; testKind: time&#34;); Preprocessing the result As usual, we can create a pandas data frame for all the runs.
     </div>
   </div>
 </div>
@@ -244,21 +261,6 @@ Discovery In a routine update of the ILCompiler.Reflection.ReadyToRun.dll for IL
     <div class="nested-links f5 lh-copy nested-copy-line-height">
       In this series, I am going to talk about my work to tune the pinned object heap. The first step to tuning is to understand how it performs now. Unfortunately, the tools for analyzing the performance is incomplete.
 Pinned Object Heap size (and the event tracing mechanisms) With the tools available in .NET 5 time frame, we did not know the size of the pinned object heap. We had the information in the trace, but we did not have the parser to understand them.
-    </div>
-  </div>
-</div>
-</div>
-      
-        <div class="relative w-100 w-30-l mb4 bg-white"><div class="relative w-100 mb4 bg-white nested-copy-line-height">
-  <div class="bg-white mb3 pa4 gray overflow-hidden">
-    <span class="f6 db">Posts</span>
-    <h1 class="f3 near-black">
-      <a href="http://cshung.github.io/posts/generation-aware-analysis/" class="link black dim">
-        Generation Aware Analysis
-      </a>
-    </h1>
-    <div class="nested-links f5 lh-copy nested-copy-line-height">
-      The problem? The .NET GC is generational, it makes the assumption that allocations are broadly divided into two classes, either they are short-lived (e.g. temporary objects) or they are long-lived (e.g. constants, caches for repeated uses). This assumption is often true, but once in a while, that&rsquo;s not true, often due to programmer mistakes. If a pile of objects meant for short term usage is leaked into gen2, that can cost a short term spike in ephemeral GC latency, and a long term memory cost for storing them.
     </div>
   </div>
 </div>

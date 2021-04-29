@@ -154,7 +154,7 @@ Out of 1,000 objects in the SOH, \( a \) of them survives and \( b \) of them ar
       
     </header>
     <div class="nested-copy-line-height lh-copy serif f4 nested-links nested-img mid-gray pr4-l w-two-thirds-l"><h1 id="benchmark-design">Benchmark design</h1>
-<p>Armed with the knowledge about how the allocation ratios works in the <a href="../poh-tuning-3/">previous post</a>. Now we can design our benchmarks. My goal is to produce a pair of benchmarks so that I can compare pinning objects by using the old pinned handle, or by the new pinned object heap.</p>
+<p>Armed with the knowledge about how the allocation ratios works in the <a href="../poh-tuning-2/">previous post</a>. Now we can design our benchmarks. My goal is to produce a pair of benchmarks so that I can compare pinning objects by using the old pinned handle, or by the new pinned object heap.</p>
 <p>In the pinned handle case, we can have a general design like this:</p>
 <p>Out of 1,000 objects in the SOH, \( a \) of them survives and \( b \) of them are pinned.</p>
 <p>The key idea is to create a matching pinned object heap variant, and here is how it could be done:</p>
