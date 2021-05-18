@@ -6,7 +6,7 @@
     
     <title>Generation Aware Analysis | My Blog</title>
     <meta name="viewport" content="width=device-width,minimum-scale=1">
-    <meta name="description" content="The problem? The .NET GC is generational, it makes the assumption that allocations are broadly divided into two classes, either they are short-lived (e.g. temporary objects) or they are long-lived (e.g. constants, caches for repeated uses). This assumption is often true, but once in a while, that&rsquo;s not true, often due to programmer mistakes. If a pile of objects meant for short term usage is leaked into gen2, that can cost a short term spike in ephemeral GC latency, and a long term memory cost for storing them.">
+    <meta name="description" content="The problem? The .NET GC is generational, it makes the assumption that allocations are broadly divided into two classes, either they are short-lived (e.g. temporary objects) or they are long-lived (e.g. constants, caches for repeated uses). This assumption is often true, but once in a while, that&rsquo;s not true, often due to programmer mistakes. If a pile of objects meant for short-term usage is leaked into gen2, that can cost a short-term spike in ephemeral GC latency, and a long-term memory cost for storing them.">
     <meta name="generator" content="Hugo 0.73.0-DEV" />
     
     
@@ -31,22 +31,22 @@
     
     
     <meta property="og:title" content="Generation Aware Analysis" />
-<meta property="og:description" content="The problem? The .NET GC is generational, it makes the assumption that allocations are broadly divided into two classes, either they are short-lived (e.g. temporary objects) or they are long-lived (e.g. constants, caches for repeated uses). This assumption is often true, but once in a while, that&rsquo;s not true, often due to programmer mistakes. If a pile of objects meant for short term usage is leaked into gen2, that can cost a short term spike in ephemeral GC latency, and a long term memory cost for storing them." />
+<meta property="og:description" content="The problem? The .NET GC is generational, it makes the assumption that allocations are broadly divided into two classes, either they are short-lived (e.g. temporary objects) or they are long-lived (e.g. constants, caches for repeated uses). This assumption is often true, but once in a while, that&rsquo;s not true, often due to programmer mistakes. If a pile of objects meant for short-term usage is leaked into gen2, that can cost a short-term spike in ephemeral GC latency, and a long-term memory cost for storing them." />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="http://cshung.github.io/posts/generation-aware-analysis/" />
 <meta property="article:published_time" content="2021-01-05T14:47:10-08:00" />
 <meta property="article:modified_time" content="2021-01-05T14:47:10-08:00" />
 <meta itemprop="name" content="Generation Aware Analysis">
-<meta itemprop="description" content="The problem? The .NET GC is generational, it makes the assumption that allocations are broadly divided into two classes, either they are short-lived (e.g. temporary objects) or they are long-lived (e.g. constants, caches for repeated uses). This assumption is often true, but once in a while, that&rsquo;s not true, often due to programmer mistakes. If a pile of objects meant for short term usage is leaked into gen2, that can cost a short term spike in ephemeral GC latency, and a long term memory cost for storing them.">
+<meta itemprop="description" content="The problem? The .NET GC is generational, it makes the assumption that allocations are broadly divided into two classes, either they are short-lived (e.g. temporary objects) or they are long-lived (e.g. constants, caches for repeated uses). This assumption is often true, but once in a while, that&rsquo;s not true, often due to programmer mistakes. If a pile of objects meant for short-term usage is leaked into gen2, that can cost a short-term spike in ephemeral GC latency, and a long-term memory cost for storing them.">
 <meta itemprop="datePublished" content="2021-01-05T14:47:10-08:00" />
 <meta itemprop="dateModified" content="2021-01-05T14:47:10-08:00" />
-<meta itemprop="wordCount" content="1063">
+<meta itemprop="wordCount" content="1155">
 
 
 
 <meta itemprop="keywords" content="" /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Generation Aware Analysis"/>
-<meta name="twitter:description" content="The problem? The .NET GC is generational, it makes the assumption that allocations are broadly divided into two classes, either they are short-lived (e.g. temporary objects) or they are long-lived (e.g. constants, caches for repeated uses). This assumption is often true, but once in a while, that&rsquo;s not true, often due to programmer mistakes. If a pile of objects meant for short term usage is leaked into gen2, that can cost a short term spike in ephemeral GC latency, and a long term memory cost for storing them."/>
+<meta name="twitter:description" content="The problem? The .NET GC is generational, it makes the assumption that allocations are broadly divided into two classes, either they are short-lived (e.g. temporary objects) or they are long-lived (e.g. constants, caches for repeated uses). This assumption is often true, but once in a while, that&rsquo;s not true, often due to programmer mistakes. If a pile of objects meant for short-term usage is leaked into gen2, that can cost a short-term spike in ephemeral GC latency, and a long-term memory cost for storing them."/>
 
 	
   </head>
@@ -146,7 +146,7 @@
       
     </header>
     <div class="nested-copy-line-height lh-copy serif f4 nested-links nested-img mid-gray pr4-l w-two-thirds-l"><h1 id="the-problem">The problem?</h1>
-<p>The .NET GC is generational, it makes the assumption that allocations are broadly divided into two classes, either they are short-lived (e.g. temporary objects) or they are long-lived (e.g. constants, caches for repeated uses). This assumption is often true, but once in a while, that&rsquo;s not true, often due to programmer mistakes. If a pile of objects meant for short term usage is leaked into gen2, that can cost a short term spike in ephemeral GC latency, and a long term memory cost for storing them. We would like to be able to detect it and analyze what happened.</p>
+<p>The .NET GC is generational, it makes the assumption that allocations are broadly divided into two classes, either they are short-lived (e.g. temporary objects) or they are long-lived (e.g. constants, caches for repeated uses). This assumption is often true, but once in a while, that&rsquo;s not true, often due to programmer mistakes. If a pile of objects meant for short-term usage is leaked into gen2, that can cost a short-term spike in ephemeral GC latency, and a long-term memory cost for storing them. We would like to be able to detect it and analyze what happened.</p>
 <h1 id="scenario">Scenario</h1>
 <p>Here is a sample program that demonstrates such a leak. This is the whole program, a copy with the project files can be found <a href="https://github.com/cshung/blog-samples/blob/main/GenAwareDemo">here</a>.</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c#" data-lang="c#"><span style="color:#66d9ef">namespace</span> GenAwareDemo
@@ -201,13 +201,39 @@
     }
 }
 </code></pre></div><p>Roughly speaking, every <code>ShortTermObject</code> has a weight of 1000 bytes. In each iteration, we create 1000 of them, arranged in a linked list, and then it will be discarded. Once in a while (i.e. when <code>counter % 1000 == 0</code>), the linked list is leaked into the <code>LongTermObject</code>.</p>
+<p>To make this post easier for first time readers, let&rsquo;s assume we already observed that the promoted bytes are usually 1MB, but once in a while the promoted bytes spikes up to 2MB. To understand what happened, we would like to capture that moment.</p>
+<p>For the curious, at the <a href="#collecting-a-trace" title="About Us">end</a> of this post, we will discuss how we can use the performance infrastructure to discover this information.</p>
+<h1 id="capturing">Capturing</h1>
+<p>Starting from .NET 5.0, we can use the generational aware analysis tool I introduced in this <a href="https://github.com/dotnet/runtime/pull/40332">PR</a> to capture the moment when the promotion happens.</p>
+<p>To use the feature, set the following environment variables before launching the process.</p>
+<pre><code>set COMPLUS_GCGenAnalysisGen=1
+set COMPLUS_GCGenAnalysisBytes=16E360
+set COMPLUS_GCGenAnalysisIndex=3E8
+</code></pre><p>We would like to command the runtime to perform a generational aware analysis and capture the moment when a gen 1 GC promoted more than 1.5 MB (<code>16E360</code> is <code>1,500,000</code> in decimal). To avoid capturing the promoted bytes corresponding to the startup phase, we ignore the first 1,000 GCs (<code>3E8</code> is 1,000 in decimal).</p>
+<p>After the process is launched, it will create two files.</p>
+<ul>
+<li><code>gcgenaware.nettrace</code></li>
+<li><code>gcgenaware.nettrace.completed</code></li>
+</ul>
+<p>The former file is the trace for further analysis, the second file is empty, it is used to signal the analysis is over. For long-running processes that do not stop, we can monitor this file.</p>
+<p>For now, it has to be done on the launch, there is no alternative.</p>
+<h1 id="analyzing-the-captured-trace">Analyzing the captured trace.</h1>
+<p>Open the <code>gcgenaware.nettrace</code> in PerfView will give us a generational aware view. Double click on the tree view until we see this:</p>
+<p><img src="/generation-aware-analysis/generation-aware-analysis-02.png" alt="generation-aware-analysis-02.png" title="generation-aware-analysis-02.png"></p>
+<p>Double-clicking on the Gen 1 Walkable Object Stacks will lead us to this window.</p>
+<p><img src="/generation-aware-analysis/generation-aware-analysis-03.png" alt="generation-aware-analysis-03.png" title="generation-aware-analysis-03.png"></p>
+<p>We can analyze the heap as usual, except now types are annotated with their generation. Now we know that there is a link between <code>LongTermObject</code> and <code>ShortTermObject</code>. This is just a heap dump, so we still do not know why a <code>LongTermObject</code> is referenced by the <code>ShortTermObject</code>, but we know they are referenced.</p>
+<p>Remember we were capturing this trace when a gen 1 GC promoted more than 1.5 MB, that object explains why that promotion happened. Hopefully this edge is sufficient to discover what is wrong in the code.</p>
+<p>In this following, I will describe what we missed earlier. How do we know there is a promoted byte spiking problem to begin with?</p>
 <h1 id="collecting-a-trace">Collecting a trace</h1>
 <p>To detect the fact that there is a leak of a pile of ephemeral objects into the next generation, we leverage the fact that the ephemeral generation GC will have a spike in the promoted bytes.</p>
-<p>I ran PerfView with <code>GCCollectOnly</code> and collected a trace. In this post, I will talk about how to use the GC performance infrastructure to analyze the trace.</p>
+<p>I ran PerfView with <code>GCCollectOnly</code> and collected a trace. In and administrative prompt, we can run</p>
+<pre><code>perfview /GCCollectOnly /nogui collect
+</code></pre><p>and press &lsquo;S&rsquo; when this is done. This will create a zip file containing the trace in the current directory.</p>
 <h1 id="analyze-the-trace">Analyze the trace</h1>
-<p>The GC performance infrastructure is available as a subdirectory in the <a href="https://github.com/dotnet/performance/tree/master/src/benchmarks/gc">dotnet/performance</a> repo. The README is generally up-to-date. Just clone the repo and follow the instruction you will have a basic setup. Note that you do <strong>NOT</strong> need to run a benchmark, in this post, we will use it only to analyze a collected trace. Make sure we also set up the prerequisites for using the Jupyter notebook.</p>
+<p>The GC performance infrastructure is available as a subdirectory in the <a href="https://github.com/dotnet/performance/tree/main/src/benchmarks/gc">dotnet/performance</a> repo. The README is generally up-to-date. Just clone the repo and follow the instruction you will have a basic setup. Note that you do <strong>NOT</strong> need to run a benchmark, in this post, we will use it only to analyze a collected trace. Make sure we also set up the prerequisites for using the Jupyter notebook.</p>
 <h2 id="preparing-for-analysis">Preparing for analysis</h2>
-<p>To get started, unzip the collected trace and rename the <code>etl</code> file to <code>GenAware.etl</code>. I placed the file under <code>C:/GenAware</code> folder. To help the infrastructure, we create a <a href="https://github.com/dotnet/performance/blob/master/src/benchmarks/gc/docs/test_status_files.md"><code>test_status_file</code></a>. the daunting appearance of the file is only apparent, we can get by with a tiny file with just these 3 lines.</p>
+<p>To get started, unzip the collected trace and rename the <code>etl</code> file to <code>GenAware.etl</code>. I placed the file under <code>C:/GenAware</code> folder. To help the infrastructure, we create a <a href="https://github.com/dotnet/performance/blob/main/src/benchmarks/gc/docs/test_status_files.md"><code>test_status_file</code></a>. the daunting appearance of the file is only apparent, we can get by with a tiny file with just these 3 lines.</p>
 <pre><code>success: true
 trace_file_name: GenAware.etl
 process_id: 1348
@@ -228,30 +254,9 @@ metrics_dict[<span style="color:#e6db74">&#34;promoted_bytes&#34;</span>] <span 
 
 metrics_frame <span style="color:#f92672">=</span> pandas<span style="color:#f92672">.</span>DataFrame<span style="color:#f92672">.</span>from_dict(metrics_dict)
 metrics_frame<span style="color:#f92672">.</span>plot()
-</code></pre></div><p>The first line <code>#%%</code> indicates that this is a new Jupyter notebook cell that can be run independently. The rest is mostly just copied and pasted from the templates and make a plot. Here is how the plot looks like:</p>
+</code></pre></div><p>The first line <code>#%%</code> indicates that this is a new Jupyter notebook cell that can be run independently. The rest is mostly just copied and pasted from the templates and makes a plot. Here is how the plot looks like:</p>
 <p><img src="/generation-aware-analysis/generation-aware-analysis-01.png" alt="generation-aware-analysis-01.png" title="generation-aware-analysis-01.png"></p>
 <p>So we confirm there is indeed a spike in the promoted bytes. Not just that, the &lsquo;normal&rsquo; promoted bytes never exceed 1.0, which is measured in MB. Earlier we said the lists have 1000 elements of size 1000 bytes, that is why we normally promote at most that much (the worst case happen when the list is about to be discarded but just not quite because the next iteration haven&rsquo;t started to overwrite that variable yet)</p>
-<h1 id="capturing">Capturing</h1>
-<p>This is an extremely simplified scenario. Real-life scenarios are often way more complex. Knowing that there is a problem is a thing, knowing exactly what&rsquo;s wrong is another. Starting from .NET 5.0, we can use the generational aware analysis tool <a href="https://github.com/dotnet/runtime/pull/40332">I introduced</a> to capture the moment when the promotion happens.</p>
-<p>To use the feature, set the following environment variable before launching the process.</p>
-<pre><code>set COMPLUS_GCGenAnalysisGen=1
-set COMPLUS_GCGenAnalysisBytes=16E360
-set COMPLUS_GCGenAnalysisIndex=3E8
-</code></pre><p>We would like to command the runtime to perform a generational aware analysis and capture the moment when a gen 1 GC promoted more than 1.5 MB (<code>16E360</code> is <code>1,500,000</code> in decimal). To avoid capturing the promoted bytes corresponding to the startup phase, we ignore the first 1,000 GCs (<code>3E8</code> is 1,000 in decimal).</p>
-<p>After the process is launched, it will create two files.</p>
-<ul>
-<li><code>gcgenaware.nettrace</code></li>
-<li><code>gcgenaware.nettrace.completed</code></li>
-</ul>
-<p>The former file is the trace for further analysis, the second file is empty, it is used to signal the analysis is over. For long-running processes that do not stop, we can monitor this file.</p>
-<p>For now, it has to be done on the launch, there is no alternative.</p>
-<h1 id="analyzing">Analyzing</h1>
-<p>Open the <code>gcgenaware.nettrace</code> in PerfView will give us a generational aware view. Double click on the tree view until we see this:</p>
-<p><img src="/generation-aware-analysis/generation-aware-analysis-02.png" alt="generation-aware-analysis-02.png" title="generation-aware-analysis-02.png"></p>
-<p>Double-clicking on the Gen 1 Walkable Object Stacks will lead us to this window.</p>
-<p><img src="/generation-aware-analysis/generation-aware-analysis-03.png" alt="generation-aware-analysis-03.png" title="generation-aware-analysis-03.png"></p>
-<p>We can analyze the heap as usual, except now types are annotated with their generation. Now we know that there is a link between <code>LongTermObject</code> and <code>ShortTermObject</code>. This is just a heap dump, so we still do not know why a <code>LongTermObject</code> is referenced by the <code>ShortTermObject</code>, but we know they are referenced.</p>
-<p>Remember we were capturing this trace when a gen 1 GC promoted more than 1.5 MB, that object explains why that promotion happened.</p>
 <ul class="pa0">
   
 </ul>

@@ -119,7 +119,7 @@ Pinned Object Heap size (and the event tracing mechanisms) With the tools availa
       <pubDate>Tue, 05 Jan 2021 14:47:10 -0800</pubDate>
       
       <guid>http://cshung.github.io/posts/generation-aware-analysis/</guid>
-      <description>The problem? The .NET GC is generational, it makes the assumption that allocations are broadly divided into two classes, either they are short-lived (e.g. temporary objects) or they are long-lived (e.g. constants, caches for repeated uses). This assumption is often true, but once in a while, that&amp;rsquo;s not true, often due to programmer mistakes. If a pile of objects meant for short term usage is leaked into gen2, that can cost a short term spike in ephemeral GC latency, and a long term memory cost for storing them.</description>
+      <description>The problem? The .NET GC is generational, it makes the assumption that allocations are broadly divided into two classes, either they are short-lived (e.g. temporary objects) or they are long-lived (e.g. constants, caches for repeated uses). This assumption is often true, but once in a while, that&amp;rsquo;s not true, often due to programmer mistakes. If a pile of objects meant for short-term usage is leaked into gen2, that can cost a short-term spike in ephemeral GC latency, and a long-term memory cost for storing them.</description>
     </item>
     
     <item>
