@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    
+    <title>Memory Corruption | My Blog</title>
+    <meta name="viewport" content="width=device-width,minimum-scale=1">
+    <meta name="description" content="Debugging a memory corruption problem A memory corruption issue refers to a problem that is caused by the fact that the memory content is wrong. For example, the code is having an access violation because it tried to dereference a pointer that is not valid. Debugging a memory corruption issue is hard because we don&rsquo;t know how the process get into a corrupted state to begin with. In this post, I am going to share my experience debugging a memory issue caused by the GC.">
+    <meta name="generator" content="Hugo 0.73.0-DEV" />
+    
+    
+      <META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
+    
+
+    
+
+  
+  
+    <link rel="stylesheet" href="/ananke/dist/main.css_5c99d70a7725bacd4c701e995b969fea.css" >
+  
+
+
+
+
+    
+      
+
+    
+
+    
+    
+    <meta property="og:title" content="Memory Corruption" />
+<meta property="og:description" content="Debugging a memory corruption problem A memory corruption issue refers to a problem that is caused by the fact that the memory content is wrong. For example, the code is having an access violation because it tried to dereference a pointer that is not valid. Debugging a memory corruption issue is hard because we don&rsquo;t know how the process get into a corrupted state to begin with. In this post, I am going to share my experience debugging a memory issue caused by the GC." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://cshung.github.io/posts/memory-corruption/" />
+<meta property="article:published_time" content="2021-05-29T11:09:44-07:00" />
+<meta property="article:modified_time" content="2021-05-29T11:09:44-07:00" />
+<meta itemprop="name" content="Memory Corruption">
+<meta itemprop="description" content="Debugging a memory corruption problem A memory corruption issue refers to a problem that is caused by the fact that the memory content is wrong. For example, the code is having an access violation because it tried to dereference a pointer that is not valid. Debugging a memory corruption issue is hard because we don&rsquo;t know how the process get into a corrupted state to begin with. In this post, I am going to share my experience debugging a memory issue caused by the GC.">
+<meta itemprop="datePublished" content="2021-05-29T11:09:44-07:00" />
+<meta itemprop="dateModified" content="2021-05-29T11:09:44-07:00" />
+<meta itemprop="wordCount" content="1799">
+
+
+
+<meta itemprop="keywords" content="" /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Memory Corruption"/>
+<meta name="twitter:description" content="Debugging a memory corruption problem A memory corruption issue refers to a problem that is caused by the fact that the memory content is wrong. For example, the code is having an access violation because it tried to dereference a pointer that is not valid. Debugging a memory corruption issue is hard because we don&rsquo;t know how the process get into a corrupted state to begin with. In this post, I am going to share my experience debugging a memory issue caused by the GC."/>
+
+	
+  </head>
+
+  <body class="ma0 avenir bg-near-white">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <script>mermaid.initialize({startOnLoad:true});</script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+   
+  
+
+  <header>
+    <div class="bg-black">
+      <nav class="pv3 ph3 ph4-ns" role="navigation">
+  <div class="flex-l justify-between items-center center">
+    <a href="/" class="f3 fw2 hover-white no-underline white-90 dib">
+      
+        My Blog
+      
+    </a>
+    <div class="flex-l items-center">
+      
+
+      
+      
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    </div>
+  </div>
+</nav>
+
+    </div>
+  </header>
+
+
+
+    <main class="pb7" role="main">
+      
+  
+  <article class="flex-l flex-wrap justify-between mw8 center ph3">
+    <header class="mt4 w-100">
+      <aside class="instapaper_ignoref b helvetica tracked">
+          
+        POSTS
+      </aside>
+      
+
+
+
+
+  <div id="sharing" class="mt3">
+
+    
+    <a href="https://www.facebook.com/sharer.php?u=http://cshung.github.io/posts/memory-corruption/" class="facebook no-underline" aria-label="share on Facebook">
+      <svg height="32px"  style="enable-background:new 0 0 67 67;" version="1.1" viewBox="0 0 67 67" width="32px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path d="M28.765,50.32h6.744V33.998h4.499l0.596-5.624h-5.095  l0.007-2.816c0-1.466,0.14-2.253,2.244-2.253h2.812V17.68h-4.5c-5.405,0-7.307,2.729-7.307,7.317v3.377h-3.369v5.625h3.369V50.32z   M33,64C16.432,64,3,50.569,3,34S16.432,4,33,4s30,13.431,30,30S49.568,64,33,64z" style="fill-rule:evenodd;clip-rule:evenodd;"/></svg>
+
+    </a>
+
+    
+    
+    <a href="https://twitter.com/share?url=http://cshung.github.io/posts/memory-corruption/&amp;text=Memory%20Corruption" class="twitter no-underline" aria-label="share on Twitter">
+      <svg height="32px"  style="enable-background:new 0 0 67 67;" version="1.1" viewBox="0 0 67 67" width="32px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path d="M37.167,22.283c-2.619,0.953-4.274,3.411-4.086,6.101  l0.063,1.038l-1.048-0.127c-3.813-0.487-7.145-2.139-9.974-4.915l-1.383-1.377l-0.356,1.017c-0.754,2.267-0.272,4.661,1.299,6.271  c0.838,0.89,0.649,1.017-0.796,0.487c-0.503-0.169-0.943-0.296-0.985-0.233c-0.146,0.149,0.356,2.076,0.754,2.839  c0.545,1.06,1.655,2.097,2.871,2.712l1.027,0.487l-1.215,0.021c-1.173,0-1.215,0.021-1.089,0.467  c0.419,1.377,2.074,2.839,3.918,3.475l1.299,0.444l-1.131,0.678c-1.676,0.976-3.646,1.526-5.616,1.568  C19.775,43.256,19,43.341,19,43.405c0,0.211,2.557,1.397,4.044,1.864c4.463,1.377,9.765,0.783,13.746-1.568  c2.829-1.673,5.657-5,6.978-8.221c0.713-1.716,1.425-4.851,1.425-6.354c0-0.975,0.063-1.102,1.236-2.267  c0.692-0.678,1.341-1.419,1.467-1.631c0.21-0.403,0.188-0.403-0.88-0.043c-1.781,0.636-2.033,0.551-1.152-0.402  c0.649-0.678,1.425-1.907,1.425-2.267c0-0.063-0.314,0.042-0.671,0.233c-0.377,0.212-1.215,0.53-1.844,0.72l-1.131,0.361l-1.027-0.7  c-0.566-0.381-1.361-0.805-1.781-0.932C39.766,21.902,38.131,21.944,37.167,22.283z M33,64C16.432,64,3,50.569,3,34S16.432,4,33,4  s30,13.431,30,30S49.568,64,33,64z" style="fill-rule:evenodd;clip-rule:evenodd;fill:;"/></svg>
+
+    </a>
+
+    
+    <a href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http://cshung.github.io/posts/memory-corruption/&amp;title=Memory%20Corruption" class="linkedin no-underline" aria-label="share on LinkedIn">
+      <svg  height="32px"  style="enable-background:new 0 0 65 65;" version="1.1" viewBox="0 0 65 65" width="32px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <path d="M50.837,48.137V36.425c0-6.275-3.35-9.195-7.816-9.195  c-3.604,0-5.219,1.983-6.119,3.374V27.71h-6.79c0.09,1.917,0,20.427,0,20.427h6.79V36.729c0-0.609,0.044-1.219,0.224-1.655  c0.49-1.22,1.607-2.483,3.482-2.483c2.458,0,3.44,1.873,3.44,4.618v10.929H50.837z M22.959,24.922c2.367,0,3.842-1.57,3.842-3.531  c-0.044-2.003-1.475-3.528-3.797-3.528s-3.841,1.524-3.841,3.528c0,1.961,1.474,3.531,3.753,3.531H22.959z M34,64  C17.432,64,4,50.568,4,34C4,17.431,17.432,4,34,4s30,13.431,30,30C64,50.568,50.568,64,34,64z M26.354,48.137V27.71h-6.789v20.427  H26.354z" style="fill-rule:evenodd;clip-rule:evenodd;fill:;"/>
+</svg>
+
+    </a>
+  </div>
+
+
+      <h1 class="f1 athelas mt3 mb1">Memory Corruption</h1>
+      
+      
+      <time class="f6 mv4 dib tracked" datetime="2021-05-29T11:09:44-07:00">May 29, 2021</time>
+
+      
+      
+    </header>
+    <div class="nested-copy-line-height lh-copy serif f4 nested-links nested-img mid-gray pr4-l w-two-thirds-l"><h1 id="debugging-a-memory-corruption-problem">Debugging a memory corruption problem</h1>
+<p>A memory corruption issue refers to a problem that is caused by the fact that the memory content is wrong. For example, the code is having an access violation because it tried to dereference a pointer that is not valid. Debugging a memory corruption issue is hard because we don&rsquo;t know how the process get into a corrupted state to begin with. In this post, I am going to share my experience debugging a memory issue caused by the GC.</p>
+<h1 id="the-symptom">The symptom</h1>
+<p>We are hitting an access violation at this location:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#66d9ef">int</span> gc_heap<span style="color:#f92672">::</span>get_region_plan_gen_num (<span style="color:#66d9ef">uint8_t</span><span style="color:#f92672">*</span> obj)
+{
+    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">heap_segment_plan_gen_num</span> (region_of (obj));
+}
+</code></pre></div><p>Obviously, this is a bug related to regions. One of the key property of region is that all managed object lies within a single range. Therefore we can check.</p>
+<pre><code>0:011&gt; dv
+            obj = 0x0000040a`187ffdc0
+</code></pre><pre><code>0:011&gt; ?? coreclr!svr::global_region_allocator
+class SVR::region_allocator
+   +0x000 global_region_start : 0x00000203`40400000
+   ...
+   +0x010 global_region_left_used : 0x00000205`17000000
+   ...
+</code></pre><p>It is fairly obvious that <code>obj</code> is outside of the region&rsquo;s range, so we confirm <code>obj</code> is wrong.</p>
+<p>The parent frame tells us where does <code>obj</code> come from</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#66d9ef">inline</span> <span style="color:#66d9ef">void</span>
+gc_heap<span style="color:#f92672">::</span>check_demotion_helper (<span style="color:#66d9ef">uint8_t</span><span style="color:#f92672">**</span> pval, <span style="color:#66d9ef">uint8_t</span><span style="color:#f92672">*</span> parent_obj)
+{
+<span style="color:#75715e">#ifdef USE_REGIONS
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">uint8_t</span><span style="color:#f92672">*</span> child_object <span style="color:#f92672">=</span> <span style="color:#f92672">*</span>pval;
+    <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>child_object) <span style="color:#66d9ef">return</span>;
+    <span style="color:#66d9ef">int</span> child_object_plan_gen <span style="color:#f92672">=</span> get_region_plan_gen_num (child_object);
+</code></pre></div><p>So <code>pval</code> is pointing to the bad pointer. Looking at <code>pval</code> itself, we see:</p>
+<pre><code>0:011&gt; ?? pval
+unsigned char ** 0x00000203`d30d89e8
+</code></pre><p>so <code>pval</code> itself is valid pointer.</p>
+<p>Looking further down the stack does not reveal anything more interesting, it looks like usual heap walking.</p>
+<h1 id="look-around">Look around</h1>
+<p>Without a better guide, let&rsquo;s take a look at the memory around it. What is it supposed to be?</p>
+<p>The <code>!lno</code> command in SOS is meant for that, now we have:</p>
+<pre><code>0:011&gt; !lno  0x00000203`d30d89e8
+Before:  00000203d30d89e0           32 (0x20)	SimpleRefPayLoad
+After:   00000203d30d8a00           40 (0x28)	ReferenceItemWithSize+ReferenceItemWithSizeNonFinalizable
+Heap local consistency confirmed.
+</code></pre><p>Let&rsquo;s take a look at the object</p>
+<pre><code>0:011&gt; !do 00000203d30d89e0 
+Name:        SimpleRefPayLoad
+MethodTable: 00007ffb490d2548
+EEClass:     00007ffb490e27a8
+Size:        32(0x20) bytes
+File:        C:\dev\performance\artifacts\bin\GCPerfSim\release\netcoreapp5.0\GCPerfSim.dll
+Fields:
+              MT    Field   Offset                 Type VT     Attr            Value Name
+00007ffb48f21070  400001e        8        System.Byte[]  0 instance 0000040a187ffdc0 payload
+00007ffb48cddf00  400001f       10 ...Services.GCHandle  1 instance 00000203d30d89f0 handle
+00007ffb48c9faa8  4000020       88        System.UInt32  1   static               16 FieldSize
+00007ffb48c9faa8  4000021       8c        System.UInt32  1   static               32 SimpleRefPayLoadSize
+00007ffb48c9faa8  4000022       90        System.UInt32  1   static               56 ArrayOverhead
+</code></pre><p>Except from the bad payload pointer, everything else looks normal, including the method table pointer. This suggest that the memory corruption might be caused by a single pointer write. That&rsquo;s is useful information, because we can basically narrow that down to the few operations that GC modifies the managed heap.</p>
+<blockquote>
+<p>Debugging tip: Looking around the corrupted memory could be helpful to guess what gone wrong.</p>
+</blockquote>
+<p>If I had a magic wand, I would set a data breakpoint on the address of payload and run backwards. It is actually possible with <a href="https://docs.microsoft.com/en-us/windows-hardware/drivers/debugger/time-travel-debugging-record">time travel tracing</a>. Sadly, it is often too slow to be useful.</p>
+<p>But we could reuse the idea, what if we just logged the pointer write ourselves? The key difficulty is that the GC writes to memory all the time. If we just logged all the accesses, it would be just as slow and not useful.</p>
+<p>What we needed is an informed guess of what pointer access might caused the corruption. That leads us to the next section.</p>
+<h1 id="ways-that-the-gc-modifies-the-managed-heap">Ways that the GC modifies the managed heap?</h1>
+<p>There are a few operations that the GC do to modify the managed heap:</p>
+<ol>
+<li><code>gcmemcopy</code> - this move a block of memory from one place to another.</li>
+<li><code>make_unused_array</code> - this change the beginning of a method table and modify the size so that it looks like an array but it is free.</li>
+<li><code>relocate_address</code> - this change an address pointing to the old memory to point to the new memory before the compaction will move it, and</li>
+<li><code>set_node_relocation_distance</code> (and similar calls) - this leverage the space before a plug to store some information related to the plug.</li>
+</ol>
+<p>There are, of course, other pointers writes. For example, updating the brick table. But they are outside of the managed heap range. Could that be wrong too? Yes, they could, for example, if we got a wrong brick index value. It is just unlikely and therefore we can rule it out.</p>
+<p>1 and 2 modify at least more than one pointer, but the symptom involves only one bad pointer, so we can rule it out. 3 and 4 are suscipious, so I started with 3.</p>
+<blockquote>
+<p>Debugging tip: Logging can be used to provide the needed missed history.</p>
+</blockquote>
+<h1 id="logging-the-write">Logging the write</h1>
+<p>The key instrument that we can use is the stress log mechanism. By writing a <code>dprintf</code> in the code, this macro will append a record in a thread static list of messages that is backed by a memory mapped page on disk. That will log the message with no contention. The log can be subsequently analyzed by a stress log analyzer that can go through the list and find interesting stuff for us.</p>
+<p>This <a href="https://github.com/dotnet/runtime/pull/53547">PR</a> summarize how I added the instrumentation for the relocation of an address, it should be straightforward to add as needed.</p>
+<h1 id="wrong-relocation">Wrong relocation</h1>
+<p>With the logging, I discovered that the issue is caused by a wrong relocation. In particular, the new address is outside of the region&rsquo;s range. But why? We don&rsquo;t know yet. In order to figure it out, it would be nice if we can stop at that moment. Indeed, we can! We can just assert the new address is within range, and whenever that happen, the assert will fire and we will be able to look at the state at that point of time.</p>
+<blockquote>
+<p>Debugging tip: If we can fail earlier, do so.</p>
+</blockquote>
+<p>After adding the assert, I stopped at the point where the relocation is wrong. That gives me an opportunity to inspect the state of the program when that happen, and that is very useful. Here is some interesting finding:</p>
+<p>First of all, here is the code that caused the problem.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">    size_t  brick <span style="color:#f92672">=</span> brick_of (old_address);
+    <span style="color:#66d9ef">int</span>    brick_entry <span style="color:#f92672">=</span>  brick_table [ brick ];
+    <span style="color:#66d9ef">uint8_t</span><span style="color:#f92672">*</span>  new_address <span style="color:#f92672">=</span> old_address;
+    <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span> ((brick_entry <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>)))
+    {
+    retry:
+        {
+            <span style="color:#66d9ef">while</span> (brick_entry <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">0</span>)
+            {
+                brick <span style="color:#f92672">=</span> (brick <span style="color:#f92672">+</span> brick_entry);
+                brick_entry <span style="color:#f92672">=</span>  brick_table [ brick ];
+            }
+            <span style="color:#66d9ef">uint8_t</span><span style="color:#f92672">*</span> old_loc <span style="color:#f92672">=</span> old_address;
+
+            <span style="color:#66d9ef">uint8_t</span><span style="color:#f92672">*</span> node <span style="color:#f92672">=</span> tree_search ((brick_address (brick) <span style="color:#f92672">+</span> brick_entry<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>),
+                                      old_loc);
+            <span style="color:#66d9ef">if</span> ((node <span style="color:#f92672">&lt;=</span> old_loc))
+                new_address <span style="color:#f92672">=</span> (old_address <span style="color:#f92672">+</span> node_relocation_distance (node));
+            <span style="color:#66d9ef">else</span>
+            {
+                <span style="color:#66d9ef">if</span> (node_left_p (node))
+                {
+                    dprintf(<span style="color:#ae81ff">3</span>,(<span style="color:#e6db74">&#34; L: %Ix&#34;</span>, (size_t)node));
+                    new_address <span style="color:#f92672">=</span> (old_address <span style="color:#f92672">+</span>
+                                   (node_relocation_distance (node) <span style="color:#f92672">+</span>
+                                    node_gap_size (node)));
+                }
+                <span style="color:#66d9ef">else</span>
+                {
+                    brick <span style="color:#f92672">=</span> brick <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>;
+                    brick_entry <span style="color:#f92672">=</span>  brick_table [ brick ];
+                    <span style="color:#66d9ef">goto</span> retry;
+                }
+            }
+        }
+
+        dprintf (<span style="color:#ae81ff">2</span>, (ThreadStressLog<span style="color:#f92672">::</span>gcRelocateReferenceMsg(), pold_address, new_address));
+        global_region_allocator.validate(new_address);
+        <span style="color:#f92672">*</span>pold_address <span style="color:#f92672">=</span> new_address;
+        <span style="color:#66d9ef">return</span>;
+    }
+</code></pre></div><p>Given the <code>new_address</code> is wrong, one would naturally want to figure out how it is computed. Apparently, it is computed by the <code>node_relocation_distance</code> of the <code>node</code>. Therefore, we would like to access the <code>node</code> variable. However, since we are breaking on the validate line, the node variable is already out of scope, and the debugger refuses to show us the value.</p>
+<p>I experimented with making the variable <code>node</code> out of the current scope, but somehow that make the reproduction of the bug difficult (for reason I still don&rsquo;t understand), therefore we need to resort to other techniques. I did that by looking at the disassembly. Here I can talk a little about that disassembly technique. Here is the truncated stack:</p>
+<pre><code>0:009&gt; k
+ # Child-SP          RetAddr           Call Site
+00 00000034`8787a950 00007ffb`e9c0497a coreclr!DbgAssertDialog+0x34c [C:\dev\runtime\src\coreclr\utilcode\debug.cpp @ 700] 
+01 00000034`8787ab90 00007ffb`e9be9823 coreclr!SVR::region_allocator::validate+0x5a [C:\dev\runtime\src\coreclr\gc\gc.cpp @ 3484] 
+02 00000034`8787abc0 00007ffb`e9be9e6a coreclr!SVR::gc_heap::relocate_address+0x283 [C:\dev\runtime\src\coreclr\gc\gc.cpp @ 29420] 
+</code></pre><p>The return address of the <code>validate</code> frame will be a location within the <code>relocate_address</code> function, so we can ask for the function disassembly of it.</p>
+<pre><code>0:009&gt; uf 00007ffb`e9be9823
+coreclr!SVR::gc_heap::relocate_address [C:\dev\runtime\src\coreclr\gc\gc.cpp @ 29358]:
+29358 00007ffb`e9be95a0 4489442418      mov     dword ptr [rsp+18h],r8d
+...
+29396 00007ffb`e9be96b4 e857680100      call    coreclr!SVR::tree_search (00007ffb`e9bfff10)
+29396 00007ffb`e9be96b9 4889442448      mov     qword ptr [rsp+48h],rax
+...
+</code></pre><p>It looks like we are storing the result of <code>tree_search</code> to <code>[rsp+48h]</code>, that is where we will inspect. To do so, we need to figure out the <code>rsp</code> value of that frame:</p>
+<pre><code>0:009&gt; .frame -r 2
+...
+... rsp=000000348787abc0 ...
+...
+0:009&gt; dq 000000348787abc0+0x48 L1
+00000034`8787ac08  000001c5`58bff468
+</code></pre><p>The node relocation distance is obtained just by reinterpreting a few bytes before it as the <code>plug_and_reloc</code> structure, so we can look at that.</p>
+<pre><code>0:009&gt; ?? (svr::plug_and_reloc*)(0x000001c5`58bff468 - 0x18)
+struct SVR::plug_and_reloc * 0x000001c5`58bff450
+   +0x000 reloc            : 0n1947109160040
+   +0x008 m_pair           : SVR::pair
+   +0x010 m_plug           : SVR::plug
+</code></pre><p>Now it is obvious that the <code>reloc</code> is suspiciously high. Using the same idea, we inspect the memory around it.</p>
+<pre><code>0:009&gt; !lno 0x000001c5`58bff468
+Before:  000001c558bff448           32 (0x20)	SimpleRefPayLoad
+Current: 000001c558bff468         2968 (0xb98)	System.Byte[]
+After:  couldn't find any object between 000001C558BFF468 and 000001C558C00000
+Heap local consistency not confirmed.
+</code></pre><p>Now it is fairly obvious that somehow we got the <code>node</code> wrong. The space before <code>node</code> is another object, which means it is not a plug tree root.</p>
+<p>Following our logic, we should take a look at the tree search. But I decided I will give some faith to the existing code there and look at its source, <code>brick</code> and <code>brick_entry</code>.</p>
+<pre><code>0:009&gt; ?? brick
+unsigned int64 0n645119
+0:009&gt; ?? (old_address - this-&gt;lowest_address)/4096
+int64 0n645120
+0:009&gt; ?? this-&gt;brick_table[645120]
+short 0n-1
+0:009&gt; ?? this-&gt;brick_table[645119]
+short 0n1129
+</code></pre><p>So the search go back by one brick and reach the wrong node. To really understand what is going on, we need to understand what they should be. For a region that is not sweep in plan, the brick should correspond to the root of the plug tree. Since we are relocating an address in a brick, that brick should have at least one plug, therefore we assert that <code>this-&gt;brick_table[645120] == -1</code> is wrong.</p>
+<blockquote>
+<p>Debugging tips: Knowing what it should be is just as important as what it is currently.</p>
+</blockquote>
+<h1 id="who-set-my-brick-wrong">Who set my brick wrong?</h1>
+<p>Now we knew the bricks are wrong, but why? The <code>brick_table</code> is only set in the <code>set_brick</code> function, but the <code>set_brick</code> function is called 23 times throughout the GC code base. Writing a log message at set_brick is meaningless. We need to know exactly where we did it.</p>
+<p>To do that, I added an extra argument named <code>reason</code> to <code>set_brick</code> and make sure each caller pass a different value, then we log the brick table write to the log messages and search for it when we knew we are writing a wrong value to the brick.</p>
+<p>To my excitement, I found the culprit, this line setting the brick to a wrong value with reason 12:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">            set_brick (last_marked_obj_end_b, 
+                    (last_marked_obj_start_b <span style="color:#f92672">-</span> last_marked_obj_end_b), <span style="color:#ae81ff">12</span>);
+</code></pre></div><p>This is exciting because it is new code. We have good reason to believe the old code are most likely fine. In this particular case, we confirm that code is wrong and it results in this <a href="https://github.com/dotnet/runtime/pull/53446">PR</a> as the fix.</p>
+<blockquote>
+<p>Debugging tips: If it is a regression, the bug is likely in the new code.</p>
+</blockquote>
+<p>This conclude the investigation of this memory corruption issue.</p>
+<ul class="pa0">
+  
+</ul>
+<div class="mt6 instapaper_ignoref">
+      
+      
+      </div>
+    </div>
+
+    <aside class="w-30-l mt6-l">
+
+
+
+
+</aside>
+
+  </article>
+
+    </main>
+    <footer class="bg-black bottom-0 w-100 pa3" role="contentinfo">
+  <div class="flex justify-between">
+  <a class="f4 fw4 hover-white no-underline white-70 dn dib-ns pv2 ph3" href="http://cshung.github.io/" >
+    &copy;  My Blog 2021 
+  </a>
+    <div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+  </div>
+</footer>
+
+    <div style="display:none">
+    <script type="text/javascript" src="https://www.free-counters.org/count/86pd"></script><br><a href='http://www.counter-zaehler.de'>besucherzähler ip</a> <script type='text/javascript'     src='https://whomania.com/ctr?id=695d5b016077d10ada0ea41fc87e54f2421f8966'></script>
+    </div>
+  </body>
+
+</html>

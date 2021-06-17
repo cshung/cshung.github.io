@@ -39,7 +39,7 @@
 <meta property="og:description" content="" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="http://cshung.github.io/" />
-<meta property="og:updated_time" content="2021-04-21T12:57:39-07:00" />
+<meta property="og:updated_time" content="2021-05-29T11:09:44-07:00" />
 <meta itemprop="name" content="My Blog">
 <meta itemprop="description" content=""><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="My Blog"/>
@@ -135,6 +135,30 @@
       
       <div class="blah w-100">
         <h1 class="f3 fw1 athelas mt0 lh-title">
+          <a href="http://cshung.github.io/posts/memory-corruption/" class="color-inherit dim link">
+            Memory Corruption
+            </a>
+        </h1>
+        <div class="f6 f5-l lh-copy nested-copy-line-height nested-links">
+          Debugging a memory corruption problem A memory corruption issue refers to a problem that is caused by the fact that the memory content is wrong. For example, the code is having an access violation because it tried to dereference a pointer that is not valid. Debugging a memory corruption issue is hard because we don&rsquo;t know how the process get into a corrupted state to begin with. In this post, I am going to share my experience debugging a memory issue caused by the GC.
+        </div>
+          <a href="http://cshung.github.io/posts/memory-corruption/" class="ba b--moon-gray bg-light-gray br2 color-inherit dib f7 hover-bg-moon-gray link mt2 ph2 pv1">read more</a>
+        
+      </div>
+    </div>
+  </div>
+</article>
+
+          </div>
+        
+          <div class="relative w-100 mb4">
+            
+<article class="bb b--black-10">
+  <div class="db pv4 ph3 ph0-l no-underline dark-gray">
+    <div class="flex flex-column flex-row-ns">
+      
+      <div class="blah w-100">
+        <h1 class="f3 fw1 athelas mt0 lh-title">
           <a href="http://cshung.github.io/posts/git-merge-squash/" class="color-inherit dim link">
             Git Merge Squash
             </a>
@@ -177,37 +201,18 @@ What is the find object problem? There are various situation that we are given a
 
           </div>
         
-          <div class="relative w-100 mb4">
-            
-<article class="bb b--black-10">
-  <div class="db pv4 ph3 ph0-l no-underline dark-gray">
-    <div class="flex flex-column flex-row-ns">
-      
-      <div class="blah w-100">
-        <h1 class="f3 fw1 athelas mt0 lh-title">
-          <a href="http://cshung.github.io/posts/card/" class="color-inherit dim link">
-            Understanding the card table
-            </a>
-        </h1>
-        <div class="f6 f5-l lh-copy nested-copy-line-height nested-links">
-          Understanding the card table A card table is used in a generational GC to discover cross-generational pointers. Let&rsquo;s get started with the generation GC problem first.
-Generational GC It is observed allocations typically divides into two classes. Either they are short-lived or they are long lived. To efficiently use the memory, we would like to be able to reclaim the space of the short lived object relatively fast without having to worry about the long lived ones.
-        </div>
-          <a href="http://cshung.github.io/posts/card/" class="ba b--moon-gray bg-light-gray br2 color-inherit dib f7 hover-bg-moon-gray link mt2 ph2 pv1">read more</a>
-        
-      </div>
-    </div>
-  </div>
-</article>
-
-          </div>
-        
       </section>
 
       
       <section class="w-100">
         <h1 class="f3">More</h1>
         
+        
+          <h2 class="f5 fw4 mb4 dib mr3">
+            <a href="http://cshung.github.io/posts/card/" class="link black dim">
+              Understanding the card table
+            </a>
+          </h2>
         
           <h2 class="f5 fw4 mb4 dib mr3">
             <a href="http://cshung.github.io/posts/poh-tuning-5/" class="link black dim">
@@ -224,12 +229,6 @@ Generational GC It is observed allocations typically divides into two classes. E
           <h2 class="f5 fw4 mb4 dib mr3">
             <a href="http://cshung.github.io/posts/poh-tuning-4/" class="link black dim">
               POH Tuning (Part 4 - Benchmark design and the performance infrastructure)
-            </a>
-          </h2>
-        
-          <h2 class="f5 fw4 mb4 dib mr3">
-            <a href="http://cshung.github.io/posts/poh-tuning-3/" class="link black dim">
-              POH Tuning (Part 3 - Other statistical properties)
             </a>
           </h2>
         

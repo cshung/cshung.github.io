@@ -6,10 +6,19 @@
     <description>Recent content on My Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 21 Apr 2021 12:57:39 -0700</lastBuildDate>
+    <lastBuildDate>Sat, 29 May 2021 11:09:44 -0700</lastBuildDate>
     
 	<atom:link href="http://cshung.github.io/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Memory Corruption</title>
+      <link>http://cshung.github.io/posts/memory-corruption/</link>
+      <pubDate>Sat, 29 May 2021 11:09:44 -0700</pubDate>
+      
+      <guid>http://cshung.github.io/posts/memory-corruption/</guid>
+      <description>Debugging a memory corruption problem A memory corruption issue refers to a problem that is caused by the fact that the memory content is wrong. For example, the code is having an access violation because it tried to dereference a pointer that is not valid. Debugging a memory corruption issue is hard because we don&amp;rsquo;t know how the process get into a corrupted state to begin with. In this post, I am going to share my experience debugging a memory issue caused by the GC.</description>
+    </item>
     
     <item>
       <title>Git Merge Squash</title>
