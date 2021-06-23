@@ -206,9 +206,9 @@
 <h1 id="capturing">Capturing</h1>
 <p>Starting from .NET 5.0, we can use the generational aware analysis tool I introduced in this <a href="https://github.com/dotnet/runtime/pull/40332">PR</a> to capture the moment when the promotion happens.</p>
 <p>To use the feature, set the following environment variables before launching the process.</p>
-<pre><code>set COMPLUS_GCGenAnalysisGen=1
-set COMPLUS_GCGenAnalysisBytes=16E360
-set COMPLUS_GCGenAnalysisIndex=3E8
+<pre><code>set COMPlus_GCGenAnalysisGen=1
+set COMPlus_GCGenAnalysisBytes=16E360
+set COMPlus_GCGenAnalysisIndex=3E8
 </code></pre><p>We would like to command the runtime to perform a generational aware analysis and capture the moment when a gen 1 GC promoted more than 1.5 MB (<code>16E360</code> is <code>1,500,000</code> in decimal). To avoid capturing the promoted bytes corresponding to the startup phase, we ignore the first 1,000 GCs (<code>3E8</code> is 1,000 in decimal).</p>
 <p>After the process is launched, it will create two files.</p>
 <ul>
