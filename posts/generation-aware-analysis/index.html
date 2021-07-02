@@ -40,7 +40,7 @@
 <meta itemprop="description" content="The problem? The .NET GC is generational, it makes the assumption that allocations are broadly divided into two classes, either they are short-lived (e.g. temporary objects) or they are long-lived (e.g. constants, caches for repeated uses). This assumption is often true, but once in a while, that&rsquo;s not true, often due to programmer mistakes. If a pile of objects meant for short-term usage is leaked into gen2, that can cost a short-term spike in ephemeral GC latency, and a long-term memory cost for storing them.">
 <meta itemprop="datePublished" content="2021-01-05T14:47:10-08:00" />
 <meta itemprop="dateModified" content="2021-01-05T14:47:10-08:00" />
-<meta itemprop="wordCount" content="1155">
+<meta itemprop="wordCount" content="1331">
 
 
 
@@ -202,7 +202,7 @@
 }
 </code></pre></div><p>Roughly speaking, every <code>ShortTermObject</code> has a weight of 1000 bytes. In each iteration, we create 1000 of them, arranged in a linked list, and then it will be discarded. Once in a while (i.e. when <code>counter % 1000 == 0</code>), the linked list is leaked into the <code>LongTermObject</code>.</p>
 <p>To make this post easier for first time readers, let&rsquo;s assume we already observed that the promoted bytes are usually 1MB, but once in a while the promoted bytes spikes up to 2MB. To understand what happened, we would like to capture that moment.</p>
-<p>For the curious, at the <a href="#collecting-a-trace" title="About Us">end</a> of this post, we will discuss how we can use the performance infrastructure to discover this information.</p>
+<p>For the curious, at the <a href="#diagnosing-a-promoted-byte-spike" title="About Us">end</a> of this post, we will discuss how we can use the performance infrastructure to discover this information.</p>
 <h1 id="capturing">Capturing</h1>
 <p>Starting from .NET 5.0, we can use the generational aware analysis tool I introduced in this <a href="https://github.com/dotnet/runtime/pull/40332">PR</a> to capture the moment when the promotion happens.</p>
 <p>To use the feature, set the following environment variables before launching the process.</p>
@@ -224,6 +224,14 @@ set COMPlus_GCGenAnalysisIndex=3E8
 <p><img src="/generation-aware-analysis/generation-aware-analysis-03.png" alt="generation-aware-analysis-03.png" title="generation-aware-analysis-03.png"></p>
 <p>We can analyze the heap as usual, except now types are annotated with their generation. Now we know that there is a link between <code>LongTermObject</code> and <code>ShortTermObject</code>. This is just a heap dump, so we still do not know why a <code>LongTermObject</code> is referenced by the <code>ShortTermObject</code>, but we know they are referenced.</p>
 <p>Remember we were capturing this trace when a gen 1 GC promoted more than 1.5 MB, that object explains why that promotion happened. Hopefully this edge is sufficient to discover what is wrong in the code.</p>
+<h1 id="collecting-a-dump">Collecting a dump</h1>
+<p>In some scenario, it would be beneficial to collect a dump. For example, if the leaking is caused by setting a static field, it will be shown in PerfView as being held by a pinned object array, but you will not know which field it is. Another common case is the leak is caused by a delegate, in this case, it will be shown as an <code>Action&lt;T&gt;</code>, in which you will not know which method is causing the leak. Either case, we can figure that out in the debugger if we have a memory dump.</p>
+<p>To collect a dump, we can use the new environment variable introduced in .NET 6</p>
+<pre><code>set COMPlus_GCGenAnalysisDump=1
+</code></pre><p>This will collect a dump in addition to the trace we already collected. If a dump is sufficient and you would like to avoid collecting a trace as well, we can disable the tracing by setting this new environment variable:</p>
+<pre><code>set COMPlus_GCGenAnalysisTrace=0
+</code></pre><p>The generated dump is called <code>gcgenaware.dmp</code> and it can be analyzed with a debugger.</p>
+<h1 id="diagnosing-a-promoted-byte-spike">Diagnosing a promoted byte spike</h1>
 <p>In this following, I will describe what we missed earlier. How do we know there is a promoted byte spiking problem to begin with?</p>
 <h1 id="collecting-a-trace">Collecting a trace</h1>
 <p>To detect the fact that there is a leak of a pile of ephemeral objects into the next generation, we leverage the fact that the ephemeral generation GC will have a spike in the promoted bytes.</p>
