@@ -6,17 +6,28 @@
     <description>Recent content on My Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 29 May 2021 11:09:44 -0700</lastBuildDate>
+    <lastBuildDate>Fri, 02 Jul 2021 15:01:10 -0700</lastBuildDate>
     
 	<atom:link href="http://cshung.github.io/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
-      <title>Memory Corruption</title>
-      <link>http://cshung.github.io/posts/memory-corruption/</link>
+      <title>Memory Corruption (2)</title>
+      <link>http://cshung.github.io/posts/memory-corruption-2/</link>
+      <pubDate>Fri, 02 Jul 2021 15:01:10 -0700</pubDate>
+      
+      <guid>http://cshung.github.io/posts/memory-corruption-2/</guid>
+      <description>Another memory corruption bug In this post, we will talk about another memory corruption bug I found and fix. Check out my previous post for more context and examples.
+The symptom We are hitting an access violation at this location:
+inline size_t my_get_size (Object* ob) { MethodTable* mT = header(ob)-&amp;gt;GetMethodTable(); return (mT-&amp;gt;GetBaseSize() + (mT-&amp;gt;HasComponentSize() ? ((size_t)((CObjectHeader*)ob)-&amp;gt;GetNumComponents() * mT-&amp;gt;RawGetComponentSize()) : 0)); } When the access violation happens, mT is a nullptr and therefore it cannot be dereferenced.</description>
+    </item>
+    
+    <item>
+      <title>Memory Corruption (1)</title>
+      <link>http://cshung.github.io/posts/memory-corruption-1/</link>
       <pubDate>Sat, 29 May 2021 11:09:44 -0700</pubDate>
       
-      <guid>http://cshung.github.io/posts/memory-corruption/</guid>
+      <guid>http://cshung.github.io/posts/memory-corruption-1/</guid>
       <description>Debugging a memory corruption problem A memory corruption issue refers to a problem that is caused by the fact that the memory content is wrong. For example, the code is having an access violation because it tried to dereference a pointer that is not valid. Debugging a memory corruption issue is hard because we don&amp;rsquo;t know how the process get into a corrupted state to begin with. In this post, I am going to share my experience debugging a memory issue caused by the GC.</description>
     </item>
     
