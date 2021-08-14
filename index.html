@@ -39,7 +39,7 @@
 <meta property="og:description" content="" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="http://cshung.github.io/" />
-<meta property="og:updated_time" content="2021-07-02T15:01:10-07:00" />
+<meta property="og:updated_time" content="2021-08-13T12:18:40-07:00" />
 <meta itemprop="name" content="My Blog">
 <meta itemprop="description" content=""><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="My Blog"/>
@@ -135,6 +135,31 @@
       
       <div class="blah w-100">
         <h1 class="f3 fw1 athelas mt0 lh-title">
+          <a href="http://cshung.github.io/posts/false-memory-leak/" class="color-inherit dim link">
+            False Memory Leak
+            </a>
+        </h1>
+        <div class="f6 f5-l lh-copy nested-copy-line-height nested-links">
+          I am writing this post to share a memory leak investigation which turns out to be a false positive (i.e. we are not having a managed memory leak). This goal of this document is to share the analysis method so that it could be applied to similar situations.
+Highlights Before I go into the details, here is a one line summary of the conclusion. This case is NOT a managed memory leak, but because a compiler generated temp is considered a reference and therefore the garbage collector cannot eliminate it.
+        </div>
+          <a href="http://cshung.github.io/posts/false-memory-leak/" class="ba b--moon-gray bg-light-gray br2 color-inherit dib f7 hover-bg-moon-gray link mt2 ph2 pv1">read more</a>
+        
+      </div>
+    </div>
+  </div>
+</article>
+
+          </div>
+        
+          <div class="relative w-100 mb4">
+            
+<article class="bb b--black-10">
+  <div class="db pv4 ph3 ph0-l no-underline dark-gray">
+    <div class="flex flex-column flex-row-ns">
+      
+      <div class="blah w-100">
+        <h1 class="f3 fw1 athelas mt0 lh-title">
           <a href="http://cshung.github.io/posts/memory-corruption-2/" class="color-inherit dim link">
             Memory Corruption (2)
             </a>
@@ -177,37 +202,18 @@ inline size_t my_get_size (Object* ob) { MethodTable* mT = header(ob)-&gt;GetMet
 
           </div>
         
-          <div class="relative w-100 mb4">
-            
-<article class="bb b--black-10">
-  <div class="db pv4 ph3 ph0-l no-underline dark-gray">
-    <div class="flex flex-column flex-row-ns">
-      
-      <div class="blah w-100">
-        <h1 class="f3 fw1 athelas mt0 lh-title">
-          <a href="http://cshung.github.io/posts/git-merge-squash/" class="color-inherit dim link">
-            Git Merge Squash
-            </a>
-        </h1>
-        <div class="f6 f5-l lh-copy nested-copy-line-height nested-links">
-          Git Merge Squash This is a short article documenting my process of reusing someone else&rsquo;s change. It is not particularly easy and therefore I would like a document to remember how I did it.
-The problem? Imagine my partner and I were working on the same repository. I am working on a feature and he is working on a fix that I need. However, for whatever reasons, my partner couldn&rsquo;t merge the fix in, but I would really like to apply his change in my code base so that my scenario work (at least locally), how should I do it?
-        </div>
-          <a href="http://cshung.github.io/posts/git-merge-squash/" class="ba b--moon-gray bg-light-gray br2 color-inherit dib f7 hover-bg-moon-gray link mt2 ph2 pv1">read more</a>
-        
-      </div>
-    </div>
-  </div>
-</article>
-
-          </div>
-        
       </section>
 
       
       <section class="w-100">
         <h1 class="f3">More</h1>
         
+        
+          <h2 class="f5 fw4 mb4 dib mr3">
+            <a href="http://cshung.github.io/posts/git-merge-squash/" class="link black dim">
+              Git Merge Squash
+            </a>
+          </h2>
         
           <h2 class="f5 fw4 mb4 dib mr3">
             <a href="http://cshung.github.io/posts/brick/" class="link black dim">
@@ -224,12 +230,6 @@ The problem? Imagine my partner and I were working on the same repository. I am 
           <h2 class="f5 fw4 mb4 dib mr3">
             <a href="http://cshung.github.io/posts/poh-tuning-5/" class="link black dim">
               POH Tuning (Part 5 - Preliminary results)
-            </a>
-          </h2>
-        
-          <h2 class="f5 fw4 mb4 dib mr3">
-            <a href="http://cshung.github.io/posts/poh-tuning-6/" class="link black dim">
-              POH Tuning (Part 6 - Varying the benchmark)
             </a>
           </h2>
         

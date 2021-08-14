@@ -6,10 +6,20 @@
     <description>Recent content on My Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 02 Jul 2021 15:01:10 -0700</lastBuildDate>
+    <lastBuildDate>Fri, 13 Aug 2021 12:18:40 -0700</lastBuildDate>
     
 	<atom:link href="http://cshung.github.io/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>False Memory Leak</title>
+      <link>http://cshung.github.io/posts/false-memory-leak/</link>
+      <pubDate>Fri, 13 Aug 2021 12:18:40 -0700</pubDate>
+      
+      <guid>http://cshung.github.io/posts/false-memory-leak/</guid>
+      <description>I am writing this post to share a memory leak investigation which turns out to be a false positive (i.e. we are not having a managed memory leak). This goal of this document is to share the analysis method so that it could be applied to similar situations.
+Highlights Before I go into the details, here is a one line summary of the conclusion. This case is NOT a managed memory leak, but because a compiler generated temp is considered a reference and therefore the garbage collector cannot eliminate it.</description>
+    </item>
     
     <item>
       <title>Memory Corruption (2)</title>
