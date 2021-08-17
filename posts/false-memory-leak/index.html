@@ -291,7 +291,7 @@ Generating: N093 (  2,  2) [000287] ------------       t287 = *  LEA(b+16) byref
 <p>In this particular case, we could make things work, by ensuring the <code>Run</code> method never access the <code>RootNode</code>. To do that, we make helper functions to access them, and make sure the JIT cannot inline them. This way we can ensure the stack frame of <code>Run</code> will never contain an instance of the <code>RootNode</code> and therefore the GC will always be able to collect it. Note that this will work even in debug mode as well.</p>
 <h1 id="conclusion">Conclusion</h1>
 <p>This is an in depth investigation into why we are not able to collect the <code>Node</code> objects. The investigation demonstrate how to investigate an issue like this. It also explained why does things works the way they were, and provided practical fixes for it.</p>
-<p>To reiterate, this is not a managed memory leak. The runtime components never guaranteed that a garbage collection will always collect all the objects when they are no longer referenced.</p>
+<p>To reiterate, this is not a managed memory leak. The JIT is free to extend the lifetime of objects within a scope therefore prevent the GC from collecting those objects.</p>
 <ul class="pa0">
   
 </ul>
