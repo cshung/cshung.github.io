@@ -43,7 +43,7 @@ What is the find object problem? There are various situation that we are given a
 What is the find object problem? There are various situation that we are given a random pointer inside the heap, and we wanted to find the pointer to the object that is using the address.">
 <meta itemprop="datePublished" content="2021-04-17T00:00:00-08:00" />
 <meta itemprop="dateModified" content="2021-04-17T00:00:00-08:00" />
-<meta itemprop="wordCount" content="638">
+<meta itemprop="wordCount" content="671">
 
 
 
@@ -153,7 +153,7 @@ What is the find object problem? There are various situation that we are given a
 <p>A brick table is a data structure that helps finding an object in the heap. To begin with the discussion, it makes sense to clarify what does finding an object mean.</p>
 <h2 id="what-is-the-find-object-problem">What is the find object problem?</h2>
 <p>There are various situation that we are given a random pointer inside the heap, and we wanted to find the pointer to the object that is using the address.</p>
-<p><strong>TODO</strong> describe the situation where this is useful.</p>
+<p>There are a couple of reasons why would get a random pointer on the heap. Interior pointers on the stack is on of them, and it is described in <a href="/posts/fake-interior-pointer">this</a> post.</p>
 <h2 id="the-naive-solution">The naive solution</h2>
 <p>A GC heap is arranged as a sequence of segments. The beginning of a segment is always an object, and object are closely packed (with certain alignment constraints). Given an object, we can determine its size, and therefore advance to the next one.</p>
 <p>Therefore, to search for an object containing a random pointer, we can simply determine the segment and walk it from the beginning, we will eventually find that object.</p>
@@ -185,7 +185,8 @@ size_t gc_heap<span style="color:#f92672">::</span>brick_of (<span style="color:
 <h2 id="who-maintain-the-brick-table-entries">Who maintain the brick table entries?</h2>
 <p>Now we know what the brick table entries are good for, there must be some code that produces and maintain these entries. Turn out there are a lot of call sites to <code>set_brick()</code> so we will not examine them all. The general theme is that we set the brick when:</p>
 <ol>
-<li>During allocation, we know where the objects are placed, and</li>
+<li>During allocation, we know where the objects are placed,</li>
+<li>During find_first_object, we also know where the objects are placed, and</li>
 <li>During compaction, we know where the objects are moving to.</li>
 </ol>
 <p>I am sure this is not an exhaustive list, there are other cases too, but that is beyond my understanding for now.</p>

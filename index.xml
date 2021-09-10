@@ -6,10 +6,21 @@
     <description>Recent content on My Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 13 Aug 2021 12:18:40 -0700</lastBuildDate>
+    <lastBuildDate>Fri, 10 Sep 2021 09:50:21 -0700</lastBuildDate>
     
 	<atom:link href="http://cshung.github.io/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Fake Interior Pointer</title>
+      <link>http://cshung.github.io/posts/fake-interior-pointer/</link>
+      <pubDate>Fri, 10 Sep 2021 09:50:21 -0700</pubDate>
+      
+      <guid>http://cshung.github.io/posts/fake-interior-pointer/</guid>
+      <description>GC reporting basics When CoreCLR performs a garbage collection, the GC asks the VM where the roots are. The runtime will report to the GC the pointers to the pointers of the objects. This process is called GC reporting.
+Suppose we have a pointer on the stack pointing to an object on the GC heap, it will look like this:
+Stack: Heap0x00001000: .......... 0x00F00000:..........: .......... ..........: ....................: .</description>
+    </item>
     
     <item>
       <title>False Memory Leak</title>
