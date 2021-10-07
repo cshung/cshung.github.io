@@ -39,7 +39,7 @@
 <meta property="og:description" content="" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="http://cshung.github.io/posts/" />
-<meta property="og:updated_time" content="2021-09-10T09:50:21-07:00" />
+<meta property="og:updated_time" content="2021-10-06T16:04:13-07:00" />
 <meta itemprop="name" content="Posts">
 <meta itemprop="description" content=""><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Posts"/>
@@ -103,6 +103,22 @@
   <article class="pa3 pa4-ns nested-copy-line-height nested-img">
     <section class="cf ph3 ph5-l pv3 pv4-l f4 tc-l center measure-wide lh-copy mid-gray"></section>
     <section class="flex-ns flex-wrap justify-around mt5">
+      
+        <div class="relative w-100 w-30-l mb4 bg-white"><div class="relative w-100 mb4 bg-white nested-copy-line-height">
+  <div class="bg-white mb3 pa4 gray overflow-hidden">
+    <span class="f6 db">Posts</span>
+    <h1 class="f3 near-black">
+      <a href="http://cshung.github.io/posts/optimize-bricks/" class="link black dim">
+        Optimize Bricks
+      </a>
+    </h1>
+    <div class="nested-links f5 lh-copy nested-copy-line-height">
+      In this post, I am going to talk about an optimization I made in the GC to reduce tail latency.
+Scenario One of our customers reported that occassionally, they are observing gen 1 GC taking longer time than usual. Usually, their gen 1 GC takes around 4 milliseconds, but once in a while it could be as long as 15 milliseconds, and this is getting into their tail latencies measurements.
+    </div>
+  </div>
+</div>
+</div>
       
         <div class="relative w-100 w-30-l mb4 bg-white"><div class="relative w-100 mb4 bg-white nested-copy-line-height">
   <div class="bg-white mb3 pa4 gray overflow-hidden">
@@ -245,23 +261,6 @@ To use the notebook to get to the data frame, we need to run the first cell (as 
       Varying the benchmark In the last post, we showed that in a particular scenario, allocating pinned objects on pinned object heap is a better choice from both the speed perspective and the heap size perspective. How about other scenarios?
 In part 4, we already discussed the criterion what is feasible to test under GCPerfSim, so we will simply generate all the possibilities here with this simple Python script
 for a in range(1, 100): if 1000 % a == 0: for b in range(1, a): if a % b == 0: if ((1000 - b) % (a - b) == 0): pin_sohsi = 1000 // a pin_sohpi = a // b poh_sohsi = (1000 - b) // (a - b) poh_pohar = b print(&#34; 2gb_pin_%s_%s:&#34; % (a, b)); print(&#34; arguments:&#34;); print(&#34; tc: 6&#34;); print(&#34; tagb: 100&#34;); print(&#34; tlgb: 2&#34;); print(&#34; lohar: 0&#34;); print(&#34; pohar: 0&#34;); print(&#34; sohsr: 100-4000&#34;); print(&#34; pohsr: 100-4000&#34;); print(&#34; sohsi: %s&#34; % pin_sohsi); print(&#34; lohsi: 0&#34;); print(&#34; pohsi: 0&#34;); print(&#34; sohpi: %s&#34; % pin_sohpi); print(&#34; lohpi: 0&#34;); print(&#34; sohfi: 0&#34;); print(&#34; lohfi: 0&#34;); print(&#34; pohfi: 0&#34;); print(&#34; allocType: reference&#34;); print(&#34; testKind: time&#34;); print(&#34; 2gb_poh_%s_%s:&#34; % (a, b)); print(&#34; arguments:&#34;); print(&#34; tc: 6&#34;); print(&#34; tagb: 100&#34;); print(&#34; tlgb: 2&#34;); print(&#34; lohar: 0&#34;); print(&#34; pohar: %s&#34; % poh_pohar); print(&#34; sohsr: 100-4000&#34;); print(&#34; pohsr: 100-4000&#34;); print(&#34; sohsi: %s&#34; % poh_sohsi); print(&#34; lohsi: 0&#34;); print(&#34; pohsi: 1&#34;); print(&#34; sohpi: 0&#34;); print(&#34; lohpi: 0&#34;); print(&#34; sohfi: 0&#34;); print(&#34; lohfi: 0&#34;); print(&#34; pohfi: 0&#34;); print(&#34; allocType: reference&#34;); print(&#34; testKind: time&#34;); Preprocessing the result As usual, we can create a pandas data frame for all the runs.
-    </div>
-  </div>
-</div>
-</div>
-      
-        <div class="relative w-100 w-30-l mb4 bg-white"><div class="relative w-100 mb4 bg-white nested-copy-line-height">
-  <div class="bg-white mb3 pa4 gray overflow-hidden">
-    <span class="f6 db">Posts</span>
-    <h1 class="f3 near-black">
-      <a href="http://cshung.github.io/posts/poh-tuning-4/" class="link black dim">
-        POH Tuning (Part 4 - Benchmark design and the performance infrastructure)
-      </a>
-    </h1>
-    <div class="nested-links f5 lh-copy nested-copy-line-height">
-      Benchmark design Armed with the knowledge about how the allocation ratios works in the previous post. Now we can design our benchmarks. My goal is to produce a pair of benchmarks so that I can compare pinning objects by using the old pinned handle, or by the new pinned object heap.
-In the pinned handle case, we can have a general design like this:
-Out of 1,000 objects in the SOH, \( a \) of them survives and \( b \) of them are pinned.
     </div>
   </div>
 </div>

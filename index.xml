@@ -6,10 +6,20 @@
     <description>Recent content on My Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 10 Sep 2021 09:50:21 -0700</lastBuildDate>
+    <lastBuildDate>Wed, 06 Oct 2021 16:04:13 -0700</lastBuildDate>
     
 	<atom:link href="http://cshung.github.io/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Optimize Bricks</title>
+      <link>http://cshung.github.io/posts/optimize-bricks/</link>
+      <pubDate>Wed, 06 Oct 2021 16:04:13 -0700</pubDate>
+      
+      <guid>http://cshung.github.io/posts/optimize-bricks/</guid>
+      <description>In this post, I am going to talk about an optimization I made in the GC to reduce tail latency.
+Scenario One of our customers reported that occassionally, they are observing gen 1 GC taking longer time than usual. Usually, their gen 1 GC takes around 4 milliseconds, but once in a while it could be as long as 15 milliseconds, and this is getting into their tail latencies measurements.</description>
+    </item>
     
     <item>
       <title>Fake Interior Pointer</title>
