@@ -6,10 +6,21 @@
     <description>Recent content in Posts on My Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 06 Oct 2021 16:04:13 -0700</lastBuildDate>
+    <lastBuildDate>Thu, 14 Oct 2021 12:27:20 -0700</lastBuildDate>
     
 	<atom:link href="http://cshung.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Ready to Run Delay Load</title>
+      <link>http://cshung.github.io/posts/ready-to-run-delay-load/</link>
+      <pubDate>Thu, 14 Oct 2021 12:27:20 -0700</pubDate>
+      
+      <guid>http://cshung.github.io/posts/ready-to-run-delay-load/</guid>
+      <description>In this series of posts, I will deep dive into ReadyToRun to understand its mechanisms. In my previous post, I briefly explained what is ReadyToRun and what problems do we need to solve. Now we will look into the exact mechanisms.
+The example We will start with this very simple example:
+using System; namespace ReadyToDebug { class Program { static void Main(string[] args) { for (int i = 0; i &amp;lt; 3; i++) { Console.</description>
+    </item>
     
     <item>
       <title>Optimize Bricks</title>

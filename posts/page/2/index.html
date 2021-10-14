@@ -39,7 +39,7 @@
 <meta property="og:description" content="" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="http://cshung.github.io/posts/" />
-<meta property="og:updated_time" content="2021-10-06T16:04:13-07:00" />
+<meta property="og:updated_time" content="2021-10-14T12:27:20-07:00" />
 <meta itemprop="name" content="Posts">
 <meta itemprop="description" content=""><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Posts"/>
@@ -103,6 +103,23 @@
   <article class="pa3 pa4-ns nested-copy-line-height nested-img">
     <section class="cf ph3 ph5-l pv3 pv4-l f4 tc-l center measure-wide lh-copy mid-gray"></section>
     <section class="flex-ns flex-wrap justify-around mt5">
+      
+        <div class="relative w-100 w-30-l mb4 bg-white"><div class="relative w-100 mb4 bg-white nested-copy-line-height">
+  <div class="bg-white mb3 pa4 gray overflow-hidden">
+    <span class="f6 db">Posts</span>
+    <h1 class="f3 near-black">
+      <a href="http://cshung.github.io/posts/poh-tuning-6/" class="link black dim">
+        POH Tuning (Part 6 - Varying the benchmark)
+      </a>
+    </h1>
+    <div class="nested-links f5 lh-copy nested-copy-line-height">
+      Varying the benchmark In the last post, we showed that in a particular scenario, allocating pinned objects on pinned object heap is a better choice from both the speed perspective and the heap size perspective. How about other scenarios?
+In part 4, we already discussed the criterion what is feasible to test under GCPerfSim, so we will simply generate all the possibilities here with this simple Python script
+for a in range(1, 100): if 1000 % a == 0: for b in range(1, a): if a % b == 0: if ((1000 - b) % (a - b) == 0): pin_sohsi = 1000 // a pin_sohpi = a // b poh_sohsi = (1000 - b) // (a - b) poh_pohar = b print(&#34; 2gb_pin_%s_%s:&#34; % (a, b)); print(&#34; arguments:&#34;); print(&#34; tc: 6&#34;); print(&#34; tagb: 100&#34;); print(&#34; tlgb: 2&#34;); print(&#34; lohar: 0&#34;); print(&#34; pohar: 0&#34;); print(&#34; sohsr: 100-4000&#34;); print(&#34; pohsr: 100-4000&#34;); print(&#34; sohsi: %s&#34; % pin_sohsi); print(&#34; lohsi: 0&#34;); print(&#34; pohsi: 0&#34;); print(&#34; sohpi: %s&#34; % pin_sohpi); print(&#34; lohpi: 0&#34;); print(&#34; sohfi: 0&#34;); print(&#34; lohfi: 0&#34;); print(&#34; pohfi: 0&#34;); print(&#34; allocType: reference&#34;); print(&#34; testKind: time&#34;); print(&#34; 2gb_poh_%s_%s:&#34; % (a, b)); print(&#34; arguments:&#34;); print(&#34; tc: 6&#34;); print(&#34; tagb: 100&#34;); print(&#34; tlgb: 2&#34;); print(&#34; lohar: 0&#34;); print(&#34; pohar: %s&#34; % poh_pohar); print(&#34; sohsr: 100-4000&#34;); print(&#34; pohsr: 100-4000&#34;); print(&#34; sohsi: %s&#34; % poh_sohsi); print(&#34; lohsi: 0&#34;); print(&#34; pohsi: 1&#34;); print(&#34; sohpi: 0&#34;); print(&#34; lohpi: 0&#34;); print(&#34; sohfi: 0&#34;); print(&#34; lohfi: 0&#34;); print(&#34; pohfi: 0&#34;); print(&#34; allocType: reference&#34;); print(&#34; testKind: time&#34;); Preprocessing the result As usual, we can create a pandas data frame for all the runs.
+    </div>
+  </div>
+</div>
+</div>
       
         <div class="relative w-100 w-30-l mb4 bg-white"><div class="relative w-100 mb4 bg-white nested-copy-line-height">
   <div class="bg-white mb3 pa4 gray overflow-hidden">
@@ -244,22 +261,6 @@ Why does it matter? The GC expects the heap to be tightly packed with objects. I
       To get started using ILCompiler.Reflection.ReadyToRun, let&rsquo;s construct a simple HelloWorld project. If you don&rsquo;t know what it is, please take a look at the previous post.
 Getting started We will create a .NET Core console application. Create a folder named HelloReflection and invoke dotnet new console.
 C:\dev&gt;mkdir HelloReflectionC:\dev&gt;cd HelloReflectionC:\dev\HelloReflection&gt;dotnet new consoleThe template &quot;Console Application&quot; was created successfully.Processing post-creation actions...Running 'dotnet restore' on C:\dev\HelloReflection\HelloReflection.csproj...Determining projects to restore.
-    </div>
-  </div>
-</div>
-</div>
-      
-        <div class="relative w-100 w-30-l mb4 bg-white"><div class="relative w-100 mb4 bg-white nested-copy-line-height">
-  <div class="bg-white mb3 pa4 gray overflow-hidden">
-    <span class="f6 db">Posts</span>
-    <h1 class="f3 near-black">
-      <a href="http://cshung.github.io/posts/coreclrgc-mono/" class="link black dim">
-        Debugging help for CoreCLR GC - Mono
-      </a>
-    </h1>
-    <div class="nested-links f5 lh-copy nested-copy-line-height">
-      I was invited to help with debugging an issue in the CoreCLR GC - Mono project. In this blog entry, I am planning to describe the debugging process so that it can be repeated to move the project forward.
-What is CoreCLR GC - Mono? CoreCLR GC - Mono is an attempt to use CoreCLR&rsquo;s GC to replace sgen, a simple generational garbage collector for Mono. The major goal of the project is to improve performance.
     </div>
   </div>
 </div>

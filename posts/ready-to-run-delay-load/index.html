@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    
+    <title>Ready to Run Delay Load | My Blog</title>
+    <meta name="viewport" content="width=device-width,minimum-scale=1">
+    <meta name="description" content="In this series of posts, I will deep dive into ReadyToRun to understand its mechanisms. In my previous post, I briefly explained what is ReadyToRun and what problems do we need to solve. Now we will look into the exact mechanisms.
+The example We will start with this very simple example:
+using System; namespace ReadyToDebug { class Program { static void Main(string[] args) { for (int i = 0; i &lt; 3; i&#43;&#43;) { Console.">
+    <meta name="generator" content="Hugo 0.73.0-DEV" />
+    
+    
+      <META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
+    
+
+    
+
+  
+  
+    <link rel="stylesheet" href="/ananke/dist/main.css_5c99d70a7725bacd4c701e995b969fea.css" >
+  
+
+
+
+
+    
+      
+
+    
+
+    
+    
+    <meta property="og:title" content="Ready to Run Delay Load" />
+<meta property="og:description" content="In this series of posts, I will deep dive into ReadyToRun to understand its mechanisms. In my previous post, I briefly explained what is ReadyToRun and what problems do we need to solve. Now we will look into the exact mechanisms.
+The example We will start with this very simple example:
+using System; namespace ReadyToDebug { class Program { static void Main(string[] args) { for (int i = 0; i &lt; 3; i&#43;&#43;) { Console." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://cshung.github.io/posts/ready-to-run-delay-load/" />
+<meta property="article:published_time" content="2021-10-14T12:27:20-07:00" />
+<meta property="article:modified_time" content="2021-10-14T12:27:20-07:00" />
+<meta itemprop="name" content="Ready to Run Delay Load">
+<meta itemprop="description" content="In this series of posts, I will deep dive into ReadyToRun to understand its mechanisms. In my previous post, I briefly explained what is ReadyToRun and what problems do we need to solve. Now we will look into the exact mechanisms.
+The example We will start with this very simple example:
+using System; namespace ReadyToDebug { class Program { static void Main(string[] args) { for (int i = 0; i &lt; 3; i&#43;&#43;) { Console.">
+<meta itemprop="datePublished" content="2021-10-14T12:27:20-07:00" />
+<meta itemprop="dateModified" content="2021-10-14T12:27:20-07:00" />
+<meta itemprop="wordCount" content="1732">
+
+
+
+<meta itemprop="keywords" content="" /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Ready to Run Delay Load"/>
+<meta name="twitter:description" content="In this series of posts, I will deep dive into ReadyToRun to understand its mechanisms. In my previous post, I briefly explained what is ReadyToRun and what problems do we need to solve. Now we will look into the exact mechanisms.
+The example We will start with this very simple example:
+using System; namespace ReadyToDebug { class Program { static void Main(string[] args) { for (int i = 0; i &lt; 3; i&#43;&#43;) { Console."/>
+
+	
+  </head>
+
+  <body class="ma0 avenir bg-near-white">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <script>mermaid.initialize({startOnLoad:true});</script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+   
+  
+
+  <header>
+    <div class="bg-black">
+      <nav class="pv3 ph3 ph4-ns" role="navigation">
+  <div class="flex-l justify-between items-center center">
+    <a href="/" class="f3 fw2 hover-white no-underline white-90 dib">
+      
+        My Blog
+      
+    </a>
+    <div class="flex-l items-center">
+      
+
+      
+      
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    </div>
+  </div>
+</nav>
+
+    </div>
+  </header>
+
+
+
+    <main class="pb7" role="main">
+      
+  
+  <article class="flex-l flex-wrap justify-between mw8 center ph3">
+    <header class="mt4 w-100">
+      <aside class="instapaper_ignoref b helvetica tracked">
+          
+        POSTS
+      </aside>
+      
+
+
+
+
+  <div id="sharing" class="mt3">
+
+    
+    <a href="https://www.facebook.com/sharer.php?u=http://cshung.github.io/posts/ready-to-run-delay-load/" class="facebook no-underline" aria-label="share on Facebook">
+      <svg height="32px"  style="enable-background:new 0 0 67 67;" version="1.1" viewBox="0 0 67 67" width="32px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path d="M28.765,50.32h6.744V33.998h4.499l0.596-5.624h-5.095  l0.007-2.816c0-1.466,0.14-2.253,2.244-2.253h2.812V17.68h-4.5c-5.405,0-7.307,2.729-7.307,7.317v3.377h-3.369v5.625h3.369V50.32z   M33,64C16.432,64,3,50.569,3,34S16.432,4,33,4s30,13.431,30,30S49.568,64,33,64z" style="fill-rule:evenodd;clip-rule:evenodd;"/></svg>
+
+    </a>
+
+    
+    
+    <a href="https://twitter.com/share?url=http://cshung.github.io/posts/ready-to-run-delay-load/&amp;text=Ready%20to%20Run%20Delay%20Load" class="twitter no-underline" aria-label="share on Twitter">
+      <svg height="32px"  style="enable-background:new 0 0 67 67;" version="1.1" viewBox="0 0 67 67" width="32px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path d="M37.167,22.283c-2.619,0.953-4.274,3.411-4.086,6.101  l0.063,1.038l-1.048-0.127c-3.813-0.487-7.145-2.139-9.974-4.915l-1.383-1.377l-0.356,1.017c-0.754,2.267-0.272,4.661,1.299,6.271  c0.838,0.89,0.649,1.017-0.796,0.487c-0.503-0.169-0.943-0.296-0.985-0.233c-0.146,0.149,0.356,2.076,0.754,2.839  c0.545,1.06,1.655,2.097,2.871,2.712l1.027,0.487l-1.215,0.021c-1.173,0-1.215,0.021-1.089,0.467  c0.419,1.377,2.074,2.839,3.918,3.475l1.299,0.444l-1.131,0.678c-1.676,0.976-3.646,1.526-5.616,1.568  C19.775,43.256,19,43.341,19,43.405c0,0.211,2.557,1.397,4.044,1.864c4.463,1.377,9.765,0.783,13.746-1.568  c2.829-1.673,5.657-5,6.978-8.221c0.713-1.716,1.425-4.851,1.425-6.354c0-0.975,0.063-1.102,1.236-2.267  c0.692-0.678,1.341-1.419,1.467-1.631c0.21-0.403,0.188-0.403-0.88-0.043c-1.781,0.636-2.033,0.551-1.152-0.402  c0.649-0.678,1.425-1.907,1.425-2.267c0-0.063-0.314,0.042-0.671,0.233c-0.377,0.212-1.215,0.53-1.844,0.72l-1.131,0.361l-1.027-0.7  c-0.566-0.381-1.361-0.805-1.781-0.932C39.766,21.902,38.131,21.944,37.167,22.283z M33,64C16.432,64,3,50.569,3,34S16.432,4,33,4  s30,13.431,30,30S49.568,64,33,64z" style="fill-rule:evenodd;clip-rule:evenodd;fill:;"/></svg>
+
+    </a>
+
+    
+    <a href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http://cshung.github.io/posts/ready-to-run-delay-load/&amp;title=Ready%20to%20Run%20Delay%20Load" class="linkedin no-underline" aria-label="share on LinkedIn">
+      <svg  height="32px"  style="enable-background:new 0 0 65 65;" version="1.1" viewBox="0 0 65 65" width="32px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <path d="M50.837,48.137V36.425c0-6.275-3.35-9.195-7.816-9.195  c-3.604,0-5.219,1.983-6.119,3.374V27.71h-6.79c0.09,1.917,0,20.427,0,20.427h6.79V36.729c0-0.609,0.044-1.219,0.224-1.655  c0.49-1.22,1.607-2.483,3.482-2.483c2.458,0,3.44,1.873,3.44,4.618v10.929H50.837z M22.959,24.922c2.367,0,3.842-1.57,3.842-3.531  c-0.044-2.003-1.475-3.528-3.797-3.528s-3.841,1.524-3.841,3.528c0,1.961,1.474,3.531,3.753,3.531H22.959z M34,64  C17.432,64,4,50.568,4,34C4,17.431,17.432,4,34,4s30,13.431,30,30C64,50.568,50.568,64,34,64z M26.354,48.137V27.71h-6.789v20.427  H26.354z" style="fill-rule:evenodd;clip-rule:evenodd;fill:;"/>
+</svg>
+
+    </a>
+  </div>
+
+
+      <h1 class="f1 athelas mt3 mb1">Ready to Run Delay Load</h1>
+      
+      
+      <time class="f6 mv4 dib tracked" datetime="2021-10-14T12:27:20-07:00">October 14, 2021</time>
+
+      
+      
+    </header>
+    <div class="nested-copy-line-height lh-copy serif f4 nested-links nested-img mid-gray pr4-l w-two-thirds-l"><p>In this series of posts, I will deep dive into ReadyToRun to understand its mechanisms. In my <a href="/posts/introduction-to-ilcompiler-reflection-readytorun">previous post</a>, I briefly explained what is ReadyToRun and what problems do we need to solve. Now we will look into the exact mechanisms.</p>
+<h1 id="the-example">The example</h1>
+<p>We will start with this very simple example:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c#" data-lang="c#"><span style="color:#66d9ef">using</span> System;
+
+<span style="color:#66d9ef">namespace</span> ReadyToDebug
+{
+    <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Program</span>
+    {
+        <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> Main(<span style="color:#66d9ef">string</span>[] args)
+        {
+            <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> i = <span style="color:#ae81ff">0</span>; i &lt; <span style="color:#ae81ff">3</span>; i++)
+            {
+                Console.WriteLine(<span style="color:#e6db74">&#34;Hello World!&#34;</span>);
+            }
+        }
+    }
+}
+</code></pre></div><p>To be precise, I put it in a project targetting .NET 6.0, and compiled using the ready to run option as follow:</p>
+<p><code>dotnet publish -r win-x64 /p:PublishReadyToRun=true</code></p>
+<p>Of course, the program simply prints &ldquo;Hello World&rdquo; 3 times.</p>
+<h1 id="the-tools">The tools</h1>
+<p>We will use <a href="https://github.com/icsharpcode/ILSpy/wiki/ILSpy.ReadyToRun">ILSpy.ReadyToRun</a> to disassemble the compiled code, and we will use the <a href="https://docs.microsoft.com/en-us/windows-hardware/drivers/debugger/time-travel-debugging-record">Time Travel Debugging</a> in WinDBG capability to make debugging easier.</p>
+<h1 id="disassembling-the-code">Disassembling the code</h1>
+<p>Using ILSpy.ReadyToRun, here is the method disassembled.</p>
+<pre><code>; void ReadyToDebug.Program.Main(string[])
+; Prolog
+00000000000017C0 57                   push      rdi
+00000000000017C1 56                   push      rsi
+00000000000017C2 4883EC28             sub       rsp,28h
+; IL_0001
+00000000000017C6 33F6                 xor       esi,esi
+; IL_0016
+00000000000017C8 488B3DD9080000       mov       rdi,[rel 20A8h]
+; IL_0006
+00000000000017CF 488B0F               mov       rcx,[rdi];
+00000000000017D2 FF15C8080000         call      qword [rel 20A0h] ; void [System.Console]System.Console::WriteLine(string)
+; IL_0012
+00000000000017D8 FFC6                 inc       esi; rsi = Local 0
+; IL_0016
+00000000000017DA 83FE03               cmp       esi,3
+00000000000017DD 0F9CC0               setl      al
+00000000000017E0 0FB6C0               movzx     eax,al
+; IL_001b
+00000000000017E3 85C0                 test      eax,eax
+00000000000017E5 75E8                 jne       short 0000`0000`0000`17CFh
+; IL_001e
+; Epilog
+00000000000017E7 4883C428             add       rsp,28h
+00000000000017EB 5E                   pop       rsi;
+00000000000017EC 5F                   pop       rdi
+00000000000017ED C3                   ret
+</code></pre><p>First of all, the address column looks weird. We seldom have instruction pointer pointing to such a small number. They are NOT actual addresses, they are relative virtual addresses. The idea is that they are a relative offset from the base address of the image. Later, we will talk about how to do this simple translation when we dive into debugging.</p>
+<p>Second, note that ILSpy.ReadyToRun nicely annotated that the call on <code>00000000000017D2</code> is going to <code>Console.WriteLine</code>. Note that the call is in indirect call, therefore the address of the callee is stored on the memory cell <code>20A0h</code>. Note that it has to be indirect, because by the time we compile the application, we have no idea where will the code for <code>Console.WriteLine</code> lives. We call such a location a redirection cell. Basically, a memory location where we can write to it to redirect execution.</p>
+<p>Given that even the compiler don&rsquo;t know where the function is, how ILSpy.ReadyToRun knows it <em>will</em> lead to <code>Console.WriteLine</code>. This is the real ReadyToRun magic.</p>
+<p>Without further ado, let&rsquo;s dive into the debugging.</p>
+<h1 id="recording-the-trace">Recording the trace</h1>
+<p>First, we run this command:</p>
+<p><code>c:\debuggers\amd64\ttd\TTTracer.exe c:\ReadyToDebug\bin\Debug\net6.0\win-x64\publish\ReadyToDebug.exe</code></p>
+<p>This will record the execution of the program and allow us to move back-and-forth to understand the execution. Then, we can start inspecting the trace as follow:</p>
+<p><code>c:\debuggers\amd64\windbg -z ReadyToDebug01.run</code></p>
+<p>This will show the normal debugging session, and we will start debugging it.</p>
+<h1 id="analyzing-the-trace">Analyzing the trace</h1>
+<p>We would like to know what happened on the indirect calls. So naturally we would like to set a breakpoint to it. Right now, <code>ReadyToDebug.dll</code> is not even loaded in the process yet. So the first thing to do is to run until it is loaded. We can do that using this command</p>
+<pre><code>0:000&gt; sxe ld ReadyToDebug
+0:000&gt; g
+</code></pre><p>This will run until <code>ReadyToDebug.dll</code> is loaded, and when it does, the debugger shows:</p>
+<pre><code>...
+ModLoad: 000001e2`f7b50000 000001e2`f7b54000   c:\Garbage\ReadyToDebug\bin\Debug\net6.0\win-x64\publish\ReadyToDebug.dll
+</code></pre><p>The first address, <code>000001e2f7b50000</code>, is the base address of the module. It may or may not be the same on other machines (and even executions on the same machine). But once we have this address, then we have this very simple formula:</p>
+<pre><code>virtual address = base address + relative virtual address
+</code></pre><p>The virtual refers to virtual memory (which is used in practically any OS today). So if we ignore the word virtual, this is basically saying the address is the base address plus the relative address. Therefore, or call site is simply <code>000001e2f7b50000 + 17d2 = 000001e2f7b517d2</code>. We will set a breakpoint there.</p>
+<pre><code>0:000&gt; bp 000001e2f7b517d2
+0:000&gt; g
+...
+Breakpoint 0 hit
+Time Travel Position: 171F7:9 [Unindexed] Index
+...
+0:000&gt; g
+...
+Breakpoint 0 hit
+Time Travel Position: 1A995:16 [Unindexed] Index
+...
+0:000&gt; g
+Breakpoint 0 hit
+Time Travel Position: 1A9A1:16 [Unindexed] Index
+...
+0:000&gt; g
+TTD: End of trace reached.
+...
+</code></pre><p>As we can see, the breakpoint hit 3 times, and then the process terminates. Of course, that matches our expectation that <code>Console.WriteLine</code> is called 3 times.</p>
+<h1 id="the-first-call">The first call</h1>
+<p>Now we will go back in time to see what happened in the first call.</p>
+<pre><code>0:000&gt; !tt 171F7:9
+Setting position: 171F7:9
+0:000&gt; dq 000001e2`f7b520a0 L1
+000001e2`f7b520a0  000001e2`f7b51804
+0:000&gt; u 000001e2`f7b51804
+000001e2`f7b51804 33c0            xor     eax,eax
+000001e2`f7b51806 6a03            push    3
+000001e2`f7b51808 ff3572080000    push    qword ptr [ReadyToDebug!COM+_Entry_Point &lt;PERF&gt; (ReadyToDebug+0x2080) (000001e2`f7b52080)]
+000001e2`f7b5180e ff2574080000    jmp     qword ptr [ReadyToDebug!COM+_Entry_Point &lt;PERF&gt; (ReadyToDebug+0x2088) (000001e2`f7b52088)]
+</code></pre><p>Remember we said the address to the actual call site is stored in <code>20a0</code>? We inspected the call site and found this code. This code is weird, we do not setup a frame and just push and jump. This pattern is often called a trunk or a trampoline. Roughly speaking, this is not a function, but a decorator of the function. If we think about the decorator pattern, you can use a decorator to execute something before of after a method. This is exactly what we are trying to do here.</p>
+<p>The key thing to notice here is that we set <code>eax</code> to 0 and pushed two more values onto the stack. Overall, the stack remain unchanged. So the argument to the target function and the return address are still there!</p>
+<p>Next, we look at the last jump.</p>
+<pre><code>0:000&gt; dq 000001e2`f7b52088 L1
+000001e2`f7b52088  00007ffd`39f349a0
+0:000&gt; uf 00007ffd`39f349a0
+coreclr!DelayLoad_MethodCall:
+00007ffd`39f349a0 4155            push    r13
+00007ffd`39f349a2 4154            push    r12
+00007ffd`39f349a4 55              push    rbp
+00007ffd`39f349a5 53              push    rbx
+00007ffd`39f349a6 56              push    rsi
+00007ffd`39f349a7 57              push    rdi
+00007ffd`39f349a8 4883ec68        sub     rsp,68h
+00007ffd`39f349ac 48898c24b0000000 mov     qword ptr [rsp+0B0h],rcx
+00007ffd`39f349b4 48899424b8000000 mov     qword ptr [rsp+0B8h],rdx
+00007ffd`39f349bc 4c898424c0000000 mov     qword ptr [rsp+0C0h],r8
+00007ffd`39f349c4 4c898c24c8000000 mov     qword ptr [rsp+0C8h],r9
+00007ffd`39f349cc 660f7f442420    movdqa  xmmword ptr [rsp+20h],xmm0
+00007ffd`39f349d2 660f7f4c2430    movdqa  xmmword ptr [rsp+30h],xmm1
+00007ffd`39f349d8 660f7f542440    movdqa  xmmword ptr [rsp+40h],xmm2
+00007ffd`39f349de 660f7f5c2450    movdqa  xmmword ptr [rsp+50h],xmm3
+00007ffd`39f349e4 4c8b8c2498000000 mov     r9,qword ptr [rsp+98h]
+00007ffd`39f349ec 4c89b42498000000 mov     qword ptr [rsp+98h],r14
+00007ffd`39f349f4 4c8b8424a0000000 mov     r8,qword ptr [rsp+0A0h]
+00007ffd`39f349fc 4c89bc24a0000000 mov     qword ptr [rsp+0A0h],r15
+00007ffd`39f34a04 488d4c2468      lea     rcx,[rsp+68h]
+00007ffd`39f34a09 488bd0          mov     rdx,rax
+00007ffd`39f34a0c e85f4decff      call    coreclr!ExternalMethodFixupWorker (00007ffd`39df9770)
+00007ffd`39f34a11 660f6f442420    movdqa  xmm0,xmmword ptr [rsp+20h]
+00007ffd`39f34a17 660f6f4c2430    movdqa  xmm1,xmmword ptr [rsp+30h]
+00007ffd`39f34a1d 660f6f542440    movdqa  xmm2,xmmword ptr [rsp+40h]
+00007ffd`39f34a23 660f6f5c2450    movdqa  xmm3,xmmword ptr [rsp+50h]
+00007ffd`39f34a29 488b8c24b0000000 mov     rcx,qword ptr [rsp+0B0h]
+00007ffd`39f34a31 488b9424b8000000 mov     rdx,qword ptr [rsp+0B8h]
+00007ffd`39f34a39 4c8b8424c0000000 mov     r8,qword ptr [rsp+0C0h]
+00007ffd`39f34a41 4c8b8c24c8000000 mov     r9,qword ptr [rsp+0C8h]
+00007ffd`39f34a49 4883c468        add     rsp,68h
+00007ffd`39f34a4d 5f              pop     rdi
+00007ffd`39f34a4e 5e              pop     rsi
+00007ffd`39f34a4f 5b              pop     rbx
+00007ffd`39f34a50 5d              pop     rbp
+00007ffd`39f34a51 415c            pop     r12
+00007ffd`39f34a53 415d            pop     r13
+00007ffd`39f34a55 415e            pop     r14
+00007ffd`39f34a57 415f            pop     r15
+00007ffd`39f34a59 e93cffffff      jmp     coreclr!ExternalMethodFixupPatchLabel (00007ffd`39f3499a)  Branch
+</code></pre><p>First of all, note that this is a function in coreclr.dll. That means by the time our application is compiled, we have no idea where is the function. That&rsquo;s why it must be done through an indirect call.</p>
+<p>This functions looks complicated, but all it really does is pushing stuff to the stack, call the <code>ExternalMethodFixupWorker</code> with some arguments, and then pop them back all, and jump somewhere else.</p>
+<p>Note that at the end we popped <code>r14</code> and <code>r15</code> which is not pushed. This is to make sure we balance out the two additional pushes before we reach <code>DelayLoad_MethodCall</code>. By the time we jump, the stack will be exactly as it was at the callsite.</p>
+<p>Looking at just the stack, this is simply another trunk. The key is what <code>ExternalMethodFixupWorker</code> to prepare the <code>ExternalMethodFixupPatchLabel</code>.</p>
+<p>Note that the last jump is NOT an indirect jump, all it does is simply jumping to where <code>rax</code> points to:</p>
+<pre><code>0:000&gt; u 00007ffd`39f3499a
+coreclr!ExternalMethodFixupPatchLabel:
+00007ffd`39f3499a 48ffe0          jmp     rax
+</code></pre><p><code>rax</code> is of course the return value of ExternalMethodFixupWorker.</p>
+<h1 id="externalmethodfixupworker">ExternalMethodFixupWorker</h1>
+<p>The function <code>ExternalMethodFixupWorker</code> is implemented in C++, so we can simply read the source code. It is a long function so we will only outline what it does. The code uses the address of the indirection cell to find a signature. Using the signature, it asks the rest of the runtime to prepare for that function and return the address of that code.</p>
+<p>Why a signature? A signature is basically the name of the method in binary form. When we ask the runtime for the code, we need to give it an identifier of the method, and the signature is such an identifier.</p>
+<p>We also notice that there is a way to find the signature from the indirection cell address. That is how ILSpy.ReadyToRun figure out where the call will lead to.</p>
+<p>Further downstream, we will simply run the <code>Console.WriteLine</code> implementation, so we will skip that.</p>
+<h1 id="the-third-call">The third call</h1>
+<p>Now you might wonder, why do I call the function 3 times to show you how a method call is done? The reason is that calling <code>ExternalMethodFixupWorker</code> is expensive, and we don&rsquo;t want want to call it repeatedly after we already know where it should be. Let&rsquo;s inspect the 3rd call now.</p>
+<pre><code>0:000&gt; !tt 1A9A1:16
+0:000&gt; dq 000001e2`f7b520a0 L1
+000001e2`f7b520a0  00007ffc`da3a2a68
+0:000&gt; u 00007ffc`da3a2a68
+00007ffc`da3a2a68 e9effaffff      jmp     00007ffc`da3a255c
+</code></pre><p>The code changed! This is why we called it multiple times. At the third call, we no longer do the <code>DelayLoad_MethodCall</code> work and instead just jump directly to the implementation. Something must have changed the code!</p>
+<pre><code>0:000&gt; !ttpw 000001e2`f7b520a0
+Time Travel Position: 1A995:217 [Unindexed] Index
+0:000&gt; k
+ # Child-SP          RetAddr               Call Site
+00 (Inline Function) --------`--------     coreclr!PatchNonVirtualExternalMethod+0x9c [D:\a\_work\1\s\src\coreclr\vm\prestub.cpp @ 2484] 
+01 000000b9`cd77e300 00007ffd`39f34a11     coreclr!ExternalMethodFixupWorker+0xaf3 [D:\a\_work\1\s\src\coreclr\vm\prestub.cpp @ 2793] 
+...
+</code></pre><p>Now it is clear that <code>ExternalMethodFixupWorker</code> takes care of changing the indirection cell so that we don&rsquo;t do the heavy work to find the method again.</p>
+<p>The timestamp of this change is <code>1A995:217</code>, which is a bit later than the second call at <code>1A995:16</code>. Therefore we are actually doing <code>DelayLoad_MethodCall</code> twice and the patch happen at the second call to <code>ExternalMethodFixupWorker</code> for the same redirection cell. This is why I need to run it 3 times instead of just twice.</p>
+<p>The exact reason why we need to call it twice instead of just once is due to <code>ThePreStub</code> and tiered compilation. We will skip that for now.</p>
+<p>This conclude our journey to understand how the ready to run code calls an external method.</p>
+<ul class="pa0">
+  
+</ul>
+<div class="mt6 instapaper_ignoref">
+      
+      
+      </div>
+    </div>
+
+    <aside class="w-30-l mt6-l">
+
+
+
+
+</aside>
+
+  </article>
+
+    </main>
+    <footer class="bg-black bottom-0 w-100 pa3" role="contentinfo">
+  <div class="flex justify-between">
+  <a class="f4 fw4 hover-white no-underline white-70 dn dib-ns pv2 ph3" href="http://cshung.github.io/" >
+    &copy;  My Blog 2021 
+  </a>
+    <div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+  </div>
+</footer>
+
+    <div style="display:none">
+    <script type="text/javascript" src="https://www.free-counters.org/count/86pd"></script><br><a href='http://www.counter-zaehler.de'>besucherzähler ip</a> <script type='text/javascript'     src='https://whomania.com/ctr?id=695d5b016077d10ada0ea41fc87e54f2421f8966'></script>
+    </div>
+  </body>
+
+</html>
