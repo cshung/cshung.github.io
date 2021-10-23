@@ -6,10 +6,19 @@
     <description>Recent content in Posts on My Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 14 Oct 2021 12:27:20 -0700</lastBuildDate>
+    <lastBuildDate>Fri, 22 Oct 2021 20:15:34 -0700</lastBuildDate>
     
 	<atom:link href="http://cshung.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>PS/2 and A20</title>
+      <link>http://cshung.github.io/posts/ps2-and-a20/</link>
+      <pubDate>Fri, 22 Oct 2021 20:15:34 -0700</pubDate>
+      
+      <guid>http://cshung.github.io/posts/ps2-and-a20/</guid>
+      <description>PS/2 and A20 If the title of the post doesn&amp;rsquo;t make any sense for you, you are just too young. Well, just kidding. These are really old technologies but still impacting our journey to host Xv6 on v86. In our last post, we were able to run a scenario, but it isn&amp;rsquo;t perfect, it looks like all keyboard inputs are ignored and one must input the command through the UART port.</description>
+    </item>
     
     <item>
       <title>Ready to Run Delay Load</title>
