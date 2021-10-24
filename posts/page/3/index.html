@@ -39,7 +39,7 @@
 <meta property="og:description" content="" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="http://cshung.github.io/posts/" />
-<meta property="og:updated_time" content="2021-10-22T20:15:34-07:00" />
+<meta property="og:updated_time" content="2021-10-23T16:32:21-07:00" />
 <meta itemprop="name" content="Posts">
 <meta itemprop="description" content=""><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Posts"/>
@@ -103,6 +103,22 @@
   <article class="pa3 pa4-ns nested-copy-line-height nested-img">
     <section class="cf ph3 ph5-l pv3 pv4-l f4 tc-l center measure-wide lh-copy mid-gray"></section>
     <section class="flex-ns flex-wrap justify-around mt5">
+      
+        <div class="relative w-100 w-30-l mb4 bg-white"><div class="relative w-100 mb4 bg-white nested-copy-line-height">
+  <div class="bg-white mb3 pa4 gray overflow-hidden">
+    <span class="f6 db">Posts</span>
+    <h1 class="f3 near-black">
+      <a href="http://cshung.github.io/posts/gc-objects-1/" class="link black dim">
+        How CoreCLR GC understand objects (part 1)
+      </a>
+    </h1>
+    <div class="nested-links f5 lh-copy nested-copy-line-height">
+      In this series of posts, I am going to explain how the GC understand objects. In this part, we will focus on size.
+Why does it matter? The GC expects the heap to be tightly packed with objects. It scans the heap by starting at the beginning of the heap and walk the object one-by-one by this simple algorithm. This is real code excerpt from gc.cpp line 22972 to 23002, out of dotnet/runtime repo, tag v5.
+    </div>
+  </div>
+</div>
+</div>
       
         <div class="relative w-100 w-30-l mb4 bg-white"><div class="relative w-100 mb4 bg-white nested-copy-line-height">
   <div class="bg-white mb3 pa4 gray overflow-hidden">

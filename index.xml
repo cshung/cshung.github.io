@@ -6,10 +6,20 @@
     <description>Recent content on My Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 22 Oct 2021 20:15:34 -0700</lastBuildDate>
+    <lastBuildDate>Sat, 23 Oct 2021 16:32:21 -0700</lastBuildDate>
     
 	<atom:link href="http://cshung.github.io/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Spurious Interrupts</title>
+      <link>http://cshung.github.io/posts/spurious-interrupts/</link>
+      <pubDate>Sat, 23 Oct 2021 16:32:21 -0700</pubDate>
+      
+      <guid>http://cshung.github.io/posts/spurious-interrupts/</guid>
+      <description>Spurious interrupt In this post, we are going to talk about the spurious interrupt that we see in the console when running Xv6 on v86. I think it is a reflection of a deep problem in Xv6. To get started, let first explain what is a spurious interrupt.
+The hardware side The best way to think of spurious interrupts is to think like the programmable interrupt controller (PIC) between the devices (e.</description>
+    </item>
     
     <item>
       <title>PS/2 and A20</title>
