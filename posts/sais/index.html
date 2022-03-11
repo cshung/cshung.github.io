@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    
+    <title>SA-IS Algorithm | My Blog</title>
+    <meta name="viewport" content="width=device-width,minimum-scale=1">
+    <meta name="description" content="Today, I would like to write about my understanding of the SA-IS algorithm for constructing a suffix array.
+What is a suffix array? Consider the string &ldquo;banana&rdquo;, this string has 6 suffixes.
+   suffix index     banana 0   anana 1   nana 2   ana 3   na 4   a 5    And if we sort them, we have these:">
+    <meta name="generator" content="Hugo 0.73.0-DEV" />
+    
+    
+      <META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
+    
+
+    
+
+  
+  
+    <link rel="stylesheet" href="/ananke/dist/main.css_5c99d70a7725bacd4c701e995b969fea.css" >
+  
+
+
+
+
+    
+      
+
+    
+
+    
+    
+    <meta property="og:title" content="SA-IS Algorithm" />
+<meta property="og:description" content="Today, I would like to write about my understanding of the SA-IS algorithm for constructing a suffix array.
+What is a suffix array? Consider the string &ldquo;banana&rdquo;, this string has 6 suffixes.
+   suffix index     banana 0   anana 1   nana 2   ana 3   na 4   a 5    And if we sort them, we have these:" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://cshung.github.io/posts/sais/" />
+<meta property="article:published_time" content="2021-12-26T10:52:35-08:00" />
+<meta property="article:modified_time" content="2021-12-26T10:52:35-08:00" />
+<meta itemprop="name" content="SA-IS Algorithm">
+<meta itemprop="description" content="Today, I would like to write about my understanding of the SA-IS algorithm for constructing a suffix array.
+What is a suffix array? Consider the string &ldquo;banana&rdquo;, this string has 6 suffixes.
+   suffix index     banana 0   anana 1   nana 2   ana 3   na 4   a 5    And if we sort them, we have these:">
+<meta itemprop="datePublished" content="2021-12-26T10:52:35-08:00" />
+<meta itemprop="dateModified" content="2021-12-26T10:52:35-08:00" />
+<meta itemprop="wordCount" content="3721">
+
+
+
+<meta itemprop="keywords" content="" /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="SA-IS Algorithm"/>
+<meta name="twitter:description" content="Today, I would like to write about my understanding of the SA-IS algorithm for constructing a suffix array.
+What is a suffix array? Consider the string &ldquo;banana&rdquo;, this string has 6 suffixes.
+   suffix index     banana 0   anana 1   nana 2   ana 3   na 4   a 5    And if we sort them, we have these:"/>
+
+	
+  </head>
+
+  <body class="ma0 avenir bg-near-white">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <script>mermaid.initialize({startOnLoad:true});</script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+   
+  
+
+  <header>
+    <div class="bg-black">
+      <nav class="pv3 ph3 ph4-ns" role="navigation">
+  <div class="flex-l justify-between items-center center">
+    <a href="/" class="f3 fw2 hover-white no-underline white-90 dib">
+      
+        My Blog
+      
+    </a>
+    <div class="flex-l items-center">
+      
+
+      
+      
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    </div>
+  </div>
+</nav>
+
+    </div>
+  </header>
+
+
+
+    <main class="pb7" role="main">
+      
+  
+  <article class="flex-l flex-wrap justify-between mw8 center ph3">
+    <header class="mt4 w-100">
+      <aside class="instapaper_ignoref b helvetica tracked">
+          
+        POSTS
+      </aside>
+      
+
+
+
+
+  <div id="sharing" class="mt3">
+
+    
+    <a href="https://www.facebook.com/sharer.php?u=https://cshung.github.io/posts/sais/" class="facebook no-underline" aria-label="share on Facebook">
+      <svg height="32px"  style="enable-background:new 0 0 67 67;" version="1.1" viewBox="0 0 67 67" width="32px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path d="M28.765,50.32h6.744V33.998h4.499l0.596-5.624h-5.095  l0.007-2.816c0-1.466,0.14-2.253,2.244-2.253h2.812V17.68h-4.5c-5.405,0-7.307,2.729-7.307,7.317v3.377h-3.369v5.625h3.369V50.32z   M33,64C16.432,64,3,50.569,3,34S16.432,4,33,4s30,13.431,30,30S49.568,64,33,64z" style="fill-rule:evenodd;clip-rule:evenodd;"/></svg>
+
+    </a>
+
+    
+    
+    <a href="https://twitter.com/share?url=https://cshung.github.io/posts/sais/&amp;text=SA-IS%20Algorithm" class="twitter no-underline" aria-label="share on Twitter">
+      <svg height="32px"  style="enable-background:new 0 0 67 67;" version="1.1" viewBox="0 0 67 67" width="32px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path d="M37.167,22.283c-2.619,0.953-4.274,3.411-4.086,6.101  l0.063,1.038l-1.048-0.127c-3.813-0.487-7.145-2.139-9.974-4.915l-1.383-1.377l-0.356,1.017c-0.754,2.267-0.272,4.661,1.299,6.271  c0.838,0.89,0.649,1.017-0.796,0.487c-0.503-0.169-0.943-0.296-0.985-0.233c-0.146,0.149,0.356,2.076,0.754,2.839  c0.545,1.06,1.655,2.097,2.871,2.712l1.027,0.487l-1.215,0.021c-1.173,0-1.215,0.021-1.089,0.467  c0.419,1.377,2.074,2.839,3.918,3.475l1.299,0.444l-1.131,0.678c-1.676,0.976-3.646,1.526-5.616,1.568  C19.775,43.256,19,43.341,19,43.405c0,0.211,2.557,1.397,4.044,1.864c4.463,1.377,9.765,0.783,13.746-1.568  c2.829-1.673,5.657-5,6.978-8.221c0.713-1.716,1.425-4.851,1.425-6.354c0-0.975,0.063-1.102,1.236-2.267  c0.692-0.678,1.341-1.419,1.467-1.631c0.21-0.403,0.188-0.403-0.88-0.043c-1.781,0.636-2.033,0.551-1.152-0.402  c0.649-0.678,1.425-1.907,1.425-2.267c0-0.063-0.314,0.042-0.671,0.233c-0.377,0.212-1.215,0.53-1.844,0.72l-1.131,0.361l-1.027-0.7  c-0.566-0.381-1.361-0.805-1.781-0.932C39.766,21.902,38.131,21.944,37.167,22.283z M33,64C16.432,64,3,50.569,3,34S16.432,4,33,4  s30,13.431,30,30S49.568,64,33,64z" style="fill-rule:evenodd;clip-rule:evenodd;fill:;"/></svg>
+
+    </a>
+
+    
+    <a href="https://www.linkedin.com/shareArticle?mini=true&amp;url=https://cshung.github.io/posts/sais/&amp;title=SA-IS%20Algorithm" class="linkedin no-underline" aria-label="share on LinkedIn">
+      <svg  height="32px"  style="enable-background:new 0 0 65 65;" version="1.1" viewBox="0 0 65 65" width="32px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <path d="M50.837,48.137V36.425c0-6.275-3.35-9.195-7.816-9.195  c-3.604,0-5.219,1.983-6.119,3.374V27.71h-6.79c0.09,1.917,0,20.427,0,20.427h6.79V36.729c0-0.609,0.044-1.219,0.224-1.655  c0.49-1.22,1.607-2.483,3.482-2.483c2.458,0,3.44,1.873,3.44,4.618v10.929H50.837z M22.959,24.922c2.367,0,3.842-1.57,3.842-3.531  c-0.044-2.003-1.475-3.528-3.797-3.528s-3.841,1.524-3.841,3.528c0,1.961,1.474,3.531,3.753,3.531H22.959z M34,64  C17.432,64,4,50.568,4,34C4,17.431,17.432,4,34,4s30,13.431,30,30C64,50.568,50.568,64,34,64z M26.354,48.137V27.71h-6.789v20.427  H26.354z" style="fill-rule:evenodd;clip-rule:evenodd;fill:;"/>
+</svg>
+
+    </a>
+  </div>
+
+
+      <h1 class="f1 athelas mt3 mb1">SA-IS Algorithm</h1>
+      
+      
+      <time class="f6 mv4 dib tracked" datetime="2021-12-26T10:52:35-08:00">December 26, 2021</time>
+
+      
+      
+    </header>
+    <div class="nested-copy-line-height lh-copy serif f4 nested-links nested-img mid-gray pr4-l w-two-thirds-l"><p>Today, I would like to write about my understanding of the SA-IS algorithm for constructing a suffix array.</p>
+<h1 id="what-is-a-suffix-array">What is a suffix array?</h1>
+<p>Consider the string &ldquo;banana&rdquo;, this string has 6 suffixes.</p>
+<table>
+<thead>
+<tr>
+<th>suffix</th>
+<th>index</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>banana</td>
+<td>0</td>
+</tr>
+<tr>
+<td>anana</td>
+<td>1</td>
+</tr>
+<tr>
+<td>nana</td>
+<td>2</td>
+</tr>
+<tr>
+<td>ana</td>
+<td>3</td>
+</tr>
+<tr>
+<td>na</td>
+<td>4</td>
+</tr>
+<tr>
+<td>a</td>
+<td>5</td>
+</tr>
+</tbody>
+</table>
+<p>And if we sort them, we have these:</p>
+<table>
+<thead>
+<tr>
+<th>suffix</th>
+<th>index</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>a</td>
+<td>5</td>
+</tr>
+<tr>
+<td>ana</td>
+<td>3</td>
+</tr>
+<tr>
+<td>anana</td>
+<td>1</td>
+</tr>
+<tr>
+<td>banana</td>
+<td>0</td>
+</tr>
+<tr>
+<td>na</td>
+<td>4</td>
+</tr>
+<tr>
+<td>nana</td>
+<td>2</td>
+</tr>
+</tbody>
+</table>
+<p>And therefore the suffix array is <code>[5,3,1,0,4,2]</code>.</p>
+<p>The suffix array can be used for many applications, for example, in text searching and compression. In this blog post, we are not going to dive deep into these application areas, and focus on the construction algorithm instead.</p>
+<h1 id="a-first-look-at-the-problem">A first look at the problem</h1>
+<p>At a first glance, sorting a bunch of strings is easy. We can simply create all the suffixes and then just sort it. The time required will be \( O(n^2 \log n) \) because the sorting performs \( O(n \log n) \) comparison and each comparison takes \( O(n) \)  time. Can we do any better? After all, the suffix array&rsquo;s size is only \( O(n) \).</p>
+<p>Indeed we can. The SA-IS algorithm can construct the suffix array in \( O(n) \)  time, and therefore it is asympotically optimal.</p>
+<h1 id="observation">Observation</h1>
+<p>Note that the costly operation above is the repeated string comparison, can we reduce the cost there? Indeed, most suffix array construction algorithms focus on that. While string comparison is costly, most of the string comparison operations are overlapping. For example, if we decides the suffixes pair:</p>
+<p>$$ \alpha &lt; \beta $$</p>
+<p>Then we also have</p>
+<p>$$ \gamma\alpha &lt; \gamma\beta $$</p>
+<p>Can we somehow leverage this? As we will see, the SA-IS is leveraging this idea again and again.</p>
+<h1 id="the-s-type-and-l-type-suffixes">The S type and L type suffixes</h1>
+<p>To start with, we introduce the &lsquo;$&rsquo; character that is lexicographically smaller than any other alphabets, and append it to the end of the string. This is just to make it easier to start our induction.</p>
+<p>Then we introduce the concept of &lsquo;S&rsquo; type and &lsquo;L&rsquo; type suffix as follow:</p>
+<ul>
+<li>The &lsquo;$&rsquo; is a S type suffix by definition.</li>
+<li>If a suffix is lexicographically smaller than its immediately right hand side suffix, then it is a S type suffix.</li>
+<li>Otherwise it is a L type suffix.</li>
+</ul>
+<blockquote>
+<p>Intuitively, the S stands for smaller, and L stands for larger. We will soon see this is a bit misleading &hellip;</p>
+</blockquote>
+<p>Following our banana example, the suffix types are as follow:</p>
+<pre><code>banana$
+LSLSLLS
+</code></pre><p>Computing the type is fairly easy. The key idea is to compute it from the right. The &lsquo;$&rsquo; sign is always type &lsquo;S&rsquo;. How about the others?
+Determining that &lsquo;a$&rsquo; is L type is trivial, all we need to do is to check that &lsquo;a&rsquo; &gt; &lsquo;$&rsquo;. In fact, in &lsquo;banana&rsquo;, all characters can be checked this way.</p>
+<p>The only tricky part is if the initial characters are the same, then we cannot just compare one character.</p>
+<p>In this case, we claim that the type is simply the type of the one on its right hand side. Here is an example.</p>
+<pre><code>paab$
+ ?SLS
+</code></pre><p>To determine the type of <code>aab$</code>, we claim that since &lsquo;a&rsquo; = &lsquo;a&rsquo;, therefore, the type of <code>aab$</code> is simply the same as the type of <code>ab$</code>, which is S.</p>
+<p>If we think about it, this is exactly leveraging our observation that string comparisons are overlapping. The string comparison is simply comparing the first letter and then compare the rest, but the rest is already computed, so we just use what we already have!</p>
+<h1 id="why-bother-with-l-and-s">Why bother with L and S?</h1>
+<p>If we look at the suffix array with the L and S attached, we will find something interesting.</p>
+<table>
+<thead>
+<tr>
+<th>suffix</th>
+<th>index</th>
+<th>type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>$</td>
+<td>6</td>
+<td>S</td>
+</tr>
+<tr>
+<td>a</td>
+<td>5</td>
+<td>L</td>
+</tr>
+<tr>
+<td>ana</td>
+<td>3</td>
+<td>S</td>
+</tr>
+<tr>
+<td>anana</td>
+<td>1</td>
+<td>S</td>
+</tr>
+<tr>
+<td>banana</td>
+<td>0</td>
+<td>L</td>
+</tr>
+<tr>
+<td>na</td>
+<td>4</td>
+<td>L</td>
+</tr>
+<tr>
+<td>nana</td>
+<td>2</td>
+<td>L</td>
+</tr>
+</tbody>
+</table>
+<p>It isn&rsquo;t very obvious with this short string. With a longer string, we will find that the &lsquo;S&rsquo; type and &lsquo;L&rsquo; type seems to cluster very well. This is because of this property:</p>
+<p>In a suffix array, for all suffixes starting with the same character, all L suffixes goes before all S suffixes.</p>
+<p>This property can be easily argued from the type assignment algorithm above. All L type suffixes must start with a character, either encounter the same character, or something smaller than it. The same goes with the S type (except the &lsquo;$&rsquo;). Symbolically, the L type must be <code>cccb</code> while the S type must be <code>cccd</code>. That is why all the L type suffixes are always smaller than the S type suffixes if they start with the same character.</p>
+<blockquote>
+<p>Recall S stands for smaller, but in fact, for the same character, S is actually larger, counterinituitive!</p>
+</blockquote>
+<p>This classification immediately lead us to a fairly fast algorithm for a partial sorting. Just do a bucket sort on the first character and its type. Of course, we haven&rsquo;t sorted the bucket yet, and we will deal with that later.</p>
+<table>
+<thead>
+<tr>
+<th>initial character</th>
+<th>L type</th>
+<th>S type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>$</td>
+<td></td>
+<td>$</td>
+</tr>
+<tr>
+<td>a</td>
+<td>a$</td>
+<td></td>
+</tr>
+<tr>
+<td>a</td>
+<td></td>
+<td>anana$,ana$</td>
+</tr>
+<tr>
+<td>b</td>
+<td>banana$</td>
+<td></td>
+</tr>
+<tr>
+<td>n</td>
+<td>nana$,na$</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>Although we display that as a table, in code we will simply represent it as an array together with an auxillary array that tell us where the bucket starts and ends.</p>
+<h1 id="sorting-the-l-type-suffixes-given-the-s-types-are-sorted">Sorting the L type suffixes given the S types are sorted</h1>
+<p>Suppose we have the S type suffixes sorted (i.e. they are placed in the right positions in the suffix array), we can easily get the fully sorted suffix array using this surprising algorithm.</p>
+<pre><code>Scan the array from left to right
+If the current suffix is not the full string
+  If the suffix to the left of that suffix is L type
+    Insert that into the end of the corresponding L type bucket
+</code></pre><p>This is a bit abstract, so we will trace an example:</p>
+<p>Step 1: Here are the initial buckets, note that the S types are already sorted and the L types buckets are emptied. The parenthesis represents the empty buckets, the suffixes outside the parenthesis are still in the array but is not part of the bucket.</p>
+<table>
+<thead>
+<tr>
+<th>initial character</th>
+<th>L type</th>
+<th>S type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>$</td>
+<td></td>
+<td>$</td>
+</tr>
+<tr>
+<td>a</td>
+<td>a$()</td>
+<td></td>
+</tr>
+<tr>
+<td>a</td>
+<td></td>
+<td>anana$,ana$</td>
+</tr>
+<tr>
+<td>b</td>
+<td>banana$()</td>
+<td></td>
+</tr>
+<tr>
+<td>n</td>
+<td>nana$,na$()</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>Step 2: The first one we find is &lsquo;$&rsquo;. The left suffix is &lsquo;a$&rsquo;, it is L type, so we put it into the right bucket.</p>
+<table>
+<thead>
+<tr>
+<th>initial character</th>
+<th>L type</th>
+<th>S type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>$</td>
+<td></td>
+<td>$</td>
+</tr>
+<tr>
+<td>a</td>
+<td>(a$)</td>
+<td></td>
+</tr>
+<tr>
+<td>a</td>
+<td></td>
+<td>ana$,anana$</td>
+</tr>
+<tr>
+<td>b</td>
+<td>banana$()</td>
+<td></td>
+</tr>
+<tr>
+<td>n</td>
+<td>nana$,na$()</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>Step 3: The next one we find is &lsquo;a$&rsquo;. The left suffix is &lsquo;na$&rsquo;, it is L type, so we put it into the right bucket.</p>
+<table>
+<thead>
+<tr>
+<th>initial character</th>
+<th>L type</th>
+<th>S type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>$</td>
+<td></td>
+<td>$</td>
+</tr>
+<tr>
+<td>a</td>
+<td>(a$)</td>
+<td></td>
+</tr>
+<tr>
+<td>a</td>
+<td></td>
+<td>ana$,anana$</td>
+</tr>
+<tr>
+<td>b</td>
+<td>banana$()</td>
+<td></td>
+</tr>
+<tr>
+<td>n</td>
+<td>nana$,(na$)</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>Step 4: The next one we find is &lsquo;ana$&rsquo;. The left suffix is &lsquo;nana$&rsquo;, it is L type, so we put it into the right bucket.</p>
+<table>
+<thead>
+<tr>
+<th>initial character</th>
+<th>L type</th>
+<th>S type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>$</td>
+<td></td>
+<td>$</td>
+</tr>
+<tr>
+<td>a</td>
+<td>(a$)</td>
+<td></td>
+</tr>
+<tr>
+<td>a</td>
+<td></td>
+<td>ana$,anana$</td>
+</tr>
+<tr>
+<td>b</td>
+<td>banana$()</td>
+<td></td>
+</tr>
+<tr>
+<td>n</td>
+<td>(na$,nana$)</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>&hellip;</p>
+<p>and so on, eventually, we will get the fully sorted suffix array.</p>
+<p>The algorithm works for this example, and it will generally work for any cases, but it is unclear why this algorithm works. The name of this algorithm is called inductive sort, and it&rsquo;s name might give us a clue on how does it work.</p>
+<p>Focusing on just the L bucket starting with <code>n</code>. We inserted <code>na$</code> in step 3 before <code>nana$</code> in step 4, and that is right order of insertion. The reason why we insert <code>na$</code> before <code>nana$</code> is because we saw <code>ana$</code> before <code>anana$</code>. This is why this algorithm is called inductive sort. The relative order to the L suffixes are induced by the relative order of the S suffixes.</p>
+<p>The above is meant to give an intuitive idea, but it is not rigorous. You might wonder, what if we are talking about the full string, so that there is nothing on its right, or we are thinking about the right hand side of the L suffix is also an L suffix? To really convince us that the algorithm works, we need a proof, and we will prove this by induction.</p>
+<ol>
+<li>
+<p>The statement we wanted to prove is after the algorithm scanned a certain position, all positions on or to the left of it has the correct elements in it.</p>
+</li>
+<li>
+<p>In the very first step, it is true because we will find &lsquo;$&rsquo;, and &lsquo;$&rsquo; is obviously in the right position.</p>
+</li>
+<li>
+<p>Now suppose the first <code>k-1</code> steps are good, considering the <code>k</code> step, and suppose we encounter a wrong suffix in the position.</p>
+</li>
+<li>
+<p>Let the wrong suffix be \( c \beta \), and the correct one is \(c \alpha\). These are both L suffixes because the algorithm only move L suffixes within its own bucket.</p>
+</li>
+<li>
+<p>\( \alpha \) and \( \beta \) cannot be empty string because a L suffix must have at least 2 characters long.</p>
+</li>
+<li>
+<p>We have \( \alpha \) &lt; \( \beta \) and also \(c \alpha\) &gt; \(\alpha\), \(c \beta\) &gt; \(\beta\)</p>
+</li>
+<li>
+<p>Since the correct suffix is \(c \alpha\), we must have seen \( \alpha \) earlier, so we must have inserted \(c \alpha\) already.</p>
+</li>
+<li>
+<p>But we see \( c \beta \) before we see \(c \alpha\), so it must be the case that we have also seen \( \beta \) earlier then \( \alpha \).</p>
+</li>
+<li>
+<p>So both \( \alpha \) and \( \beta \) were seen, but in the wrong order. That is a contradiction because we assumed that order we seen earlier was correct.</p>
+</li>
+</ol>
+<h1 id="relaxing-the-assumptions">Relaxing the assumptions</h1>
+<p>Can we sort fewer S suffixes and still get the L suffixes correct?</p>
+<p>Looking at the proof, we can see how we could relax the assumption. We note that the proof does not use the fact that the S suffixes are sorted in a really cruical way. Here is a revised version of it, attempting to prove less with less given condition.</p>
+<ol>
+<li>
+<p>The statement we wanted to prove is after the algorithm scanned a certain position, all <strong>L</strong> positions on or to the left of it has the correct elements in it.</p>
+</li>
+<li>
+<p>In the very first step, it is true because we will find &lsquo;$&rsquo;, and it does not matter because we only cared about <strong>L</strong> positions.</p>
+</li>
+<li>
+<p>Now suppose the first <code>k-1</code> steps are good, considering the <code>k</code> step, and suppose we encounter a wrong suffix in the position.</p>
+</li>
+<li>
+<p>Let the wrong suffix be \( c \beta \), and the correct one is \(c \alpha\). These are both L suffixes because the algorithm only move L suffixes within its own bucket.</p>
+</li>
+<li>
+<p>\( \alpha \) and \( \beta \) cannot be empty string because a L suffix must have at least 2 characters long.</p>
+</li>
+<li>
+<p>We have \( \alpha \) &lt; \( \beta \) and also \(c \alpha\) &gt; \(\alpha\), \(c \beta\) &gt; \(\beta\)</p>
+</li>
+<li>
+<p>Since the correct suffix is \(c \alpha\), we must have seen \( \alpha \) earlier, so we must have inserted \(c \alpha\) already.</p>
+</li>
+<li>
+<p>But we see \( c \beta \) before we see \(c \alpha\), so it must be the case that we have also seen \( \beta \) earlier then \( \alpha \).</p>
+</li>
+<li>
+<p>So both \( \alpha \) and \( \beta \) were seen, but in the wrong order.</p>
+</li>
+</ol>
+<p>In order to proceed with step 9, if it happens that both \( \alpha \) and \( \beta \) are type L, we can still use the induction hypothesis. If exactly one of \( \alpha \) and \( \beta \) are type S, then we can still argue that the original order should not mess up the relative ordering of L type and S type. The last case, that both \( \alpha \) and \( \beta \) are type S, is the true problem. We do need to make sure they were ordered properly before the algorithm starts.</p>
+<p>It is just too good to be true if we can assume nothing and get the L type suffix sorted, turn out we still must sort some S type suffixes, but not all of them. It matters only if they cab be \( \alpha \) or \( \beta \) above. This type of S suffixes has a special property that they are the immediate right hand side of a L type suffix. In other words, they are the left most S type suffixes, or LMS for short.</p>
+<p>Suppose we can get the LMS suffixes sorted, then we can use the inductive sort to get the L type suffixes sorted. Now the problem how about the S type suffixes?</p>
+<h1 id="sorting-the-s-type-suffixes-as-well">Sorting the S type suffixes as well</h1>
+<p>Intuition tells us L and S are symmetric, can we run the inductive sort in reverse and sort the S type suffixes given the L type suffixes. Yes we can.</p>
+<pre><code>Scan the array from right to left
+If the current suffix is not the full string
+  If the suffix to the left that suffix is S type
+    Insert that into the beginning of the corresponding bucket
+</code></pre><p>And the proof is similar.</p>
+<ol>
+<li>
+<p>The statement we wanted to prove is after the algorithm scanned a certain position, all positions on or to the right of it has the correct elements in it.</p>
+</li>
+<li>
+<p>In the very first step, it is true because we will find the bucket with the largest character, and that string has to be of L type, which we assumed to be correct.</p>
+</li>
+<li>
+<p>Now suppose the first <code>k-1</code> steps are good, considering the <code>k</code> step, and suppose we encounter a wrong suffix in the position.</p>
+</li>
+<li>
+<p>Let the wrong suffix be \( c \alpha \), and the correct one is \(c \beta \). These are both S suffixes because the algorithm only move S suffixes within its own bucket.</p>
+</li>
+<li>
+<p>Beside the obviously correct &lsquo;$&rsquo;, all S suffixes have length at least 3, so \( \alpha \) and \( \beta \) cannot be empty string.</p>
+</li>
+<li>
+<p>We have \( \alpha \) &lt; \( \beta \) and also \(c \alpha\) &lt; \(\alpha\), \(c \beta\) &lt; \(\beta\)</p>
+</li>
+<li>
+<p>Since the correct suffix is \(c \beta\), we must have seen \( \beta \) earlier, so we must have inserted \(c \beta\) already.</p>
+</li>
+<li>
+<p>But we see \( c \alpha \) before we see \(c \beta\), so it must be the case that we have also seen \( \alpha \) earlier then \( \beta \).</p>
+</li>
+<li>
+<p>So both \( \alpha \) and \( \beta \) were seen, but in the wrong order. That is a contradiction because we assumed that order we seen earlier was correct.</p>
+</li>
+</ol>
+<p>See, this is completely symmetric.</p>
+<h1 id="sorting-the-lms-suffixes">Sorting the LMS suffixes</h1>
+<p>The problem of producing the suffix array is now reduced to sorting the LMS suffixes. We have a good news, because a LMS suffix must have a L right next to a S, at most half of the suffixes can be LMS.</p>
+<p>Suppose we can recursively solve the problem of sorting the LMS suffixes, then we are done. Because \( T(n) = T(n/2) + O(n) \implies T(n) = O(n) \).</p>
+<p>The only problem is that sorting the LMS suffixes is not the same problem as creating a suffix array, so it is unclear how we would recursively solve a different problem. Unless we turn it into one. Looking at our banana again:</p>
+<pre><code>banana$
+LSLSLLS
+</code></pre><p>The LMS suffixes are</p>
+<pre><code>anana$
+ana$
+$
+</code></pre><p>Wouldn&rsquo;t it be cool if we could rename the substrings into an alphabet this way:</p>
+<pre><code>pq$
+q$
+$
+</code></pre><p>And therefore, what we are really solving is the suffix array problem for the string <code>pq$</code>.</p>
+<p>To do this trick, we need to know the substring <code>an</code> should map to <code>p</code> and the substring <code>ana</code> should map to <code>q</code>. But how exactly do we find this renaming scheme?</p>
+<h1 id="renaming-the-strings">Renaming the strings</h1>
+<p>The strings to be renamed has a very special property. It starts with a LMS character, and ends before the next. We will call these strings LMS substrings. Finding the set of all LMS substrings is not difficult, but what should we rename them to?</p>
+<p>The naive approach is to map each LMS substring to a different name, but it won&rsquo;t work since we basically forgot the original problem and solved the trivial problem of finding the suffix array of <code>123456$</code> with all distinct names. That won&rsquo;t solve our problem.</p>
+<p>This tell us the renaming must respect the original problem. In particular, it must be mapped to alphabets where it respect the comparison of the LMS substrings.</p>
+<p>If we could sort the LMS substrings and do the obvious renaming, then we can build the new string for the recursive call!</p>
+<h1 id="sorting-the-lms-substrings">Sorting the LMS substrings</h1>
+<p>Now we are back to square 1. If we were to sort the LMS substrings, we are still going to have \( O(n^2 \log n) \) time, we could have at most \( \frac{n}{2} \) LMS substrings!</p>
+<p>Finally we are getting to the crux of the SA-IS paper. The author used the induction sort again for this purpose!</p>
+<p>To start with, we put all the LMS suffixes into their corresponding S buckets.
+Sort the L suffixes
+Sort the S suffixes</p>
+<p>And the claim is that this will sort the LMS substrings. This is just amazing. How exactly does that work?</p>
+<h1 id="lms-prefix">LMS Prefix</h1>
+<p>Instead of thinking about sorting the suffixes, we can also think of the problem as sorting the LMS prefixes. Earlier, when we were thinking about sorting the suffix array. The suffix array content is an integer that give us the index of where the suffix start, and the suffix always ends at the end of the string. Instead of that, we can think of that string ends at the next earliest LMS character. We call these strings the LMS prefixes.</p>
+<p>Note that LMS prefixes are different from LMS substrings. LMS prefixes are required to end at the LMS character, but it can start anywhere on or after the previous LMS character. So we can still have L type LMS prefix or S type LMS prefix depending on the first character.</p>
+<p>On the other hand, LMS Substring must start from the LMS character, and must stop exactly before the next LMS character.</p>
+<p>The set of LMS suffixes are all the type S LMS prefixes of length 1.</p>
+<p>Now we wanted to prove, in the L pass, we will sort all the L type LMS prefixes. Bring back our good old proof:</p>
+<ol>
+<li>
+<p>The statement we wanted to prove is after the algorithm scanned a certain position, all <strong>L</strong> positions on or to the left of it has the correct elements in it.</p>
+</li>
+<li>
+<p>In the very first step, it is true because we will find &lsquo;$&rsquo;, and &lsquo;$&rsquo; is obviously in the right position.</p>
+</li>
+<li>
+<p>Now suppose the first <code>k-1</code> steps are good, considering the <code>k</code> step, and suppose we encounter a wrong suffix in the position.</p>
+</li>
+<li>
+<p>Let the wrong prefix be \( c \beta \), and the correct one is \(c \alpha\). These are both L prefixes because the algorithm only move L prefixes within its own bucket.</p>
+</li>
+<li>
+<p>The L type LMS prefix must have at least length 2, so \( \alpha \) and \( \beta \) cannot be empty string.</p>
+</li>
+<li>
+<p>We have \( \alpha \) &lt; \( \beta \) and also \(c \alpha\) &gt; \(\alpha\), \(c \beta\) &gt; \(\beta\)</p>
+</li>
+<li>
+<p>Since the correct prefix is \(c \alpha\), we must have seen \( \alpha \) earlier, so we must have inserted \(c \alpha\) already.</p>
+</li>
+<li>
+<p>But we see \( c \beta \) before we see \(c \alpha\), so it must be the case that we have also seen \( \beta \) earlier then \( \alpha \).</p>
+</li>
+<li>
+<p>So both \( \alpha \) and \( \beta \) were seen, but in the wrong order.</p>
+</li>
+</ol>
+<p>If both \( \alpha \) and \( \beta \) are L type prefixes, this contradicts with the inductive hypothesis.
+If exactly one of \( \alpha \) or \( \beta \) is S type prefix, then we argue just by moving the L type prefix cannot mess up the relative ordering between S type and L type.
+If both \( \alpha \) and \( \beta \) are S type prefixes, then being a S type prefix that is a suffix, it can only be length 1. (Otherwise it wouldn&rsquo;t be LMS prefix anymore).</p>
+<p>In the backward pass,</p>
+<ol>
+<li>
+<p>The statement we wanted to prove is after the algorithm scanned a certain position, all positions on or to the right of it has the correct elements in it.</p>
+</li>
+<li>
+<p>In the very first step, we will find a L prefix and that is correct already.</p>
+</li>
+<li>
+<p>Now suppose the first <code>k-1</code> steps are good, considering the <code>k</code> step, and suppose we encounter a wrong suffix in the position.</p>
+</li>
+<li>
+<p>Let the wrong prefix be \( c \alpha \), and the correct one is \(c \beta\). These are both S prefixes because the algorithm only move S prefixes within its own bucket.</p>
+</li>
+<li>
+<p>Step 5 is tricky here.</p>
+</li>
+<li>
+<p>We have \( \alpha \) &lt; \( \beta \) and also \(c \alpha\) &lt; \(\alpha\), \(c \beta\) &lt; \(\beta\)</p>
+</li>
+<li>
+<p>Since the correct prefix is \(c \beta\), we must have seen \( \beta \) earlier, so we must have inserted \(c \beta\) already.</p>
+</li>
+<li>
+<p>But we see \( c \alpha \) before we see \(c \beta\), so it must be the case that we have also seen \( \alpha \) earlier then \( \beta \).</p>
+</li>
+<li>
+<p>So both \( \alpha \) and \( \beta \) were seen, but in the wrong order. That is a contradiction because we assumed that order we seen earlier was correct.</p>
+</li>
+</ol>
+<p>Step 5 is getting in our way, in general, we cannot claim \( \alpha \) or \( \beta \) are not empty string, and that is not great for the proof, so I relaxed the goal of the proof. I would like to show that all length &gt; 1 LMS prefixes are sorted. Now step 5 is obvious, if it is length 1 so that \( \alpha \) or \( \beta \) are empty strings, we don&rsquo;t care that case.</p>
+<h1 id="lms-substrings-again">LMS Substrings again</h1>
+<p>Now we have the LMS prefixes sorted except the length 1 ones. It turns out to be okay because the LMS substrings are those LMS prefix with one less character (in particular, the LMS substring do not contain the last LMS character). So we can regard this as a sorted list of LMS substrings. A linear scan of this list can be used to determine the name of the substrings.</p>
+<p>This concludes the theory of the SA-IS algorithm.</p>
+<ul class="pa0">
+  
+</ul>
+<div class="mt6 instapaper_ignoref">
+      
+      
+      </div>
+    </div>
+
+    <aside class="w-30-l mt6-l">
+
+
+
+
+</aside>
+
+  </article>
+
+    </main>
+    <footer class="bg-black bottom-0 w-100 pa3" role="contentinfo">
+  <div class="flex justify-between">
+  <a class="f4 fw4 hover-white no-underline white-70 dn dib-ns pv2 ph3" href="https://cshung.github.io/" >
+    &copy;  My Blog 2022 
+  </a>
+    <div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+  </div>
+</footer>
+
+    <div style="display:none">
+    <script type="text/javascript" src="https://www.free-counters.org/count/86pd"></script><br><a href='http://www.counter-zaehler.de'>besucherzähler ip</a> <script type='text/javascript'     src='https://whomania.com/ctr?id=695d5b016077d10ada0ea41fc87e54f2421f8966'></script>
+    </div>
+  </body>
+
+</html>

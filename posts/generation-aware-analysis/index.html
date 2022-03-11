@@ -40,7 +40,7 @@
 <meta itemprop="description" content="The problem? The .NET GC is generational, it makes the assumption that allocations are broadly divided into two classes, either they are short-lived (e.g. temporary objects) or they are long-lived (e.g. constants, caches for repeated uses). This assumption is often true, but once in a while, that&rsquo;s not true, often due to programmer mistakes. If a pile of objects meant for short-term usage is leaked into gen2, that can cost a short-term spike in ephemeral GC latency, and a long-term memory cost for storing them.">
 <meta itemprop="datePublished" content="2021-01-05T14:47:10-08:00" />
 <meta itemprop="dateModified" content="2021-01-05T14:47:10-08:00" />
-<meta itemprop="wordCount" content="1331">
+<meta itemprop="wordCount" content="1335">
 
 
 
@@ -210,7 +210,7 @@
 set COMPlus_GCGenAnalysisBytes=16E360
 set COMPlus_GCGenAnalysisIndex=3E8
 </code></pre><p>We would like to command the runtime to perform a generational aware analysis and capture the moment when a gen 1 GC promoted more than 1.5 MB (<code>16E360</code> is <code>1,500,000</code> in decimal). To avoid capturing the promoted bytes corresponding to the startup phase, we ignore the first 1,000 GCs (<code>3E8</code> is 1,000 in decimal).</p>
-<p>After the process is launched, it will create two files.</p>
+<p>After the process is launched, it will create two files in the current directory:</p>
 <ul>
 <li><code>gcgenaware.nettrace</code></li>
 <li><code>gcgenaware.nettrace.completed</code></li>
@@ -287,7 +287,7 @@ metrics_frame<span style="color:#f92672">.</span>plot()
     <footer class="bg-black bottom-0 w-100 pa3" role="contentinfo">
   <div class="flex justify-between">
   <a class="f4 fw4 hover-white no-underline white-70 dn dib-ns pv2 ph3" href="https://cshung.github.io/" >
-    &copy;  My Blog 2021 
+    &copy;  My Blog 2022 
   </a>
     <div>
 

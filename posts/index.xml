@@ -6,10 +6,21 @@
     <description>Recent content in Posts on My Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 23 Oct 2021 16:32:21 -0700</lastBuildDate>
+    <lastBuildDate>Sun, 26 Dec 2021 10:52:35 -0800</lastBuildDate>
     
 	<atom:link href="https://cshung.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>SA-IS Algorithm</title>
+      <link>https://cshung.github.io/posts/sais/</link>
+      <pubDate>Sun, 26 Dec 2021 10:52:35 -0800</pubDate>
+      
+      <guid>https://cshung.github.io/posts/sais/</guid>
+      <description>Today, I would like to write about my understanding of the SA-IS algorithm for constructing a suffix array.
+What is a suffix array? Consider the string &amp;ldquo;banana&amp;rdquo;, this string has 6 suffixes.
+   suffix index     banana 0   anana 1   nana 2   ana 3   na 4   a 5    And if we sort them, we have these:</description>
+    </item>
     
     <item>
       <title>Spurious Interrupts</title>
