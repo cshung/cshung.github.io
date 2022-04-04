@@ -8,11 +8,11 @@
     <meta name="viewport" content="width=device-width,minimum-scale=1">
     <meta name="description" content="To get started using ILCompiler.Reflection.ReadyToRun, let&rsquo;s construct a simple HelloWorld project. If you don&rsquo;t know what it is, please take a look at the previous post.
 Getting started We will create a .NET Core console application. Create a folder named HelloReflection and invoke dotnet new console.
-C:\dev&gt;mkdir HelloReflectionC:\dev&gt;cd HelloReflectionC:\dev\HelloReflection&gt;dotnet new consoleThe template &quot;Console Application&quot; was created successfully.Processing post-creation actions...Running &#39;dotnet restore&#39; on C:\dev\HelloReflection\HelloReflection.csproj...Determining projects to restore.">
-    <meta name="generator" content="Hugo 0.73.0-DEV" />
+C:\dev&gt;mkdir HelloReflection C:\dev&gt;cd HelloReflection C:\dev\HelloReflection&gt;dotnet new console The template &#34;Console Application&#34; was created successfully. Processing post-creation actions... Running &#39;dotnet restore&#39; on C:\dev\HelloReflection\HelloReflection.csproj... Determining projects to restore.">
+    <meta name="generator" content="Hugo 0.96.0" />
     
     
-      <META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
+      <META NAME="ROBOTS" CONTENT="INDEX, FOLLOW">
     
 
     
@@ -35,31 +35,30 @@ C:\dev&gt;mkdir HelloReflectionC:\dev&gt;cd HelloReflectionC:\dev\HelloReflect
     <meta property="og:title" content="Hello Reflection" />
 <meta property="og:description" content="To get started using ILCompiler.Reflection.ReadyToRun, let&rsquo;s construct a simple HelloWorld project. If you don&rsquo;t know what it is, please take a look at the previous post.
 Getting started We will create a .NET Core console application. Create a folder named HelloReflection and invoke dotnet new console.
-C:\dev&gt;mkdir HelloReflectionC:\dev&gt;cd HelloReflectionC:\dev\HelloReflection&gt;dotnet new consoleThe template &quot;Console Application&quot; was created successfully.Processing post-creation actions...Running &#39;dotnet restore&#39; on C:\dev\HelloReflection\HelloReflection.csproj...Determining projects to restore." />
+C:\dev&gt;mkdir HelloReflection C:\dev&gt;cd HelloReflection C:\dev\HelloReflection&gt;dotnet new console The template &#34;Console Application&#34; was created successfully. Processing post-creation actions... Running &#39;dotnet restore&#39; on C:\dev\HelloReflection\HelloReflection.csproj... Determining projects to restore." />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://cshung.github.io/posts/hello-reflection/" />
+<meta property="og:url" content="https://cshung.github.io/posts/hello-reflection/" /><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2020-12-05T14:53:55-08:00" />
 <meta property="article:modified_time" content="2020-12-05T14:53:55-08:00" />
+
 <meta itemprop="name" content="Hello Reflection">
 <meta itemprop="description" content="To get started using ILCompiler.Reflection.ReadyToRun, let&rsquo;s construct a simple HelloWorld project. If you don&rsquo;t know what it is, please take a look at the previous post.
 Getting started We will create a .NET Core console application. Create a folder named HelloReflection and invoke dotnet new console.
-C:\dev&gt;mkdir HelloReflectionC:\dev&gt;cd HelloReflectionC:\dev\HelloReflection&gt;dotnet new consoleThe template &quot;Console Application&quot; was created successfully.Processing post-creation actions...Running &#39;dotnet restore&#39; on C:\dev\HelloReflection\HelloReflection.csproj...Determining projects to restore.">
-<meta itemprop="datePublished" content="2020-12-05T14:53:55-08:00" />
+C:\dev&gt;mkdir HelloReflection C:\dev&gt;cd HelloReflection C:\dev\HelloReflection&gt;dotnet new console The template &#34;Console Application&#34; was created successfully. Processing post-creation actions... Running &#39;dotnet restore&#39; on C:\dev\HelloReflection\HelloReflection.csproj... Determining projects to restore."><meta itemprop="datePublished" content="2020-12-05T14:53:55-08:00" />
 <meta itemprop="dateModified" content="2020-12-05T14:53:55-08:00" />
 <meta itemprop="wordCount" content="513">
-
-
-
 <meta itemprop="keywords" content="" /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Hello Reflection"/>
 <meta name="twitter:description" content="To get started using ILCompiler.Reflection.ReadyToRun, let&rsquo;s construct a simple HelloWorld project. If you don&rsquo;t know what it is, please take a look at the previous post.
 Getting started We will create a .NET Core console application. Create a folder named HelloReflection and invoke dotnet new console.
-C:\dev&gt;mkdir HelloReflectionC:\dev&gt;cd HelloReflectionC:\dev\HelloReflection&gt;dotnet new consoleThe template &quot;Console Application&quot; was created successfully.Processing post-creation actions...Running &#39;dotnet restore&#39; on C:\dev\HelloReflection\HelloReflection.csproj...Determining projects to restore."/>
+C:\dev&gt;mkdir HelloReflection C:\dev&gt;cd HelloReflection C:\dev\HelloReflection&gt;dotnet new console The template &#34;Console Application&#34; was created successfully. Processing post-creation actions... Running &#39;dotnet restore&#39; on C:\dev\HelloReflection\HelloReflection.csproj... Determining projects to restore."/>
 
+      
+    
 	
   </head>
 
-  <body class="ma0 avenir bg-near-white">
+  <body class="ma0 avenir bg-near-white production">
     <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
     <script>mermaid.initialize({startOnLoad:true});</script>
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
@@ -156,68 +155,68 @@ C:\dev&gt;mkdir HelloReflectionC:\dev&gt;cd HelloReflectionC:\dev\HelloReflect
     <div class="nested-copy-line-height lh-copy serif f4 nested-links nested-img mid-gray pr4-l w-two-thirds-l"><p>To get started using <code>ILCompiler.Reflection.ReadyToRun</code>, let&rsquo;s construct a simple HelloWorld project. If you don&rsquo;t know what it is, please take a look at the <a href="/posts/introduction-to-ilcompiler-reflection-readytorun/">previous post</a>.</p>
 <h1 id="getting-started">Getting started</h1>
 <p>We will create a .NET Core console application. Create a folder named <code>HelloReflection</code> and invoke <code>dotnet new console</code>.</p>
-<pre><code>C:\dev&gt;mkdir HelloReflection
+<pre tabindex="0"><code>C:\dev&gt;mkdir HelloReflection
 
 C:\dev&gt;cd HelloReflection
 
 C:\dev\HelloReflection&gt;dotnet new console
-The template &quot;Console Application&quot; was created successfully.
+The template &#34;Console Application&#34; was created successfully.
 
 Processing post-creation actions...
-Running 'dotnet restore' on C:\dev\HelloReflection\HelloReflection.csproj...
+Running &#39;dotnet restore&#39; on C:\dev\HelloReflection\HelloReflection.csproj...
   Determining projects to restore...
   Restored C:\dev\HelloReflection\HelloReflection.csproj (in 80 ms).
 Restore succeeded.
 </code></pre><h1 id="using-my-personal-feed">Using my personal feed</h1>
 <p>As of now, <code>ILCompiler.Reflection.ReadyToRun</code> is not part of .NET Core, therefore, we need to specify where we can find a copy of <code>ILCompiler.Reflection.ReadyToRun.dll</code> to use. To facilitate my collaboration with ILSpy, I created a personal feed that serves the binary. To use my feed, we can add this <code>Nuget.config</code> at the root directory of the project.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#75715e">&lt;?xml version=&#34;1.0&#34; encoding=&#34;utf-8&#34;?&gt;</span>
-<span style="color:#f92672">&lt;configuration&gt;</span>
-  <span style="color:#f92672">&lt;packageSources&gt;</span>
-    <span style="color:#f92672">&lt;add</span> <span style="color:#a6e22e">key=</span><span style="color:#e6db74">&#34;Nuget Official&#34;</span> <span style="color:#a6e22e">value=</span><span style="color:#e6db74">&#34;https://api.nuget.org/v3/index.json&#34;</span> <span style="color:#f92672">/&gt;</span>
-    <span style="color:#f92672">&lt;add</span> <span style="color:#a6e22e">key=</span><span style="color:#e6db74">&#34;cshung_public_development&#34;</span> <span style="color:#a6e22e">value=</span><span style="color:#e6db74">&#34;https://pkgs.dev.azure.com/cshung/public/_packaging/development/nuget/v3/index.json&#34;</span> <span style="color:#f92672">/&gt;</span>
-  <span style="color:#f92672">&lt;/packageSources&gt;</span>
-<span style="color:#f92672">&lt;/configuration&gt;</span>
-</code></pre></div><p>This will allow us to add a package reference as follow:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#f92672">&lt;Project</span> <span style="color:#a6e22e">Sdk=</span><span style="color:#e6db74">&#34;Microsoft.NET.Sdk&#34;</span><span style="color:#f92672">&gt;</span>
-
-  <span style="color:#f92672">&lt;PropertyGroup&gt;</span>
-    <span style="color:#f92672">&lt;OutputType&gt;</span>Exe<span style="color:#f92672">&lt;/OutputType&gt;</span>
-    <span style="color:#f92672">&lt;TargetFramework&gt;</span>net5.0<span style="color:#f92672">&lt;/TargetFramework&gt;</span>
-  <span style="color:#f92672">&lt;/PropertyGroup&gt;</span>
-
-  <span style="color:#f92672">&lt;ItemGroup&gt;</span>
-    <span style="color:#f92672">&lt;PackageReference</span> <span style="color:#a6e22e">Include=</span><span style="color:#e6db74">&#34;ILCompiler.Reflection.ReadyToRun&#34;</span> <span style="color:#a6e22e">Version=</span><span style="color:#e6db74">&#34;1.0.13-alpha&#34;</span> <span style="color:#f92672">/&gt;</span>
-  <span style="color:#f92672">&lt;/ItemGroup&gt;</span>
-
-<span style="color:#f92672">&lt;/Project&gt;</span>
-</code></pre></div><p>Note the versioning scheme, it is still in alpha, meaning API is going to change from build to build. This is necessary for a still evoling library.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-xml" data-lang="xml"><span style="display:flex;"><span><span style="color:#75715e">&lt;?xml version=&#34;1.0&#34; encoding=&#34;utf-8&#34;?&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&lt;configuration&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;packageSources&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;add</span> <span style="color:#a6e22e">key=</span><span style="color:#e6db74">&#34;Nuget Official&#34;</span> <span style="color:#a6e22e">value=</span><span style="color:#e6db74">&#34;https://api.nuget.org/v3/index.json&#34;</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;add</span> <span style="color:#a6e22e">key=</span><span style="color:#e6db74">&#34;cshung_public_development&#34;</span> <span style="color:#a6e22e">value=</span><span style="color:#e6db74">&#34;https://pkgs.dev.azure.com/cshung/public/_packaging/development/nuget/v3/index.json&#34;</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;/packageSources&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&lt;/configuration&gt;</span>
+</span></span></code></pre></div><p>This will allow us to add a package reference as follow:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-xml" data-lang="xml"><span style="display:flex;"><span><span style="color:#f92672">&lt;Project</span> <span style="color:#a6e22e">Sdk=</span><span style="color:#e6db74">&#34;Microsoft.NET.Sdk&#34;</span><span style="color:#f92672">&gt;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;PropertyGroup&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;OutputType&gt;</span>Exe<span style="color:#f92672">&lt;/OutputType&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;TargetFramework&gt;</span>net5.0<span style="color:#f92672">&lt;/TargetFramework&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;/PropertyGroup&gt;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;ItemGroup&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;PackageReference</span> <span style="color:#a6e22e">Include=</span><span style="color:#e6db74">&#34;ILCompiler.Reflection.ReadyToRun&#34;</span> <span style="color:#a6e22e">Version=</span><span style="color:#e6db74">&#34;1.0.13-alpha&#34;</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;/ItemGroup&gt;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&lt;/Project&gt;</span>
+</span></span></code></pre></div><p>Note the versioning scheme, it is still in alpha, meaning API is going to change from build to build. This is necessary for a still evoling library.</p>
 <h1 id="instantiating-a-readytorunreader">Instantiating a ReadyToRunReader</h1>
 <p><code>ReadyToRunReader</code> is the entry point to the functionality. We must first construct an instance of a <code>ReadyToRunReader</code>. Fortunately, there is a constructor that takes only two parameters.</p>
 <p>The second parameter is easy, it is just the full path to the binary that we wanted to read. The first one is an <code>IAssemblyResolver</code>, it looks like we need to provide an instance of it to resolve an assembly. What exactly does that mean?</p>
 <p>It means that when the reader needs to find referenced assembly, it needs to be able to read it. To make things simple in HelloWorld, we will just provide a skeleton implementation that simply always fails.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c#" data-lang="c#">    <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">MyAssemblyResolver</span> : IAssemblyResolver
-    {
-        <span style="color:#66d9ef">public</span> IAssemblyMetadata FindAssembly(MetadataReader metadataReader, AssemblyReferenceHandle assemblyReferenceHandle, <span style="color:#66d9ef">string</span> parentFile)
-        {
-            <span style="color:#66d9ef">throw</span> <span style="color:#66d9ef">new</span> NotImplementedException();
-        }
-
-        <span style="color:#66d9ef">public</span> IAssemblyMetadata FindAssembly(<span style="color:#66d9ef">string</span> simpleName, <span style="color:#66d9ef">string</span> parentFile)
-        {
-            <span style="color:#66d9ef">throw</span> <span style="color:#66d9ef">new</span> NotImplementedException();
-        }
-    }
-</code></pre></div><p>With that, now we can instantiate a <code>ReadyToRunReader</code> as follow:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c#" data-lang="c#">ReadyToRunReader reader = <span style="color:#66d9ef">new</span> ReadyToRunReader(<span style="color:#66d9ef">new</span> MyAssemblyResolver(), <span style="color:#e6db74">@&#34;C:\temp\System.Private.CoreLib.dll&#34;</span>);
-</code></pre></div><p>Note that we have to use <code>System.Private.CoreLib.dll</code>. This is the only library that is not referencing any other assemblies. If we were to use other ready to run binary instead, we would hit the <code>NotImplementedException</code> we just thrown.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c#" data-lang="c#"><span style="display:flex;"><span>    <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">MyAssemblyResolver</span> : IAssemblyResolver
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">public</span> IAssemblyMetadata FindAssembly(MetadataReader metadataReader, AssemblyReferenceHandle assemblyReferenceHandle, <span style="color:#66d9ef">string</span> parentFile)
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">throw</span> <span style="color:#66d9ef">new</span> NotImplementedException();
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">public</span> IAssemblyMetadata FindAssembly(<span style="color:#66d9ef">string</span> simpleName, <span style="color:#66d9ef">string</span> parentFile)
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">throw</span> <span style="color:#66d9ef">new</span> NotImplementedException();
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span></code></pre></div><p>With that, now we can instantiate a <code>ReadyToRunReader</code> as follow:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c#" data-lang="c#"><span style="display:flex;"><span>ReadyToRunReader reader = <span style="color:#66d9ef">new</span> ReadyToRunReader(<span style="color:#66d9ef">new</span> MyAssemblyResolver(), <span style="color:#e6db74">@&#34;C:\temp\System.Private.CoreLib.dll&#34;</span>);
+</span></span></code></pre></div><p>Note that we have to use <code>System.Private.CoreLib.dll</code>. This is the only library that is not referencing any other assemblies. If we were to use other ready to run binary instead, we would hit the <code>NotImplementedException</code> we just thrown.</p>
 <h1 id="using-the-readytorunreader">Using the ReadyToRunReader</h1>
 <p>There are a lot of properties on the <code>ReadyToRunReader</code>. The most important one is probably <code>Methods</code>. The property gives us all the methods that are ready to run compiled. As a first look, we can take a look at the method&rsquo;s signature string. Here is the code.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c#" data-lang="c#"><span style="color:#66d9ef">foreach</span> (<span style="color:#66d9ef">var</span> method <span style="color:#66d9ef">in</span> reader.Methods)
-{
-    Console.WriteLine(method.SignatureString);
-}
-</code></pre></div><p>That will show us a long list of method signatures.</p>
-<pre><code>void Microsoft.CodeAnalysis.EmbeddedAttribute..ctor()
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c#" data-lang="c#"><span style="display:flex;"><span><span style="color:#66d9ef">foreach</span> (<span style="color:#66d9ef">var</span> method <span style="color:#66d9ef">in</span> reader.Methods)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    Console.WriteLine(method.SignatureString);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>That will show us a long list of method signatures.</p>
+<pre tabindex="0"><code>void Microsoft.CodeAnalysis.EmbeddedAttribute..ctor()
 void System.Runtime.CompilerServices.IsUnmanagedAttribute..ctor()
 void System.Runtime.CompilerServices.NullableAttribute..ctor(byte)
 void System.Runtime.CompilerServices.NullableAttribute..ctor(byte[])

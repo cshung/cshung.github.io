@@ -8,10 +8,10 @@
     <meta name="viewport" content="width=device-width,minimum-scale=1">
     <meta name="description" content="In this series of posts, I am going to explain how the GC understand objects. In this part, we will focus on size.
 Why does it matter? The GC expects the heap to be tightly packed with objects. It scans the heap by starting at the beginning of the heap and walk the object one-by-one by this simple algorithm. This is real code excerpt from gc.cpp line 22972 to 23002, out of dotnet/runtime repo, tag v5.">
-    <meta name="generator" content="Hugo 0.73.0-DEV" />
+    <meta name="generator" content="Hugo 0.96.0" />
     
     
-      <META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
+      <META NAME="ROBOTS" CONTENT="INDEX, FOLLOW">
     
 
     
@@ -35,27 +35,26 @@ Why does it matter? The GC expects the heap to be tightly packed with objects. I
 <meta property="og:description" content="In this series of posts, I am going to explain how the GC understand objects. In this part, we will focus on size.
 Why does it matter? The GC expects the heap to be tightly packed with objects. It scans the heap by starting at the beginning of the heap and walk the object one-by-one by this simple algorithm. This is real code excerpt from gc.cpp line 22972 to 23002, out of dotnet/runtime repo, tag v5." />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://cshung.github.io/posts/gc-objects-1/" />
+<meta property="og:url" content="https://cshung.github.io/posts/gc-objects-1/" /><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2021-01-04T12:11:37-08:00" />
 <meta property="article:modified_time" content="2021-01-04T12:11:37-08:00" />
+
 <meta itemprop="name" content="How CoreCLR GC understand objects (part 1)">
 <meta itemprop="description" content="In this series of posts, I am going to explain how the GC understand objects. In this part, we will focus on size.
-Why does it matter? The GC expects the heap to be tightly packed with objects. It scans the heap by starting at the beginning of the heap and walk the object one-by-one by this simple algorithm. This is real code excerpt from gc.cpp line 22972 to 23002, out of dotnet/runtime repo, tag v5.">
-<meta itemprop="datePublished" content="2021-01-04T12:11:37-08:00" />
+Why does it matter? The GC expects the heap to be tightly packed with objects. It scans the heap by starting at the beginning of the heap and walk the object one-by-one by this simple algorithm. This is real code excerpt from gc.cpp line 22972 to 23002, out of dotnet/runtime repo, tag v5."><meta itemprop="datePublished" content="2021-01-04T12:11:37-08:00" />
 <meta itemprop="dateModified" content="2021-01-04T12:11:37-08:00" />
 <meta itemprop="wordCount" content="626">
-
-
-
 <meta itemprop="keywords" content="" /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="How CoreCLR GC understand objects (part 1)"/>
 <meta name="twitter:description" content="In this series of posts, I am going to explain how the GC understand objects. In this part, we will focus on size.
 Why does it matter? The GC expects the heap to be tightly packed with objects. It scans the heap by starting at the beginning of the heap and walk the object one-by-one by this simple algorithm. This is real code excerpt from gc.cpp line 22972 to 23002, out of dotnet/runtime repo, tag v5."/>
 
+      
+    
 	
   </head>
 
-  <body class="ma0 avenir bg-near-white">
+  <body class="ma0 avenir bg-near-white production">
     <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
     <script>mermaid.initialize({startOnLoad:true});</script>
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
@@ -152,32 +151,32 @@ Why does it matter? The GC expects the heap to be tightly packed with objects. I
     <div class="nested-copy-line-height lh-copy serif f4 nested-links nested-img mid-gray pr4-l w-two-thirds-l"><p>In this series of posts, I am going to explain how the GC understand objects. In this part, we will focus on size.</p>
 <h1 id="why-does-it-matter">Why does it matter?</h1>
 <p>The GC expects the heap to be tightly packed with objects. It scans the heap by starting at the beginning of the heap and walk the object one-by-one by this simple algorithm. This is real code excerpt from <a href="https://github.com/dotnet/runtime/blob/v5.0.1/src/coreclr/src/gc/%60gc.cpp%60"><code>gc.cpp</code></a> line 22972 to 23002, out of <a href="https://github.com/dotnet/runtime/tree/v5.0.1">dotnet/runtime repo, tag v5.0.1</a>.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#66d9ef">uint8_t</span><span style="color:#f92672">*</span> xl <span style="color:#f92672">=</span> x;
-<span style="color:#66d9ef">while</span> (<span style="color:#75715e">/* some conditions ... */</span>)
-{
-    <span style="color:#75715e">/* code that does not change xl */</span>
-    xl <span style="color:#f92672">=</span> xl <span style="color:#f92672">+</span> Align (size (xl));
-    <span style="color:#75715e">/* more code that does not change xl */</span>
-}
-</code></pre></div><p>At the first line, <code>x</code> points to an object. Using the <code>size</code> macro, it computes the size of the object, adjusted using the <code>Align</code> macro, we found the next object, and go on with the scan. Therefore we can visualize the heap as follow:</p>
-<pre><code>Small Address -&gt; Large Address
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#66d9ef">uint8_t</span><span style="color:#f92672">*</span> xl <span style="color:#f92672">=</span> x;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">while</span> (<span style="color:#75715e">/* some conditions ... */</span>)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">/* code that does not change xl */</span>
+</span></span><span style="display:flex;"><span>    xl <span style="color:#f92672">=</span> xl <span style="color:#f92672">+</span> Align (size (xl));
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">/* more code that does not change xl */</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>At the first line, <code>x</code> points to an object. Using the <code>size</code> macro, it computes the size of the object, adjusted using the <code>Align</code> macro, we found the next object, and go on with the scan. Therefore we can visualize the heap as follow:</p>
+<pre tabindex="0"><code>Small Address -&gt; Large Address
 |Object Space|Alignment Pad|Object Space|Alignment Pad|....
 </code></pre><p>Therefore it is important that an object describes its size accurately.</p>
 <h1 id="how-size-is-computed">How size is computed?</h1>
 <p>The <code>size</code> macro is defined in <code>gc.cpp</code> line 9548.</p>
-<pre><code>#define size(i) my_get_size (header(i))
+<pre tabindex="0"><code>#define size(i) my_get_size (header(i))
 </code></pre><p>The <code>header</code> macro is defined in <code>gc.cpp</code> line 3794.</p>
-<pre><code>#define header(i) ((CObjectHeader*)(i))
+<pre tabindex="0"><code>#define header(i) ((CObjectHeader*)(i))
 </code></pre><p>And the <code>my_get_size</code> function is defined in <code>gc.cpp</code> line 9538 to 9545</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#66d9ef">inline</span> size_t <span style="color:#a6e22e">my_get_size</span> (Object<span style="color:#f92672">*</span> ob)
-{
-    MethodTable<span style="color:#f92672">*</span> mT <span style="color:#f92672">=</span> header(ob)<span style="color:#f92672">-&gt;</span>GetMethodTable();
-
-    <span style="color:#66d9ef">return</span> (mT<span style="color:#f92672">-&gt;</span>GetBaseSize() <span style="color:#f92672">+</span>
-            (mT<span style="color:#f92672">-&gt;</span>HasComponentSize() <span style="color:#f92672">?</span>
-             ((size_t)((CObjectHeader<span style="color:#f92672">*</span>)ob)<span style="color:#f92672">-&gt;</span>GetNumComponents() <span style="color:#f92672">*</span> mT<span style="color:#f92672">-&gt;</span>RawGetComponentSize()) <span style="color:#f92672">:</span> <span style="color:#ae81ff">0</span>));
-}
-</code></pre></div><p>The algorithm for computing the size is fairly straightfoward. We first note that the class <code>CObjectHeader</code> inheriting <code>Object</code> is defined in <code>gc.cpp</code> and it is just a pile of methods without any fields. This means after casting the pointer to a <code>CObjectHeader</code> using the header macro, it is passed unchanged to the <code>my_get_size</code> function.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#66d9ef">inline</span> size_t <span style="color:#a6e22e">my_get_size</span> (Object<span style="color:#f92672">*</span> ob)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    MethodTable<span style="color:#f92672">*</span> mT <span style="color:#f92672">=</span> header(ob)<span style="color:#f92672">-&gt;</span>GetMethodTable();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> (mT<span style="color:#f92672">-&gt;</span>GetBaseSize() <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>            (mT<span style="color:#f92672">-&gt;</span>HasComponentSize() <span style="color:#f92672">?</span>
+</span></span><span style="display:flex;"><span>             ((size_t)((CObjectHeader<span style="color:#f92672">*</span>)ob)<span style="color:#f92672">-&gt;</span>GetNumComponents() <span style="color:#f92672">*</span> mT<span style="color:#f92672">-&gt;</span>RawGetComponentSize()) <span style="color:#f92672">:</span> <span style="color:#ae81ff">0</span>));
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>The algorithm for computing the size is fairly straightfoward. We first note that the class <code>CObjectHeader</code> inheriting <code>Object</code> is defined in <code>gc.cpp</code> and it is just a pile of methods without any fields. This means after casting the pointer to a <code>CObjectHeader</code> using the header macro, it is passed unchanged to the <code>my_get_size</code> function.</p>
 <p>The first thing <code>my_get_size</code> does is to get the method table. The method table is always the first pointer of the object. The method table gives us three things:</p>
 <ul>
 <li>The base size of the object</li>
@@ -187,15 +186,15 @@ Why does it matter? The GC expects the heap to be tightly packed with objects. I
 <p>The component size are designed for arrays. For a usual object, you don&rsquo;t have a component size. The base size is the size of the object. For an array, it has a base size, which is space used to describe the array itself (e.g. the length), and then we have a component size, which is the size for a single element. Note that the method table is used to get the component size, but the object itself is used to get the number of components. This allows arrays of different lengths to share the same method table.</p>
 <p>They are a lot of variations in the type of objects that the .NET runtimes allows. For example, we can have multi-dimensional arrays. To the GC, there are only two types, either it is a fixed size object, or it is a variable sized object where its size fits this simple linear equation.</p>
 <p>Last but not least, let&rsquo;s look at the <code>Align</code> function defined in <code>gcpriv.h</code> line 863 to line 869.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#75715e">#define ALIGNCONST (DATA_ALIGNMENT-1)
-</span><span style="color:#75715e"></span>
-<span style="color:#66d9ef">inline</span>
-size_t <span style="color:#a6e22e">Align</span> (size_t nbytes, <span style="color:#66d9ef">int</span> alignment<span style="color:#f92672">=</span>ALIGNCONST)
-{
-    <span style="color:#66d9ef">return</span> (nbytes <span style="color:#f92672">+</span> alignment) <span style="color:#f92672">&amp;</span> <span style="color:#f92672">~</span>alignment;
-}
-</code></pre></div><p>where <code>DATA_ALIGNMENT</code> is defined in <code>gcenv.base.h</code> line 476.</p>
-<pre><code>#define DATA_ALIGNMENT sizeof(uintptr_t)
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#75715e">#define ALIGNCONST (DATA_ALIGNMENT-1)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">inline</span>
+</span></span><span style="display:flex;"><span>size_t <span style="color:#a6e22e">Align</span> (size_t nbytes, <span style="color:#66d9ef">int</span> alignment<span style="color:#f92672">=</span>ALIGNCONST)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> (nbytes <span style="color:#f92672">+</span> alignment) <span style="color:#f92672">&amp;</span> <span style="color:#f92672">~</span>alignment;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>where <code>DATA_ALIGNMENT</code> is defined in <code>gcenv.base.h</code> line 476.</p>
+<pre tabindex="0"><code>#define DATA_ALIGNMENT sizeof(uintptr_t)
 </code></pre><p>In 64 bits, the size of the <code>uintptr_t</code> would be 8. Therefore, <code>ALIGNCONST</code> is 7. By taking a bitwise negation, it effectively mask out the last 3 bits, which is the same as rounding down to last multiple of 8. However, by adding 7 first, this means it is round up to the next multiple of 8.</p>
 <p>This really just mean objects are always point size aligned.</p>
 <p>This concludes why and how the GC get the size of an object.</p>

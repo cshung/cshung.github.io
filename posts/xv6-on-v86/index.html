@@ -8,10 +8,10 @@
     <meta name="viewport" content="width=device-width,minimum-scale=1">
     <meta name="description" content="Xv6 on v86 In this post, I will talk about my journey to get Xv6 running on v86. Xv6 is a unix-like teaching OS developed by MIT. v86 is an x86 virtual machine running on the browser developed by Fabian.
 The key characteristic of these two systems is that they are simple compared to their industrial-strength counterparts (compared to the Linux kernel or the QEMU emulator). Being simple, it is easy to understand.">
-    <meta name="generator" content="Hugo 0.73.0-DEV" />
+    <meta name="generator" content="Hugo 0.96.0" />
     
     
-      <META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
+      <META NAME="ROBOTS" CONTENT="INDEX, FOLLOW">
     
 
     
@@ -35,27 +35,26 @@ The key characteristic of these two systems is that they are simple compared to 
 <meta property="og:description" content="Xv6 on v86 In this post, I will talk about my journey to get Xv6 running on v86. Xv6 is a unix-like teaching OS developed by MIT. v86 is an x86 virtual machine running on the browser developed by Fabian.
 The key characteristic of these two systems is that they are simple compared to their industrial-strength counterparts (compared to the Linux kernel or the QEMU emulator). Being simple, it is easy to understand." />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://cshung.github.io/posts/xv6-on-v86/" />
+<meta property="og:url" content="https://cshung.github.io/posts/xv6-on-v86/" /><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2020-06-28T09:27:30-07:00" />
 <meta property="article:modified_time" content="2020-06-28T09:27:30-07:00" />
+
 <meta itemprop="name" content="Xv6 on v86">
 <meta itemprop="description" content="Xv6 on v86 In this post, I will talk about my journey to get Xv6 running on v86. Xv6 is a unix-like teaching OS developed by MIT. v86 is an x86 virtual machine running on the browser developed by Fabian.
-The key characteristic of these two systems is that they are simple compared to their industrial-strength counterparts (compared to the Linux kernel or the QEMU emulator). Being simple, it is easy to understand.">
-<meta itemprop="datePublished" content="2020-06-28T09:27:30-07:00" />
+The key characteristic of these two systems is that they are simple compared to their industrial-strength counterparts (compared to the Linux kernel or the QEMU emulator). Being simple, it is easy to understand."><meta itemprop="datePublished" content="2020-06-28T09:27:30-07:00" />
 <meta itemprop="dateModified" content="2020-06-28T09:27:30-07:00" />
 <meta itemprop="wordCount" content="2602">
-
-
-
 <meta itemprop="keywords" content="" /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Xv6 on v86"/>
 <meta name="twitter:description" content="Xv6 on v86 In this post, I will talk about my journey to get Xv6 running on v86. Xv6 is a unix-like teaching OS developed by MIT. v86 is an x86 virtual machine running on the browser developed by Fabian.
 The key characteristic of these two systems is that they are simple compared to their industrial-strength counterparts (compared to the Linux kernel or the QEMU emulator). Being simple, it is easy to understand."/>
 
+      
+    
 	
   </head>
 
-  <body class="ma0 avenir bg-near-white">
+  <body class="ma0 avenir bg-near-white production">
     <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
     <script>mermaid.initialize({startOnLoad:true});</script>
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
@@ -156,7 +155,7 @@ The key characteristic of these two systems is that they are simple compared to 
 <p>The rest of this post will talk about the various things I did to get it to work. It was an eye-opener for me.</p>
 <h1 id="dead-on-arrival---triple-fault-on-qemu">Dead on arrival - triple fault on QEMU</h1>
 <p>My first step is simply running <code>xv6</code> using QEMU. Unfortunate, we have a dead on arrival, this is what is shown:</p>
-<pre><code>qemu-system-i386 -serial mon:stdio -drive file=fs.img,index=1,media=disk,format=raw -drive file=xv6.img,index=0,media=disk,format=raw -smp 2 -m 512 
+<pre tabindex="0"><code>qemu-system-i386 -serial mon:stdio -drive file=fs.img,index=1,media=disk,format=raw -drive file=xv6.img,index=0,media=disk,format=raw -smp 2 -m 512 
 EAX=80010011 EBX=00010094 ECX=00000000 EDX=000001f0
 ESI=00010094 EDI=00000000 EBP=00007bf8 ESP=00007bdc
 EIP=00100028 EFL=00000086 [--S--P-] CPL=0 II=0 A20=1 SMM=0 HLT=0
@@ -180,40 +179,40 @@ Triple fault.  Halting for inspection via QEMU monitor.
 <p>Even the author of the fix doesn&rsquo;t really know what has gone wrong. As far as we can tell, there is a regression in the <code>binutils</code> so that the generated file is different. I could have spent some time to debug the related tools, but I decided to move on since understanding those tools was not my goal.</p>
 <h1 id="unimplemented-sse">Unimplemented sse</h1>
 <p>The next thing I did is to run the generated image under <code>v86</code>. Before my fix, it fails with this JavaScript exception.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-js" data-lang="js">Error
-    <span style="color:#a6e22e">at</span> eval (eval <span style="color:#a6e22e">at</span> <span style="color:#a6e22e">dbg_assert_failed</span> (<span style="color:#a6e22e">http</span><span style="color:#f92672">:</span><span style="color:#75715e">//localhost:8000/src/log.js:1:1), &lt;anonymous&gt;:1:1)
-</span><span style="color:#75715e"></span>    <span style="color:#a6e22e">at</span> <span style="color:#a6e22e">dbg_assert_failed</span> (<span style="color:#a6e22e">http</span><span style="color:#f92672">:</span><span style="color:#75715e">//localhost:8000/src/log.js:118:5)
-</span><span style="color:#75715e"></span>    <span style="color:#a6e22e">at</span> <span style="color:#a6e22e">dbg_assert</span> (<span style="color:#a6e22e">http</span><span style="color:#f92672">:</span><span style="color:#75715e">//localhost:8000/src/log.js:111:9)
-</span><span style="color:#75715e"></span>    <span style="color:#a6e22e">at</span> <span style="color:#a6e22e">CPU</span>.<span style="color:#a6e22e">unimplemented_sse</span> (<span style="color:#a6e22e">http</span><span style="color:#f92672">:</span><span style="color:#75715e">//localhost:8000/src/cpu.js:3294:5)
-</span><span style="color:#75715e"></span>    <span style="color:#a6e22e">at</span> Array.<span style="color:#a6e22e">t</span>.<span style="color:#f92672">&lt;</span><span style="color:#a6e22e">computed</span><span style="color:#f92672">&gt;</span> (<span style="color:#a6e22e">http</span><span style="color:#f92672">:</span><span style="color:#75715e">//localhost:8000/src/instructions.js:1933:24)
-</span><span style="color:#75715e"></span>    <span style="color:#a6e22e">at</span> Array.<span style="color:#a6e22e">t32</span>.<span style="color:#f92672">&lt;</span><span style="color:#a6e22e">computed</span><span style="color:#f92672">&gt;</span> (<span style="color:#a6e22e">http</span><span style="color:#f92672">:</span><span style="color:#75715e">//localhost:8000/src/instructions.js:45:36)
-</span><span style="color:#75715e"></span>    <span style="color:#a6e22e">at</span> <span style="color:#a6e22e">CPU</span>.<span style="color:#a6e22e">run_prefix_instruction</span> (<span style="color:#a6e22e">http</span><span style="color:#f92672">:</span><span style="color:#75715e">//localhost:8000/src/cpu.js:1246:39)
-</span><span style="color:#75715e"></span>    <span style="color:#a6e22e">at</span> Array.<span style="color:#a6e22e">t</span>.<span style="color:#f92672">&lt;</span><span style="color:#a6e22e">computed</span><span style="color:#f92672">&gt;</span> (<span style="color:#a6e22e">http</span><span style="color:#f92672">:</span><span style="color:#75715e">//localhost:8000/src/instructions.js:1253:9)
-</span><span style="color:#75715e"></span>    <span style="color:#a6e22e">at</span> <span style="color:#a6e22e">CPU</span>.<span style="color:#a6e22e">cycle_internal</span> (<span style="color:#a6e22e">http</span><span style="color:#f92672">:</span><span style="color:#75715e">//localhost:8000/src/cpu.js:1205:23)
-</span><span style="color:#75715e"></span>    <span style="color:#a6e22e">at</span> <span style="color:#a6e22e">CPU</span>.<span style="color:#a6e22e">do_many_cycles_unsafe</span> (<span style="color:#a6e22e">http</span><span style="color:#f92672">:</span><span style="color:#75715e">//localhost:8000/src/cpu.js:1148:14)&#34;
-</span><span style="color:#75715e"></span>    ...
-</code></pre></div><p>When I first see this error. I thought maybe the image contained some SSE instructions and the emulator does not support it well. Especially I read this on the front page of <code>v86</code> GitHub:</p>
-<pre><code>An x86 compatible CPU. The instruction set is around Pentium 1 level. Some features are missing, more specifically:
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-js" data-lang="js"><span style="display:flex;"><span>Error
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">at</span> eval (eval <span style="color:#a6e22e">at</span> <span style="color:#a6e22e">dbg_assert_failed</span> (<span style="color:#a6e22e">http</span><span style="color:#f92672">:</span><span style="color:#75715e">//localhost:8000/src/log.js:1:1), &lt;anonymous&gt;:1:1)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">at</span> <span style="color:#a6e22e">dbg_assert_failed</span> (<span style="color:#a6e22e">http</span><span style="color:#f92672">:</span><span style="color:#75715e">//localhost:8000/src/log.js:118:5)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">at</span> <span style="color:#a6e22e">dbg_assert</span> (<span style="color:#a6e22e">http</span><span style="color:#f92672">:</span><span style="color:#75715e">//localhost:8000/src/log.js:111:9)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">at</span> <span style="color:#a6e22e">CPU</span>.<span style="color:#a6e22e">unimplemented_sse</span> (<span style="color:#a6e22e">http</span><span style="color:#f92672">:</span><span style="color:#75715e">//localhost:8000/src/cpu.js:3294:5)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">at</span> Array.<span style="color:#a6e22e">t</span>.<span style="color:#f92672">&lt;</span><span style="color:#a6e22e">computed</span><span style="color:#f92672">&gt;</span> (<span style="color:#a6e22e">http</span><span style="color:#f92672">:</span><span style="color:#75715e">//localhost:8000/src/instructions.js:1933:24)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">at</span> Array.<span style="color:#a6e22e">t32</span>.<span style="color:#f92672">&lt;</span><span style="color:#a6e22e">computed</span><span style="color:#f92672">&gt;</span> (<span style="color:#a6e22e">http</span><span style="color:#f92672">:</span><span style="color:#75715e">//localhost:8000/src/instructions.js:45:36)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">at</span> <span style="color:#a6e22e">CPU</span>.<span style="color:#a6e22e">run_prefix_instruction</span> (<span style="color:#a6e22e">http</span><span style="color:#f92672">:</span><span style="color:#75715e">//localhost:8000/src/cpu.js:1246:39)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">at</span> Array.<span style="color:#a6e22e">t</span>.<span style="color:#f92672">&lt;</span><span style="color:#a6e22e">computed</span><span style="color:#f92672">&gt;</span> (<span style="color:#a6e22e">http</span><span style="color:#f92672">:</span><span style="color:#75715e">//localhost:8000/src/instructions.js:1253:9)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">at</span> <span style="color:#a6e22e">CPU</span>.<span style="color:#a6e22e">cycle_internal</span> (<span style="color:#a6e22e">http</span><span style="color:#f92672">:</span><span style="color:#75715e">//localhost:8000/src/cpu.js:1205:23)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">at</span> <span style="color:#a6e22e">CPU</span>.<span style="color:#a6e22e">do_many_cycles_unsafe</span> (<span style="color:#a6e22e">http</span><span style="color:#f92672">:</span><span style="color:#75715e">//localhost:8000/src/cpu.js:1148:14)&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    ...
+</span></span></code></pre></div><p>When I first see this error. I thought maybe the image contained some SSE instructions and the emulator does not support it well. Especially I read this on the front page of <code>v86</code> GitHub:</p>
+<pre tabindex="0"><code>An x86 compatible CPU. The instruction set is around Pentium 1 level. Some features are missing, more specifically:
 ...
 - MMX, SSE
 ...
 </code></pre><p>I would like to avoid it. At the very least, I would like to understand what SSE instruction is being used and see if we can do something about it. Navigating down the stack I saw the <code>CPU.cycle_internal</code> frame and that gave me some hints.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-js" data-lang="js"><span style="color:#a6e22e">CPU</span>.<span style="color:#a6e22e">prototype</span>.<span style="color:#a6e22e">cycle_internal</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">function</span>()
-{
-    <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">previous_ip</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">instruction_pointer</span>;
-    ...
-    <span style="color:#75715e">// call the instruction
-</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">table</span>[<span style="color:#a6e22e">opcode</span>](<span style="color:#66d9ef">this</span>);
-    ...
-}
-</code></pre></div><p>The debugger nicely gave us the <code>previous_ip</code> is <code>0x7d49</code>. This is not familiar, normal instruction pointers are not that small. Recalling that during boot, the bootloader is loaded at address <code>0x7c00</code>. That is a good reason for me to believe that <code>0x7d49</code> is part of the bootloader, and indeed it is. Looking at the <code>bootblock.asm</code> generated at the build we see that is an <code>endbr32</code> instruction.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-s" data-lang="s">    <span style="color:#ae81ff">7</span>d48<span style="color:#f92672">:</span>       c3                      ret
-
-<span style="color:#ae81ff">00007</span>d49 <span style="color:#f92672">&lt;</span>bootmain<span style="color:#f92672">&gt;:</span>
-{
-    <span style="color:#ae81ff">7</span>d49<span style="color:#f92672">:</span>       f3 <span style="color:#ae81ff">0</span>f <span style="color:#ae81ff">1</span>e fb             endbr32
-    <span style="color:#ae81ff">7</span>d4d<span style="color:#f92672">:</span>       <span style="color:#ae81ff">55</span>                      push   %ebp
-</code></pre></div><p>This is interesting, what is <code>endbr32</code>? <a href="https://stackoverflow.com/questions/56120231/how-do-old-cpus-execute-the-new-endbr64-and-endbr32-instructions">This</a> link provided me with an answer.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-js" data-lang="js"><span style="display:flex;"><span><span style="color:#a6e22e">CPU</span>.<span style="color:#a6e22e">prototype</span>.<span style="color:#a6e22e">cycle_internal</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">function</span>()
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">previous_ip</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">instruction_pointer</span>;
+</span></span><span style="display:flex;"><span>    ...
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// call the instruction
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">table</span>[<span style="color:#a6e22e">opcode</span>](<span style="color:#66d9ef">this</span>);
+</span></span><span style="display:flex;"><span>    ...
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>The debugger nicely gave us the <code>previous_ip</code> is <code>0x7d49</code>. This is not familiar, normal instruction pointers are not that small. Recalling that during boot, the bootloader is loaded at address <code>0x7c00</code>. That is a good reason for me to believe that <code>0x7d49</code> is part of the bootloader, and indeed it is. Looking at the <code>bootblock.asm</code> generated at the build we see that is an <code>endbr32</code> instruction.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-s" data-lang="s"><span style="display:flex;"><span>    <span style="color:#ae81ff">7</span>d48<span style="color:#f92672">:</span>       c3                      ret
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">00007</span>d49 <span style="color:#f92672">&lt;</span>bootmain<span style="color:#f92672">&gt;:</span>
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#ae81ff">7</span>d49<span style="color:#f92672">:</span>       f3 <span style="color:#ae81ff">0</span>f <span style="color:#ae81ff">1</span>e fb             endbr32
+</span></span><span style="display:flex;"><span>    <span style="color:#ae81ff">7</span>d4d<span style="color:#f92672">:</span>       <span style="color:#ae81ff">55</span>                      push   %ebp
+</span></span></code></pre></div><p>This is interesting, what is <code>endbr32</code>? <a href="https://stackoverflow.com/questions/56120231/how-do-old-cpus-execute-the-new-endbr64-and-endbr32-instructions">This</a> link provided me with an answer.</p>
 <p>It is part of the <a href="https://software.intel.com/content/www/us/en/develop/articles/technical-look-control-flow-enforcement-technology.html">Intel Control-flow Enforcement Technology</a>. Usually, instructions that come with new technology may not be available in low-end machines, and compilers usually require extra flags to leverage them. Why does <code>gcc</code> generate a <code>CET</code> instruction in this case? <a href="https://gcc.gnu.org/bugzilla/show_bug.cgi?id=83087">This</a> nice discussion summarizes it. The key idea is that:</p>
 <ul>
 <li>These instructions are supposed to run correctly on older machines, and</li>
@@ -223,14 +222,14 @@ Triple fault.  Halting for inspection via QEMU monitor.
 <p>With the fix, now the boot moves on further, but we are stuck with &hellip;</p>
 <h1 id="infinite-loop">Infinite loop</h1>
 <p>Opening the JavaScript console, we see these messages</p>
-<pre><code>...
+<pre tabindex="0"><code>...
 log.js:13 Previous message repeated 2048 times
 log.js:13 17:05:54+347 [IO  ] Read from unmapped memory space, addr=0xFEE00300
 log.js:13 Previous message repeated 2048 times
 ...
 </code></pre><p>It is always the same address, very suspicious to be an infinite loop. This time around, the VM does not stop, so let&rsquo;s make it stop. Somewhere in the JavaScript code, there must be a <code>console.log</code>, so I find that one out (in log.js) and put a breakpoint there.</p>
 <p>With that I extract a stack trace of what is going on:</p>
-<pre><code>&quot;Error
+<pre tabindex="0"><code>&#34;Error
     at eval (eval at do_the_log (http://localhost:8000/src/log.js:13:9), &lt;anonymous&gt;:1:1)
     at do_the_log (http://localhost:8000/src/log.js:13:9)
     at dbg_log_ (http://localhost:8000/src/log.js:76:21)
@@ -240,42 +239,42 @@ log.js:13 Previous message repeated 2048 times
     at CPU.safe_read32s (http://localhost:8000/src/cpu.js:1581:21)
     at CPU.read_e32s (http://localhost:8000/src/cpu.js:3396:21)
     at Array.t32.&lt;computed&gt; (http://localhost:8000/src/instructions.js:400:20)
-    at CPU.cycle_internal (http://localhost:8000/src/cpu.js:1205:23)&quot;
+    at CPU.cycle_internal (http://localhost:8000/src/cpu.js:1205:23)&#34;
 </code></pre><p>Again, going back to the <code>CPU.cycle_internal</code> frame, I obtained the instruction pointer to be <code>-2146424736</code>, a curious negative number, which is <code>0x80102860</code> in hex. This looks interesting. Usually, we reserve the top 2 gigabytes of the address space to the kernel, so this is mostly like some code in the kernel.</p>
 <p>Indeed, I found it in kernel.asm. Again, this is generated disassembly:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-s" data-lang="s">  <span style="color:#a6e22e">while</span>(lapic[ICRLO] <span style="color:#f92672">&amp;</span> DELIVS)
-<span style="color:#ae81ff">80102860</span><span style="color:#f92672">:</span>       <span style="color:#ae81ff">8</span>b <span style="color:#ae81ff">90</span> <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">03</span> <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">00</span>       mov    <span style="color:#ae81ff">0x300</span>(<span style="color:#f92672">%eax),%</span>edx
-<span style="color:#ae81ff">80102866</span><span style="color:#f92672">:</span>       <span style="color:#ae81ff">80</span> e6 <span style="color:#ae81ff">10</span>                and    <span style="color:#f92672">$</span><span style="color:#ae81ff">0x10</span>,<span style="color:#f92672">%dh
-</span><span style="color:#f92672">80102869:       75 f5                   jne    80102860 &lt;lapicinit+0xc0&gt;
-</span><span style="color:#f92672">  lapic[index] = value;
-</span><span style="color:#f92672">8010286b:       c7 80 80 00 00 00 00    movl   $0x0,0x80(%</span>eax)
-<span style="color:#ae81ff">80102872</span><span style="color:#f92672">:</span>       <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">00</span>
-  lapic[ID];  <span style="color:#f92672">//</span> wait for write to finish, by reading
-<span style="color:#ae81ff">80102875</span><span style="color:#f92672">:</span>       <span style="color:#ae81ff">8</span>b <span style="color:#ae81ff">40</span> <span style="color:#ae81ff">20</span>                mov    <span style="color:#ae81ff">0x20</span>(<span style="color:#f92672">%eax),%</span>eax
-    ;
-</code></pre></div><p>It looks like to loop just never ends. Reading through lapic.c, I figure this is called the local advanced programmable interrupt controller. And it appears that this is not described in this list of emulated hardware in the <code>v86</code> page, leading me to believe it won&rsquo;t work. I had email conservation with Fabian and confirmed that is the case.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-s" data-lang="s"><span style="display:flex;"><span>  <span style="color:#a6e22e">while</span>(lapic[ICRLO] <span style="color:#f92672">&amp;</span> DELIVS)
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">80102860</span><span style="color:#f92672">:</span>       <span style="color:#ae81ff">8</span>b <span style="color:#ae81ff">90</span> <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">03</span> <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">00</span>       mov    <span style="color:#ae81ff">0x300</span>(<span style="color:#f92672">%eax),%</span>edx
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">80102866</span><span style="color:#f92672">:</span>       <span style="color:#ae81ff">80</span> e6 <span style="color:#ae81ff">10</span>                and    <span style="color:#f92672">$</span><span style="color:#ae81ff">0x10</span>,<span style="color:#f92672">%dh
+</span></span></span><span style="display:flex;"><span><span style="color:#f92672">80102869:       75 f5                   jne    80102860 &lt;lapicinit+0xc0&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#f92672">  lapic[index] = value;
+</span></span></span><span style="display:flex;"><span><span style="color:#f92672">8010286b:       c7 80 80 00 00 00 00    movl   $0x0,0x80(%</span>eax)
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">80102872</span><span style="color:#f92672">:</span>       <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">00</span>
+</span></span><span style="display:flex;"><span>  lapic[ID];  <span style="color:#f92672">//</span> wait for write to finish, by reading
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">80102875</span><span style="color:#f92672">:</span>       <span style="color:#ae81ff">8</span>b <span style="color:#ae81ff">40</span> <span style="color:#ae81ff">20</span>                mov    <span style="color:#ae81ff">0x20</span>(<span style="color:#f92672">%eax),%</span>eax
+</span></span><span style="display:flex;"><span>    ;
+</span></span></code></pre></div><p>It looks like to loop just never ends. Reading through lapic.c, I figure this is called the local advanced programmable interrupt controller. And it appears that this is not described in this list of emulated hardware in the <code>v86</code> page, leading me to believe it won&rsquo;t work. I had email conservation with Fabian and confirmed that is the case.</p>
 <h1 id="the-lying-bios">The lying BIOS</h1>
 <p>It is unclear here, but running into that infinite loop is odd. We should have exited early here:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#66d9ef">void</span>
-<span style="color:#a6e22e">lapicinit</span>(<span style="color:#66d9ef">void</span>)
-{
-  <span style="color:#66d9ef">if</span>(<span style="color:#f92672">!</span>lapic)
-    <span style="color:#66d9ef">return</span>;
-  ...
-  <span style="color:#66d9ef">while</span>(lapic[ICRLO] <span style="color:#f92672">&amp;</span> DELIVS)
-}
-</code></pre></div><p>This leads me to track down where does the variable <code>lapic</code> got set. The code nicely tells me where that is:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#66d9ef">volatile</span> uint <span style="color:#f92672">*</span>lapic;  <span style="color:#75715e">// Initialized in mp.c
-</span></code></pre></div><p>and here it is in mp.c:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">  ...
-  <span style="color:#66d9ef">if</span>((conf <span style="color:#f92672">=</span> mpconfig(<span style="color:#f92672">&amp;</span>mp)) <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>)
-    panic(<span style="color:#e6db74">&#34;Expect to run on an SMP&#34;</span>);
-  ismp <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>;
-  lapic <span style="color:#f92672">=</span> (uint<span style="color:#f92672">*</span>)conf<span style="color:#f92672">-&gt;</span>lapicaddr;
-  ...
-</code></pre></div><p>Reading through the <code>mpconfig</code> function, it searches for the MP configuration table and performs some validation. The search must have succeeded, otherwise, we would have hit the <code>panic</code>. Why would such a configuration table exist in memory?</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">void</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">lapicinit</span>(<span style="color:#66d9ef">void</span>)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span>(<span style="color:#f92672">!</span>lapic)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span>;
+</span></span><span style="display:flex;"><span>  ...
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">while</span>(lapic[ICRLO] <span style="color:#f92672">&amp;</span> DELIVS)
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>This leads me to track down where does the variable <code>lapic</code> got set. The code nicely tells me where that is:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">volatile</span> uint <span style="color:#f92672">*</span>lapic;  <span style="color:#75715e">// Initialized in mp.c
+</span></span></span></code></pre></div><p>and here it is in mp.c:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>  ...
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span>((conf <span style="color:#f92672">=</span> mpconfig(<span style="color:#f92672">&amp;</span>mp)) <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>)
+</span></span><span style="display:flex;"><span>    panic(<span style="color:#e6db74">&#34;Expect to run on an SMP&#34;</span>);
+</span></span><span style="display:flex;"><span>  ismp <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>  lapic <span style="color:#f92672">=</span> (uint<span style="color:#f92672">*</span>)conf<span style="color:#f92672">-&gt;</span>lapicaddr;
+</span></span><span style="display:flex;"><span>  ...
+</span></span></code></pre></div><p>Reading through the <code>mpconfig</code> function, it searches for the MP configuration table and performs some validation. The search must have succeeded, otherwise, we would have hit the <code>panic</code>. Why would such a configuration table exist in memory?</p>
 <p>Since I didn&rsquo;t get to the panic line, I suspect conf is not NULL. Let&rsquo;s prove that. I changed the <code>== 0</code> to <code>!= 0</code>. Here is what I get:</p>
-<pre><code>SeaBIOS (version rel-1.10.0-39-g3fdabae-dirty-20170530_143849-nyu)
+<pre tabindex="0"><code>SeaBIOS (version rel-1.10.0-39-g3fdabae-dirty-20170530_143849-nyu)
 Booting from Floppy
 Boot failed: could not read the boot disk
 
@@ -283,40 +282,40 @@ Booting from Hard Disk...
 lapicid 0: panic: Expect to run on an SMP
   801032a9 8010306f 0 0 0 0 0 0 0 0_
 </code></pre><p>So it proved my hypothesis, <code>conf</code> is indeed not NULL. But something else is more interesting, we are able to output something to the screen, which is a great debugging aid. Let&rsquo;s take a look at how panic is implemented.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#66d9ef">void</span>
-<span style="color:#a6e22e">panic</span>(<span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>s)
-{
-  <span style="color:#66d9ef">int</span> i;
-  uint pcs[<span style="color:#ae81ff">10</span>];
-
-  cli();
-  cons.locking <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
-  <span style="color:#75715e">// use lapiccpunum so that we can call panic from mycpu()
-</span><span style="color:#75715e"></span>  cprintf(<span style="color:#e6db74">&#34;lapicid %d: panic: &#34;</span>, lapicid());
-  cprintf(s);
-  cprintf(<span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
-  getcallerpcs(<span style="color:#f92672">&amp;</span>s, pcs);
-  <span style="color:#66d9ef">for</span>(i<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>; i<span style="color:#f92672">&lt;</span><span style="color:#ae81ff">10</span>; i<span style="color:#f92672">++</span>)
-    cprintf(<span style="color:#e6db74">&#34; %p&#34;</span>, pcs[i]);
-  panicked <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>; <span style="color:#75715e">// freeze other CPU
-</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">for</span>(;;)
-    ;
-}
-</code></pre></div><p>Now we know, there is a function named <code>cprintf()</code> that can print something to the screen. Now, let&rsquo;s use that to figure out what is <code>conf</code>. I changed it so that it prints the value of <code>conf</code>.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">void</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">panic</span>(<span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>s)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">int</span> i;
+</span></span><span style="display:flex;"><span>  uint pcs[<span style="color:#ae81ff">10</span>];
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  cli();
+</span></span><span style="display:flex;"><span>  cons.locking <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// use lapiccpunum so that we can call panic from mycpu()
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  cprintf(<span style="color:#e6db74">&#34;lapicid %d: panic: &#34;</span>, lapicid());
+</span></span><span style="display:flex;"><span>  cprintf(s);
+</span></span><span style="display:flex;"><span>  cprintf(<span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
+</span></span><span style="display:flex;"><span>  getcallerpcs(<span style="color:#f92672">&amp;</span>s, pcs);
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">for</span>(i<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>; i<span style="color:#f92672">&lt;</span><span style="color:#ae81ff">10</span>; i<span style="color:#f92672">++</span>)
+</span></span><span style="display:flex;"><span>    cprintf(<span style="color:#e6db74">&#34; %p&#34;</span>, pcs[i]);
+</span></span><span style="display:flex;"><span>  panicked <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>; <span style="color:#75715e">// freeze other CPU
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">for</span>(;;)
+</span></span><span style="display:flex;"><span>    ;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Now we know, there is a function named <code>cprintf()</code> that can print something to the screen. Now, let&rsquo;s use that to figure out what is <code>conf</code>. I changed it so that it prints the value of <code>conf</code>.</p>
 <p>From:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">  ...
-  <span style="color:#66d9ef">if</span>((conf <span style="color:#f92672">=</span> mpconfig(<span style="color:#f92672">&amp;</span>mp)) <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>)
-     panic(<span style="color:#e6db74">&#34;Expect to run on an SMP&#34;</span>);
-  ...
-</code></pre></div><p>To:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">  ...
-  conf <span style="color:#f92672">=</span> mpconfig(<span style="color:#f92672">&amp;</span>mp);
-  cprintf(<span style="color:#e6db74">&#34;conf = %p</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, conf);
-  <span style="color:#66d9ef">if</span>(conf <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>)
-     panic(<span style="color:#e6db74">&#34;Expect to run on an SMP&#34;</span>);
-  ...
-</code></pre></div><p>Now we see this, the address is always <code>800f6ef0</code>. Now we can investigate what populated that address.</p>
-<pre><code>SeaBIOS (version rel-1.10.0-39-g3fdabae-dirty-20170530_143849-nyu)
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>  ...
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span>((conf <span style="color:#f92672">=</span> mpconfig(<span style="color:#f92672">&amp;</span>mp)) <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>)
+</span></span><span style="display:flex;"><span>     panic(<span style="color:#e6db74">&#34;Expect to run on an SMP&#34;</span>);
+</span></span><span style="display:flex;"><span>  ...
+</span></span></code></pre></div><p>To:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>  ...
+</span></span><span style="display:flex;"><span>  conf <span style="color:#f92672">=</span> mpconfig(<span style="color:#f92672">&amp;</span>mp);
+</span></span><span style="display:flex;"><span>  cprintf(<span style="color:#e6db74">&#34;conf = %p</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, conf);
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span>(conf <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>)
+</span></span><span style="display:flex;"><span>     panic(<span style="color:#e6db74">&#34;Expect to run on an SMP&#34;</span>);
+</span></span><span style="display:flex;"><span>  ...
+</span></span></code></pre></div><p>Now we see this, the address is always <code>800f6ef0</code>. Now we can investigate what populated that address.</p>
+<pre tabindex="0"><code>SeaBIOS (version rel-1.10.0-39-g3fdabae-dirty-20170530_143849-nyu)
 Booting from Floppy
 Boot failed: could not read the boot disk
 
@@ -329,37 +328,37 @@ conf = 800f6ef0
 <li><code>CPU.prototype.debug_write</code></li>
 </ul>
 <p>Unfortunately the argument to these functions use physical address, and <code>800f6ef0</code> is obviously a virtual address. I just guessed the physical address is <code>f6ef0</code> and added these instrumentation to the <code>debug_read</code> and <code>debug_write</code> method as follow:</p>
-<pre><code>    if (addr &lt;= 0xf6ef0 &amp;&amp; 0xf6ef0 &lt; addr + size)
+<pre tabindex="0"><code>    if (addr &lt;= 0xf6ef0 &amp;&amp; 0xf6ef0 &lt; addr + size)
     {
-        console.log(&quot;Hit&quot;);
+        console.log(&#34;Hit&#34;);
     }
 </code></pre><p>and then I put a breakpoint on the <code>console.log</code> line. Now it hits multiple times, the key ones being:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-js" data-lang="js"><span style="color:#a6e22e">CPU</span>.<span style="color:#a6e22e">debug_write</span> (<span style="color:#a6e22e">memory</span>.<span style="color:#a6e22e">js</span><span style="color:#f92672">:</span><span style="color:#ae81ff">19</span>)
-<span style="color:#a6e22e">CPU</span>.<span style="color:#a6e22e">write_blob</span> (<span style="color:#a6e22e">memory</span>.<span style="color:#a6e22e">js</span><span style="color:#f92672">:</span><span style="color:#ae81ff">292</span>)
-<span style="color:#a6e22e">CPU</span>.<span style="color:#a6e22e">load_bios</span> (<span style="color:#a6e22e">cpu</span>.<span style="color:#a6e22e">js</span><span style="color:#f92672">:</span><span style="color:#ae81ff">1052</span>)
-<span style="color:#a6e22e">CPU</span>.<span style="color:#a6e22e">init</span> (<span style="color:#a6e22e">cpu</span>.<span style="color:#a6e22e">js</span><span style="color:#f92672">:</span><span style="color:#ae81ff">648</span>)
-<span style="color:#a6e22e">v86</span>.<span style="color:#a6e22e">init</span> (<span style="color:#a6e22e">main</span>.<span style="color:#a6e22e">js</span><span style="color:#f92672">:</span><span style="color:#ae81ff">76</span>)
-...
-</code></pre></div><p>and</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-js" data-lang="js"><span style="color:#a6e22e">CPU</span>.<span style="color:#a6e22e">debug_read</span> (<span style="color:#a6e22e">memory</span>.<span style="color:#a6e22e">js</span><span style="color:#f92672">:</span><span style="color:#ae81ff">40</span>)
-<span style="color:#a6e22e">CPU</span>.<span style="color:#a6e22e">read8</span> (<span style="color:#a6e22e">memory</span>.<span style="color:#a6e22e">js</span><span style="color:#f92672">:</span><span style="color:#ae81ff">101</span>)
-<span style="color:#a6e22e">CPU</span>.<span style="color:#a6e22e">safe_read8</span> (<span style="color:#a6e22e">cpu</span>.<span style="color:#a6e22e">js</span><span style="color:#f92672">:</span><span style="color:#ae81ff">1553</span>)
-<span style="color:#a6e22e">CPU</span>.<span style="color:#a6e22e">read_e8</span> (<span style="color:#a6e22e">cpu</span>.<span style="color:#a6e22e">js</span><span style="color:#f92672">:</span><span style="color:#ae81ff">3363</span>)
-<span style="color:#a6e22e">t32</span>.<span style="color:#f92672">&lt;</span><span style="color:#a6e22e">computed</span><span style="color:#f92672">&gt;</span> (<span style="color:#a6e22e">instructions</span>.<span style="color:#a6e22e">js</span><span style="color:#f92672">:</span><span style="color:#ae81ff">3813</span>)
-<span style="color:#a6e22e">t32</span>.<span style="color:#f92672">&lt;</span><span style="color:#a6e22e">computed</span><span style="color:#f92672">&gt;</span> (<span style="color:#a6e22e">instructions</span>.<span style="color:#a6e22e">js</span><span style="color:#f92672">:</span><span style="color:#ae81ff">45</span>)
-<span style="color:#a6e22e">CPU</span>.<span style="color:#a6e22e">cycle_internal</span> (<span style="color:#a6e22e">cpu</span>.<span style="color:#a6e22e">js</span><span style="color:#f92672">:</span><span style="color:#ae81ff">1200</span>)
-...
-</code></pre></div><p>The first stack indicates the signature is hardcoded in the ROM BIOS. In the second stack, the <code>cycle_internal</code> frame indicates the <code>previous_ip</code> is -2146422112 (0x801032a0), that correspond to the <code>mpinit</code> code in kernel.asm.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-s" data-lang="s">void
-<span style="color:#a6e22e">mpinit</span>(void)
-{
-<span style="color:#ae81ff">801031</span>f0<span style="color:#f92672">:</span>	f3 <span style="color:#ae81ff">0</span>f <span style="color:#ae81ff">1</span>e fb          	endbr32 
-<span style="color:#66d9ef">...</span>
-<span style="color:#ae81ff">80103299</span><span style="color:#f92672">:</span>	<span style="color:#ae81ff">8</span>d b4 <span style="color:#ae81ff">26</span> <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">00</span> 	lea    <span style="color:#ae81ff">0x0</span>(<span style="color:#f92672">%esi,%</span>eiz,<span style="color:#ae81ff">1</span>),<span style="color:#f92672">%esi
-</span><span style="color:#f92672">    sum += addr[i];
-</span><span style="color:#f92672">801032a0:	0f b6 88 00 00 00 80 	movzbl -0x80000000(%</span>eax),%ecx
-</code></pre></div><p>We can also inspect the register values by invoking <code>this.debug.dumpregs()</code>:</p>
-<pre><code>this.debug.dump_regs()
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-js" data-lang="js"><span style="display:flex;"><span><span style="color:#a6e22e">CPU</span>.<span style="color:#a6e22e">debug_write</span> (<span style="color:#a6e22e">memory</span>.<span style="color:#a6e22e">js</span><span style="color:#f92672">:</span><span style="color:#ae81ff">19</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">CPU</span>.<span style="color:#a6e22e">write_blob</span> (<span style="color:#a6e22e">memory</span>.<span style="color:#a6e22e">js</span><span style="color:#f92672">:</span><span style="color:#ae81ff">292</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">CPU</span>.<span style="color:#a6e22e">load_bios</span> (<span style="color:#a6e22e">cpu</span>.<span style="color:#a6e22e">js</span><span style="color:#f92672">:</span><span style="color:#ae81ff">1052</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">CPU</span>.<span style="color:#a6e22e">init</span> (<span style="color:#a6e22e">cpu</span>.<span style="color:#a6e22e">js</span><span style="color:#f92672">:</span><span style="color:#ae81ff">648</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">v86</span>.<span style="color:#a6e22e">init</span> (<span style="color:#a6e22e">main</span>.<span style="color:#a6e22e">js</span><span style="color:#f92672">:</span><span style="color:#ae81ff">76</span>)
+</span></span><span style="display:flex;"><span>...
+</span></span></code></pre></div><p>and</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-js" data-lang="js"><span style="display:flex;"><span><span style="color:#a6e22e">CPU</span>.<span style="color:#a6e22e">debug_read</span> (<span style="color:#a6e22e">memory</span>.<span style="color:#a6e22e">js</span><span style="color:#f92672">:</span><span style="color:#ae81ff">40</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">CPU</span>.<span style="color:#a6e22e">read8</span> (<span style="color:#a6e22e">memory</span>.<span style="color:#a6e22e">js</span><span style="color:#f92672">:</span><span style="color:#ae81ff">101</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">CPU</span>.<span style="color:#a6e22e">safe_read8</span> (<span style="color:#a6e22e">cpu</span>.<span style="color:#a6e22e">js</span><span style="color:#f92672">:</span><span style="color:#ae81ff">1553</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">CPU</span>.<span style="color:#a6e22e">read_e8</span> (<span style="color:#a6e22e">cpu</span>.<span style="color:#a6e22e">js</span><span style="color:#f92672">:</span><span style="color:#ae81ff">3363</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">t32</span>.<span style="color:#f92672">&lt;</span><span style="color:#a6e22e">computed</span><span style="color:#f92672">&gt;</span> (<span style="color:#a6e22e">instructions</span>.<span style="color:#a6e22e">js</span><span style="color:#f92672">:</span><span style="color:#ae81ff">3813</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">t32</span>.<span style="color:#f92672">&lt;</span><span style="color:#a6e22e">computed</span><span style="color:#f92672">&gt;</span> (<span style="color:#a6e22e">instructions</span>.<span style="color:#a6e22e">js</span><span style="color:#f92672">:</span><span style="color:#ae81ff">45</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">CPU</span>.<span style="color:#a6e22e">cycle_internal</span> (<span style="color:#a6e22e">cpu</span>.<span style="color:#a6e22e">js</span><span style="color:#f92672">:</span><span style="color:#ae81ff">1200</span>)
+</span></span><span style="display:flex;"><span>...
+</span></span></code></pre></div><p>The first stack indicates the signature is hardcoded in the ROM BIOS. In the second stack, the <code>cycle_internal</code> frame indicates the <code>previous_ip</code> is -2146422112 (0x801032a0), that correspond to the <code>mpinit</code> code in kernel.asm.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-s" data-lang="s"><span style="display:flex;"><span>void
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">mpinit</span>(void)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">801031</span>f0<span style="color:#f92672">:</span>	f3 <span style="color:#ae81ff">0</span>f <span style="color:#ae81ff">1</span>e fb          	endbr32 
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">...</span>
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">80103299</span><span style="color:#f92672">:</span>	<span style="color:#ae81ff">8</span>d b4 <span style="color:#ae81ff">26</span> <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">00</span> 	lea    <span style="color:#ae81ff">0x0</span>(<span style="color:#f92672">%esi,%</span>eiz,<span style="color:#ae81ff">1</span>),<span style="color:#f92672">%esi
+</span></span></span><span style="display:flex;"><span><span style="color:#f92672">    sum += addr[i];
+</span></span></span><span style="display:flex;"><span><span style="color:#f92672">801032a0:	0f b6 88 00 00 00 80 	movzbl -0x80000000(%</span>eax),%ecx
+</span></span></code></pre></div><p>We can also inspect the register values by invoking <code>this.debug.dumpregs()</code>:</p>
+<pre tabindex="0"><code>this.debug.dump_regs()
 log.js:13 16:08:00+268 [CPU ] eax=0x000F6EF0 ecx=0x0000000A edx=0x00000F16 ebx=0x000F6F78   ds=0x0010 es=0x0010 fs=0x0000
 log.js:13 16:08:00+269 [CPU ] esp=0x8010B570 ebp=0x8010B598 esi=0x000F6E90 edi=0x800F6E80   gs=0x0000 cs=0x0008 ss=0x0010
 </code></pre><p>Now we are certain that the virtual address is indeed 0x80000000 + (eax=0x000F6EF0) = 0x800F6EF0, and it was loaded by the BIOS.</p>
@@ -375,73 +374,73 @@ log.js:13 16:08:00+269 [CPU ] esp=0x8010B570 ebp=0x8010B598 esi=0x000F6E90 edi=0
 <p>That was just luck, xv6 used to work without SMP. All I needed to do is to undo that change and bring back the single processor support. This is done in this <a href="https://github.com/cshung/xv6-public/commit/33016524d7b905010c6ba768e869f50e0e769e1b">commit</a> Of course, the code would also handle the lie BIOS told us, and that is handled in this <a href="https://github.com/cshung/xv6-public/commit/1a229ce3d039b7e82ad00287eced46117bd05a10">commit</a></p>
 <h1 id="unmapped-memory">Unmapped memory</h1>
 <p>With the fix, now we are running into another infinite loop with this output:</p>
-<pre><code>...
+<pre tabindex="0"><code>...
 log.js:13 16:49:49+855 [IO  ] Write to unmapped memory space, addr=0x0802BDD0 value=0x01010101
 log.js:13 16:49:49+856 [IO  ] Write to unmapped memory space, addr=0x0802BDD4 value=0x01010101
 ...
 </code></pre><p>Just like before, I set a breakpoint on console.log, and here is the stack.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-js" data-lang="js"><span style="color:#a6e22e">do_the_log</span> (<span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">js</span><span style="color:#f92672">:</span><span style="color:#ae81ff">13</span>)
-<span style="color:#a6e22e">dbg_log_</span> (<span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">js</span><span style="color:#f92672">:</span><span style="color:#ae81ff">82</span>)
-(<span style="color:#a6e22e">anonymous</span>) (<span style="color:#a6e22e">io</span>.<span style="color:#a6e22e">js</span><span style="color:#f92672">:</span><span style="color:#ae81ff">47</span>)
-<span style="color:#a6e22e">CPU</span>.<span style="color:#a6e22e">mmap_write32</span> (<span style="color:#a6e22e">memory</span>.<span style="color:#a6e22e">js</span><span style="color:#f92672">:</span><span style="color:#ae81ff">79</span>)
-<span style="color:#a6e22e">CPU</span>.<span style="color:#a6e22e">write_aligned32</span> (<span style="color:#a6e22e">memory</span>.<span style="color:#a6e22e">js</span><span style="color:#f92672">:</span><span style="color:#ae81ff">269</span>)
-<span style="color:#a6e22e">stosd</span> (<span style="color:#a6e22e">string</span>.<span style="color:#a6e22e">js</span><span style="color:#f92672">:</span><span style="color:#ae81ff">594</span>)
-<span style="color:#a6e22e">t32</span>.<span style="color:#f92672">&lt;</span><span style="color:#a6e22e">computed</span><span style="color:#f92672">&gt;</span> (<span style="color:#a6e22e">instructions</span>.<span style="color:#a6e22e">js</span><span style="color:#f92672">:</span><span style="color:#ae81ff">671</span>)
-<span style="color:#a6e22e">CPU</span>.<span style="color:#a6e22e">run_prefix_instruction</span> (<span style="color:#a6e22e">cpu</span>.<span style="color:#a6e22e">js</span><span style="color:#f92672">:</span><span style="color:#ae81ff">1241</span>)
-<span style="color:#a6e22e">t</span>.<span style="color:#f92672">&lt;</span><span style="color:#a6e22e">computed</span><span style="color:#f92672">&gt;</span> (<span style="color:#a6e22e">instructions</span>.<span style="color:#a6e22e">js</span><span style="color:#f92672">:</span><span style="color:#ae81ff">1253</span>)
-<span style="color:#a6e22e">CPU</span>.<span style="color:#a6e22e">cycle_internal</span> (<span style="color:#a6e22e">cpu</span>.<span style="color:#a6e22e">js</span><span style="color:#f92672">:</span><span style="color:#ae81ff">1200</span>)
-...
-</code></pre></div><p>The <code>previous_ip</code> is -2146417291 = 0x80104575, that correspond to a <code>memset</code> function:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-s" data-lang="s">void<span style="color:#f92672">*</span>
-<span style="color:#a6e22e">memset</span>(void <span style="color:#f92672">*</span>dst, int c, uint n)
-{
-<span style="color:#ae81ff">80104540</span><span style="color:#f92672">:</span>	f3 <span style="color:#ae81ff">0</span>f <span style="color:#ae81ff">1</span>e fb          	endbr32 
-<span style="color:#66d9ef">...</span>
-<span style="color:#ae81ff">80104575</span><span style="color:#f92672">:</span>	f3 ab                	rep stos <span style="color:#f92672">%eax,%</span>es<span style="color:#f92672">:</span>(%edi)
-<span style="color:#66d9ef">...</span>
-</code></pre></div><p>Unlike earlier, we are now stuck. The code is a generic function that doesn&rsquo;t give many contexts. Normally, we would like the debugger to give us a stack trace to see which function called it. Here we illustrate how we could do something similar manually.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-js" data-lang="js"><span style="display:flex;"><span><span style="color:#a6e22e">do_the_log</span> (<span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">js</span><span style="color:#f92672">:</span><span style="color:#ae81ff">13</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">dbg_log_</span> (<span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">js</span><span style="color:#f92672">:</span><span style="color:#ae81ff">82</span>)
+</span></span><span style="display:flex;"><span>(<span style="color:#a6e22e">anonymous</span>) (<span style="color:#a6e22e">io</span>.<span style="color:#a6e22e">js</span><span style="color:#f92672">:</span><span style="color:#ae81ff">47</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">CPU</span>.<span style="color:#a6e22e">mmap_write32</span> (<span style="color:#a6e22e">memory</span>.<span style="color:#a6e22e">js</span><span style="color:#f92672">:</span><span style="color:#ae81ff">79</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">CPU</span>.<span style="color:#a6e22e">write_aligned32</span> (<span style="color:#a6e22e">memory</span>.<span style="color:#a6e22e">js</span><span style="color:#f92672">:</span><span style="color:#ae81ff">269</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">stosd</span> (<span style="color:#a6e22e">string</span>.<span style="color:#a6e22e">js</span><span style="color:#f92672">:</span><span style="color:#ae81ff">594</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">t32</span>.<span style="color:#f92672">&lt;</span><span style="color:#a6e22e">computed</span><span style="color:#f92672">&gt;</span> (<span style="color:#a6e22e">instructions</span>.<span style="color:#a6e22e">js</span><span style="color:#f92672">:</span><span style="color:#ae81ff">671</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">CPU</span>.<span style="color:#a6e22e">run_prefix_instruction</span> (<span style="color:#a6e22e">cpu</span>.<span style="color:#a6e22e">js</span><span style="color:#f92672">:</span><span style="color:#ae81ff">1241</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">t</span>.<span style="color:#f92672">&lt;</span><span style="color:#a6e22e">computed</span><span style="color:#f92672">&gt;</span> (<span style="color:#a6e22e">instructions</span>.<span style="color:#a6e22e">js</span><span style="color:#f92672">:</span><span style="color:#ae81ff">1253</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">CPU</span>.<span style="color:#a6e22e">cycle_internal</span> (<span style="color:#a6e22e">cpu</span>.<span style="color:#a6e22e">js</span><span style="color:#f92672">:</span><span style="color:#ae81ff">1200</span>)
+</span></span><span style="display:flex;"><span>...
+</span></span></code></pre></div><p>The <code>previous_ip</code> is -2146417291 = 0x80104575, that correspond to a <code>memset</code> function:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-s" data-lang="s"><span style="display:flex;"><span>void<span style="color:#f92672">*</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">memset</span>(void <span style="color:#f92672">*</span>dst, int c, uint n)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">80104540</span><span style="color:#f92672">:</span>	f3 <span style="color:#ae81ff">0</span>f <span style="color:#ae81ff">1</span>e fb          	endbr32 
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">...</span>
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">80104575</span><span style="color:#f92672">:</span>	f3 ab                	rep stos <span style="color:#f92672">%eax,%</span>es<span style="color:#f92672">:</span>(%edi)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">...</span>
+</span></span></code></pre></div><p>Unlike earlier, we are now stuck. The code is a generic function that doesn&rsquo;t give many contexts. Normally, we would like the debugger to give us a stack trace to see which function called it. Here we illustrate how we could do something similar manually.</p>
 <p>The current stack pointer can be found using <code>this.debug.dump_regs()</code>.</p>
-<pre><code>this.debug.dump_regs()
+<pre tabindex="0"><code>this.debug.dump_regs()
 log.js:13 17:12:36+136 [CPU ] eax=0x01010101 ecx=0x000000B6 edx=0x8802B000 ebx=0x00010000   ds=0x0010 es=0x0010 fs=0x0000
 log.js:13 17:12:36+137 [CPU ] esp=0x8010B550 ebp=0x8010B558 esi=0x8E000000 edi=0x8802BD28   gs=0x0000 cs=0x0008 ss=0x0010
 </code></pre><p>So we can look into the stack slot (<code>mem8</code> is indexed using physical memory)</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-js" data-lang="js"><span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">temp</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">temp</span> <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">20</span>; <span style="color:#a6e22e">temp</span><span style="color:#f92672">++</span>) {
-    <span style="color:#a6e22e">temp_a</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">mem8</span>[<span style="color:#ae81ff">0x10B550</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">temp</span> <span style="color:#f92672">*</span> <span style="color:#ae81ff">4</span> <span style="color:#f92672">+</span> <span style="color:#ae81ff">0</span>]
-    <span style="color:#a6e22e">temp_b</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">mem8</span>[<span style="color:#ae81ff">0x10B550</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">temp</span> <span style="color:#f92672">*</span> <span style="color:#ae81ff">4</span> <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>]
-    <span style="color:#a6e22e">temp_c</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">mem8</span>[<span style="color:#ae81ff">0x10B550</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">temp</span> <span style="color:#f92672">*</span> <span style="color:#ae81ff">4</span> <span style="color:#f92672">+</span> <span style="color:#ae81ff">2</span>]
-    <span style="color:#a6e22e">temp_d</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">mem8</span>[<span style="color:#ae81ff">0x10B550</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">temp</span> <span style="color:#f92672">*</span> <span style="color:#ae81ff">4</span> <span style="color:#f92672">+</span> <span style="color:#ae81ff">3</span>]
-    <span style="color:#a6e22e">temp_e</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">temp_d</span> <span style="color:#f92672">*</span> <span style="color:#ae81ff">256</span> <span style="color:#f92672">*</span> <span style="color:#ae81ff">256</span> <span style="color:#f92672">*</span> <span style="color:#ae81ff">256</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">temp_c</span> <span style="color:#f92672">*</span> <span style="color:#ae81ff">256</span> <span style="color:#f92672">*</span> <span style="color:#ae81ff">256</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">temp_b</span> <span style="color:#f92672">*</span> <span style="color:#ae81ff">256</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">temp_a</span>;
-    <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#a6e22e">temp</span> <span style="color:#f92672">+</span><span style="color:#e6db74">&#34; :  &#34;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">temp_e</span>.<span style="color:#a6e22e">toString</span>(<span style="color:#ae81ff">16</span>));
-}
-
-<span style="color:#ae81ff">0</span> <span style="color:#f92672">:</span>  <span style="color:#ae81ff">8802</span><span style="color:#a6e22e">b000</span>
-<span style="color:#ae81ff">1</span> <span style="color:#f92672">:</span>  <span style="color:#ae81ff">0</span>
-<span style="color:#ae81ff">2</span> <span style="color:#f92672">:</span>  <span style="color:#ae81ff">8010</span><span style="color:#a6e22e">b578</span>
-<span style="color:#ae81ff">3</span> <span style="color:#f92672">:</span>  <span style="color:#ae81ff">801024</span><span style="color:#a6e22e">eb</span>
-<span style="color:#ae81ff">4</span> <span style="color:#f92672">:</span>  <span style="color:#ae81ff">8802</span><span style="color:#a6e22e">b000</span>
-<span style="color:#ae81ff">5</span> <span style="color:#f92672">:</span>  <span style="color:#ae81ff">1</span>
-<span style="color:#ae81ff">6</span> <span style="color:#f92672">:</span>  <span style="color:#ae81ff">1000</span>
-<span style="color:#ae81ff">7</span> <span style="color:#f92672">:</span>  <span style="color:#ae81ff">80107866</span>
-<span style="color:#ae81ff">8</span> <span style="color:#f92672">:</span>  <span style="color:#ae81ff">0</span>
-<span style="color:#ae81ff">9</span> <span style="color:#f92672">:</span>  <span style="color:#ae81ff">8802</span><span style="color:#a6e22e">d000</span>
-<span style="color:#ae81ff">10</span> <span style="color:#f92672">:</span>  <span style="color:#ae81ff">8010</span><span style="color:#a6e22e">b598</span>
-<span style="color:#ae81ff">11</span> <span style="color:#f92672">:</span>  <span style="color:#ae81ff">8010264</span><span style="color:#a6e22e">d</span>
-<span style="color:#ae81ff">12</span> <span style="color:#f92672">:</span>  <span style="color:#ae81ff">8802</span><span style="color:#a6e22e">b000</span>
-<span style="color:#ae81ff">13</span> <span style="color:#f92672">:</span>  <span style="color:#ae81ff">0</span>
-<span style="color:#ae81ff">14</span> <span style="color:#f92672">:</span>  <span style="color:#ae81ff">8010</span><span style="color:#a6e22e">b5a8</span>
-<span style="color:#ae81ff">15</span> <span style="color:#f92672">:</span>  <span style="color:#ae81ff">8010576</span><span style="color:#a6e22e">d</span>
-<span style="color:#ae81ff">16</span> <span style="color:#f92672">:</span>  <span style="color:#ae81ff">80112830</span>
-<span style="color:#ae81ff">17</span> <span style="color:#f92672">:</span>  <span style="color:#ae81ff">100</span><span style="color:#a6e22e">b4</span>
-<span style="color:#ae81ff">18</span> <span style="color:#f92672">:</span>  <span style="color:#ae81ff">8010</span><span style="color:#a6e22e">b5b8</span>
-<span style="color:#ae81ff">19</span> <span style="color:#f92672">:</span>  <span style="color:#ae81ff">801031</span><span style="color:#a6e22e">b2</span>
-</code></pre></div><p>We could have done it the right way, inspect the code, figure out where is the return address. But it is just much easier to dump all dwords in the stack and match with the source code.
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-js" data-lang="js"><span style="display:flex;"><span><span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">temp</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">temp</span> <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">20</span>; <span style="color:#a6e22e">temp</span><span style="color:#f92672">++</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">temp_a</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">mem8</span>[<span style="color:#ae81ff">0x10B550</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">temp</span> <span style="color:#f92672">*</span> <span style="color:#ae81ff">4</span> <span style="color:#f92672">+</span> <span style="color:#ae81ff">0</span>]
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">temp_b</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">mem8</span>[<span style="color:#ae81ff">0x10B550</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">temp</span> <span style="color:#f92672">*</span> <span style="color:#ae81ff">4</span> <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>]
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">temp_c</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">mem8</span>[<span style="color:#ae81ff">0x10B550</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">temp</span> <span style="color:#f92672">*</span> <span style="color:#ae81ff">4</span> <span style="color:#f92672">+</span> <span style="color:#ae81ff">2</span>]
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">temp_d</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">mem8</span>[<span style="color:#ae81ff">0x10B550</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">temp</span> <span style="color:#f92672">*</span> <span style="color:#ae81ff">4</span> <span style="color:#f92672">+</span> <span style="color:#ae81ff">3</span>]
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">temp_e</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">temp_d</span> <span style="color:#f92672">*</span> <span style="color:#ae81ff">256</span> <span style="color:#f92672">*</span> <span style="color:#ae81ff">256</span> <span style="color:#f92672">*</span> <span style="color:#ae81ff">256</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">temp_c</span> <span style="color:#f92672">*</span> <span style="color:#ae81ff">256</span> <span style="color:#f92672">*</span> <span style="color:#ae81ff">256</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">temp_b</span> <span style="color:#f92672">*</span> <span style="color:#ae81ff">256</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">temp_a</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#a6e22e">temp</span> <span style="color:#f92672">+</span><span style="color:#e6db74">&#34; :  &#34;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">temp_e</span>.<span style="color:#a6e22e">toString</span>(<span style="color:#ae81ff">16</span>));
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">0</span> <span style="color:#f92672">:</span>  <span style="color:#ae81ff">8802</span><span style="color:#a6e22e">b000</span>
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">1</span> <span style="color:#f92672">:</span>  <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">2</span> <span style="color:#f92672">:</span>  <span style="color:#ae81ff">8010</span><span style="color:#a6e22e">b578</span>
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">3</span> <span style="color:#f92672">:</span>  <span style="color:#ae81ff">801024</span><span style="color:#a6e22e">eb</span>
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">4</span> <span style="color:#f92672">:</span>  <span style="color:#ae81ff">8802</span><span style="color:#a6e22e">b000</span>
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">5</span> <span style="color:#f92672">:</span>  <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">6</span> <span style="color:#f92672">:</span>  <span style="color:#ae81ff">1000</span>
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">7</span> <span style="color:#f92672">:</span>  <span style="color:#ae81ff">80107866</span>
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">8</span> <span style="color:#f92672">:</span>  <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">9</span> <span style="color:#f92672">:</span>  <span style="color:#ae81ff">8802</span><span style="color:#a6e22e">d000</span>
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">10</span> <span style="color:#f92672">:</span>  <span style="color:#ae81ff">8010</span><span style="color:#a6e22e">b598</span>
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">11</span> <span style="color:#f92672">:</span>  <span style="color:#ae81ff">8010264</span><span style="color:#a6e22e">d</span>
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">12</span> <span style="color:#f92672">:</span>  <span style="color:#ae81ff">8802</span><span style="color:#a6e22e">b000</span>
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">13</span> <span style="color:#f92672">:</span>  <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">14</span> <span style="color:#f92672">:</span>  <span style="color:#ae81ff">8010</span><span style="color:#a6e22e">b5a8</span>
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">15</span> <span style="color:#f92672">:</span>  <span style="color:#ae81ff">8010576</span><span style="color:#a6e22e">d</span>
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">16</span> <span style="color:#f92672">:</span>  <span style="color:#ae81ff">80112830</span>
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">17</span> <span style="color:#f92672">:</span>  <span style="color:#ae81ff">100</span><span style="color:#a6e22e">b4</span>
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">18</span> <span style="color:#f92672">:</span>  <span style="color:#ae81ff">8010</span><span style="color:#a6e22e">b5b8</span>
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">19</span> <span style="color:#f92672">:</span>  <span style="color:#ae81ff">801031</span><span style="color:#a6e22e">b2</span>
+</span></span></code></pre></div><p>We could have done it the right way, inspect the code, figure out where is the return address. But it is just much easier to dump all dwords in the stack and match with the source code.
 Now we have some context, 0x801024EB, which is <code>kfree</code>. Further ahead of time, it is 0x8010264d, which is <code>kinit2</code>. Note that <code>kinit2</code> didn&rsquo;t directly call <code>kfree</code>, it must be inlined. That is why we shouldn&rsquo;t waste time trying to manually stack walk accurately.</p>
 <p>Reading through <code>kinit2</code>, it is just freeing the memory by filling it with patterns. The real problem is that the range is defined by a symbolic constant <code>PHYSTOP</code> which is hardcoded to 0xE000000. This is suspicious, how could the kernel know how much memory there is? The answer is actually written on the manual, on page 37 (or the last page of chapter 2, whatever version you are reading)</p>
-<pre><code>Xv6 should determine the actual RAM configuration, instead of assuming 240MB
+<pre tabindex="0"><code>Xv6 should determine the actual RAM configuration, instead of assuming 240MB
 </code></pre><p>Now the mystery is solved. All we need to get around that infinite loop is to set the memory limit to 240 MB</p>
 <h1 id="havedisk1">HaveDisk1</h1>
 <p>I promise this is the last hurdle. With the memory configuration set right. The code runs further an give this error:</p>
-<pre><code>SeaBIOS (version rel-1.10.0-39-g3fdabae-dirty-20170530_143849-nyu)
+<pre tabindex="0"><code>SeaBIOS (version rel-1.10.0-39-g3fdabae-dirty-20170530_143849-nyu)
 Booting from Floppy
 Boot failed: could not read the boot disk
 

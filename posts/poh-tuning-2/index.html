@@ -8,10 +8,10 @@
     <meta name="viewport" content="width=device-width,minimum-scale=1">
     <meta name="description" content="In the last post, we talk about the event tracing infrastructure, it allows us to measure the metrics we wanted to study when we run the program. But what program do we want to run? The program that we will run is called a benchmark. In this post, I will look into the details of the benchmark program.
 Overview The program that we will run is called GCPerfSim. As its name suggests, it simulates workload for the GC to understand its performance.">
-    <meta name="generator" content="Hugo 0.73.0-DEV" />
+    <meta name="generator" content="Hugo 0.96.0" />
     
     
-      <META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
+      <META NAME="ROBOTS" CONTENT="INDEX, FOLLOW">
     
 
     
@@ -35,27 +35,26 @@ Overview The program that we will run is called GCPerfSim. As its name suggests,
 <meta property="og:description" content="In the last post, we talk about the event tracing infrastructure, it allows us to measure the metrics we wanted to study when we run the program. But what program do we want to run? The program that we will run is called a benchmark. In this post, I will look into the details of the benchmark program.
 Overview The program that we will run is called GCPerfSim. As its name suggests, it simulates workload for the GC to understand its performance." />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://cshung.github.io/posts/poh-tuning-2/" />
+<meta property="og:url" content="https://cshung.github.io/posts/poh-tuning-2/" /><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2021-03-01T19:55:26-08:00" />
 <meta property="article:modified_time" content="2021-03-01T19:55:26-08:00" />
+
 <meta itemprop="name" content="POH Tuning (Part 2 - What am I running?)">
 <meta itemprop="description" content="In the last post, we talk about the event tracing infrastructure, it allows us to measure the metrics we wanted to study when we run the program. But what program do we want to run? The program that we will run is called a benchmark. In this post, I will look into the details of the benchmark program.
-Overview The program that we will run is called GCPerfSim. As its name suggests, it simulates workload for the GC to understand its performance.">
-<meta itemprop="datePublished" content="2021-03-01T19:55:26-08:00" />
+Overview The program that we will run is called GCPerfSim. As its name suggests, it simulates workload for the GC to understand its performance."><meta itemprop="datePublished" content="2021-03-01T19:55:26-08:00" />
 <meta itemprop="dateModified" content="2021-03-01T19:55:26-08:00" />
 <meta itemprop="wordCount" content="1233">
-
-
-
 <meta itemprop="keywords" content="" /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="POH Tuning (Part 2 - What am I running?)"/>
 <meta name="twitter:description" content="In the last post, we talk about the event tracing infrastructure, it allows us to measure the metrics we wanted to study when we run the program. But what program do we want to run? The program that we will run is called a benchmark. In this post, I will look into the details of the benchmark program.
 Overview The program that we will run is called GCPerfSim. As its name suggests, it simulates workload for the GC to understand its performance."/>
 
+      
+    
 	
   </head>
 
-  <body class="ma0 avenir bg-near-white">
+  <body class="ma0 avenir bg-near-white production">
     <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
     <script>mermaid.initialize({startOnLoad:true});</script>
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
@@ -153,7 +152,7 @@ Overview The program that we will run is called GCPerfSim. As its name suggests,
 <h1 id="overview">Overview</h1>
 <p>The program that we will run is called <code>GCPerfSim</code>. As its name suggests, it simulates workload for the GC to understand its performance. We understand real-life workloads are very variable, therefore <code>GCPerfSim</code> has a lot of parameters that allow us to simulate different situations. In order to have some ideas of what these parameters mean, it is imperative for us to look into the program and see how it works and how the parameters impact its execution.</p>
 <p>There are various modes in <code>GCPerfSim</code>, in this post, we will only focus on these parameters. They are the default from the <code>normal_server</code> benchmark coming from the performance infrastructure. We will cover the performance infrastructure itself in the next post.</p>
-<pre><code>-tc 6 -tagb 100.0 -tlgb 2.0 -lohar 0 -pohar 0 -sohsi 50 -lohsi 0 -pohsi 0 -sohsr 10-4000 -lohsr 102400-204800 -pohsr 100-204800 -sohpi 50 -lohpi 0 -sohfi 0 -lohfi 0 -pohfi 0 -allocType reference -testKind time
+<pre tabindex="0"><code>-tc 6 -tagb 100.0 -tlgb 2.0 -lohar 0 -pohar 0 -sohsi 50 -lohsi 0 -pohsi 0 -sohsr 10-4000 -lohsr 102400-204800 -pohsr 100-204800 -sohpi 50 -lohpi 0 -sohfi 0 -lohfi 0 -pohfi 0 -allocType reference -testKind time
 </code></pre><p>The most important parameter here is <code>testKind</code>. This tells us we will be running the <code>TimeTest</code> method, where it hosts the while loop to keep calling <code>MakeObjectAndMaybeSurvive</code>. The <code>allocType</code> parameter controls the type of object to allocate. For now, it will always be one of the subclasses of <code>ReferenceItemWithSize</code>.</p>
 <p>The <code>MakeObjectAndMaybeSurvive</code> method can be divided into 3 phases:</p>
 <ul>
@@ -213,19 +212,19 @@ $$ E[A_{poh}] = \left(\frac{W_{poh}}{1000} \times (E[S_{poh}] - O)\right) \times
 <p>Since we assumed the weights, so everything is known, except \( N \), so we will cancel out this unknown, by computing a ratio as follow:</p>
 <p>$$
 \begin{eqnarray}
-\frac{R_{soh}}{R_{loh}} &amp;=&amp; \frac{W_{soh}(E[S_{soh}] - O) + O}{W_{loh}(E[S_{loh}] - O)} \\<br>
+\frac{R_{soh}}{R_{loh}} &amp;=&amp; \frac{W_{soh}(E[S_{soh}] - O) + O}{W_{loh}(E[S_{loh}] - O)} \\
 \frac{R_{soh}}{R_{poh}} &amp;=&amp; \frac{W_{soh}(E[S_{soh}] - O) + O}{W_{poh}(E[S_{poh}] - O)}
 \end{eqnarray}
 $$</p>
 <p>Now we think of the weights as the unknowns. Note that some of them are in the denominators, which is difficult, so we cross multiply</p>
-<p>$$ 
+<p>$$
 \begin{eqnarray}
-R_{soh} (E[S_{loh}] - O) W_{loh} &amp;=&amp; R_{loh} (E[S_{soh}] - O) W_{soh} + R_{loh}O \\<br>
+R_{soh} (E[S_{loh}] - O) W_{loh} &amp;=&amp; R_{loh} (E[S_{soh}] - O) W_{soh} + R_{loh}O \\
 R_{soh} (E[S_{poh}] - O) W_{poh} &amp;=&amp; R_{poh} (E[S_{soh}] - O) W_{soh} + R_{poh}O
 \end{eqnarray}
 $$</p>
 <p>While these equations seem complicated, the only unknowns are the \( W \) values, therefore, these are just two linear equations. The third equation is simply</p>
-<p>$$ 
+<p>$$
 \begin{eqnarray}
 W_{soh} + W_{loh} + W_{poh} = 1000
 \end{eqnarray}

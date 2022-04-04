@@ -7,10 +7,10 @@
     <title>Automate WinDBG | My Blog</title>
     <meta name="viewport" content="width=device-width,minimum-scale=1">
     <meta name="description" content="Automate WinDBG WinDBG is a very convenient debugger, but typing the same command again and again is tiresome, especially during startup. GDB provided a mechanism to run some commands on startup through gdbinit. WinDBG has the equivalent, although it is not as clear. In this blog post, I am going to share how I automated WinDBG to run some commands on startup. For the impatient, just rush to the summary to get the commands.">
-    <meta name="generator" content="Hugo 0.73.0-DEV" />
+    <meta name="generator" content="Hugo 0.96.0" />
     
     
-      <META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
+      <META NAME="ROBOTS" CONTENT="INDEX, FOLLOW">
     
 
     
@@ -33,25 +33,24 @@
     <meta property="og:title" content="Automate WinDBG" />
 <meta property="og:description" content="Automate WinDBG WinDBG is a very convenient debugger, but typing the same command again and again is tiresome, especially during startup. GDB provided a mechanism to run some commands on startup through gdbinit. WinDBG has the equivalent, although it is not as clear. In this blog post, I am going to share how I automated WinDBG to run some commands on startup. For the impatient, just rush to the summary to get the commands." />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://cshung.github.io/posts/automate-windbg/" />
+<meta property="og:url" content="https://cshung.github.io/posts/automate-windbg/" /><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2020-08-31T17:01:33-07:00" />
 <meta property="article:modified_time" content="2020-08-31T17:01:33-07:00" />
+
 <meta itemprop="name" content="Automate WinDBG">
-<meta itemprop="description" content="Automate WinDBG WinDBG is a very convenient debugger, but typing the same command again and again is tiresome, especially during startup. GDB provided a mechanism to run some commands on startup through gdbinit. WinDBG has the equivalent, although it is not as clear. In this blog post, I am going to share how I automated WinDBG to run some commands on startup. For the impatient, just rush to the summary to get the commands.">
-<meta itemprop="datePublished" content="2020-08-31T17:01:33-07:00" />
+<meta itemprop="description" content="Automate WinDBG WinDBG is a very convenient debugger, but typing the same command again and again is tiresome, especially during startup. GDB provided a mechanism to run some commands on startup through gdbinit. WinDBG has the equivalent, although it is not as clear. In this blog post, I am going to share how I automated WinDBG to run some commands on startup. For the impatient, just rush to the summary to get the commands."><meta itemprop="datePublished" content="2020-08-31T17:01:33-07:00" />
 <meta itemprop="dateModified" content="2020-08-31T17:01:33-07:00" />
 <meta itemprop="wordCount" content="904">
-
-
-
 <meta itemprop="keywords" content="" /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Automate WinDBG"/>
 <meta name="twitter:description" content="Automate WinDBG WinDBG is a very convenient debugger, but typing the same command again and again is tiresome, especially during startup. GDB provided a mechanism to run some commands on startup through gdbinit. WinDBG has the equivalent, although it is not as clear. In this blog post, I am going to share how I automated WinDBG to run some commands on startup. For the impatient, just rush to the summary to get the commands."/>
 
+      
+    
 	
   </head>
 
-  <body class="ma0 avenir bg-near-white">
+  <body class="ma0 avenir bg-near-white production">
     <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
     <script>mermaid.initialize({startOnLoad:true});</script>
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
@@ -150,86 +149,85 @@
 <h1 id="startup-command">Startup command</h1>
 <p>WinDBG supports using the <code>-c</code> command line argument to specify a startup command. The option is documented <a href="https://docs.microsoft.com/en-us/windows-hardware/drivers/debugger/windbg-command-line-options">here</a>, search for <code>-c</code> in the page.</p>
 <p>Here is a very simple example:</p>
-<pre><code>windbg.exe -c q cmd.exe
+<pre tabindex="0"><code>windbg.exe -c q cmd.exe
 </code></pre><p>This will launch a debugger trying to debug <code>cmd.exe</code>. When the debugger starts up, it will quit itself immediately. Not super interesting, but it works.</p>
 <h1 id="run-script-file">Run script file</h1>
 <p>We do not want to run just one command, we wanted to run a series of them. To do so, WinDBG has a command that run a script file. The command is documented <a href="https://docs.microsoft.com/en-us/windows-hardware/drivers/debugger/-----------------------a---run-script-file-">here</a>. The remark is probably the most interesting part to read, which explain how string escaping works.</p>
 <p>I do not want to screw myself, so I will use a script file that does not contain a semicolon <code>;</code> in the file name. That allow us to use <code>$$&gt;a&lt;</code>.</p>
 <p>Let&rsquo;s first create an autodbg.script is a file with a single command <code>q</code>. Then type this into the command prompt, what do we see?</p>
-<pre><code>windbg.exe -c $$&gt;a&lt;autodbg.script cmd.exe
+<pre tabindex="0"><code>windbg.exe -c $$&gt;a&lt;autodbg.script cmd.exe
 </code></pre><p>We see the debugger do not quit, and a new file named <code>a</code> is created. The problem is that the <code>&gt;</code> and <code>&lt;</code> operators are interpreted by the command prompt as redirection operators, we need to escape them using the caret <code>^</code> sign as follow:</p>
-<pre><code>windbg.exe -c $$^&gt;a^&lt;autodbg.script cmd.exe
+<pre tabindex="0"><code>windbg.exe -c $$^&gt;a^&lt;autodbg.script cmd.exe
 </code></pre><p>Now it works to quit the prompt.</p>
 <h1 id="handling-crash">Handling crash</h1>
 <p>Suppose a process is launched without a debugger, if it crashes, the process is just gone. To debug that crash, it is possible to tell the system to launch WinDBG and debug when a crash happens. To do so, you run the following command in an elevated command prompt:</p>
-<pre><code>windbg.exe -I
+<pre tabindex="0"><code>windbg.exe -I
 </code></pre><p>This will install WinDBG as a post-mortem debugger. We can experiment with it by having a crashing process as follow:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;iostream&gt;</span><span style="color:#75715e">
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">using</span> <span style="color:#66d9ef">namespace</span> std;
-
-<span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>()
-{
-    <span style="color:#66d9ef">int</span><span style="color:#f92672">*</span> a <span style="color:#f92672">=</span> NULL;
-    cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;Pre crash&#34;</span> <span style="color:#f92672">&lt;&lt;</span> endl;
-    <span style="color:#f92672">*</span>a <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
-    cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;Post crash&#34;</span> <span style="color:#f92672">&lt;&lt;</span> endl;
-}
-
-</code></pre></div><p>This is obviously an access violation. If we launch this process outside of Visual Studio, we should see WinDBG popping up an pointing right at the line that write to <code>*a</code>.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;iostream&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">using</span> <span style="color:#66d9ef">namespace</span> std;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>()
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span><span style="color:#f92672">*</span> a <span style="color:#f92672">=</span> NULL;
+</span></span><span style="display:flex;"><span>    cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;Pre crash&#34;</span> <span style="color:#f92672">&lt;&lt;</span> endl;
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">*</span>a <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>    cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;Post crash&#34;</span> <span style="color:#f92672">&lt;&lt;</span> endl;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>This is obviously an access violation. If we launch this process outside of Visual Studio, we should see WinDBG popping up an pointing right at the line that write to <code>*a</code>.</p>
 <h1 id="automate-crash-handling">Automate Crash Handling</h1>
 <p>When we invoke <code>windbg.exe -I</code>, all it does is that it writes to the registry. The key:</p>
-<pre><code>HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\AeDebug
+<pre tabindex="0"><code>HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\AeDebug
 </code></pre><p>contains a value:</p>
-<pre><code>Debugger
+<pre tabindex="0"><code>Debugger
 </code></pre><p>pointing to the debugger command as follow:</p>
-<pre><code>&quot;c:\toolssw\debuggers\amd64\windbg.exe&quot; -p %ld -e %ld -g
+<pre tabindex="0"><code>&#34;c:\toolssw\debuggers\amd64\windbg.exe&#34; -p %ld -e %ld -g
 </code></pre><p>That makes me ponder, is it possible to add the <code>-c</code> option above to automate some of the processing? The answer is yes!</p>
-<pre><code>&quot;c:\toolssw\debuggers\amd64\windbg.exe&quot; -c $$&gt;a&lt;c:\temp\autodbg.script -p %ld -e %ld -g
+<pre tabindex="0"><code>&#34;c:\toolssw\debuggers\amd64\windbg.exe&#34; -c $$&gt;a&lt;c:\temp\autodbg.script -p %ld -e %ld -g
 </code></pre><p>Note that this is not the command prompt, so we no longer need to escape the <code>&gt;</code> and <code>&lt;</code> signs. Also, I specified a full path for the script.</p>
 <p>For Visual Studio user, the original value is this, you can restore it after the WinDBG session if you wish.</p>
-<pre><code>&quot;C:\WINDOWS\system32\vsjitdebugger.exe&quot; -p %ld -e %ld
+<pre tabindex="0"><code>&#34;C:\WINDOWS\system32\vsjitdebugger.exe&#34; -p %ld -e %ld
 </code></pre><h1 id="launching-executables">Launching executables</h1>
 <p>Launching an executable in a script has some interesting twist. The WinDBG way for launching an executable is using the .shell command. The command is documented <a href="https://docs.microsoft.com/en-us/windows-hardware/drivers/debugger/-shell--command-shell-">here</a>. Notice the <code>-i</code> option and the fact that <code>-i-</code> can avoid WinDBG prompting for inputs for the process, it is important if you don&rsquo;t</p>
 <p>To start with, I wrote a very simple executable to be launched to observe the executable launching behavior.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;string&gt;</span><span style="color:#75715e">
-</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;fstream&gt;</span><span style="color:#75715e">
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">using</span> <span style="color:#66d9ef">namespace</span> std;
-
-<span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>(<span style="color:#66d9ef">int</span> argc, <span style="color:#66d9ef">char</span><span style="color:#f92672">**</span> argv)
-{
-    ofstream outputFile(<span style="color:#e6db74">&#34;c:</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">temp</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">output.txt&#34;</span>);
-    <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; i <span style="color:#f92672">&lt;</span> argc; i<span style="color:#f92672">++</span>)
-    {
-        outputFile <span style="color:#f92672">&lt;&lt;</span> argv[i] <span style="color:#f92672">&lt;&lt;</span> endl;
-    }
-    outputFile.close();
-    <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
-}
-</code></pre></div><p>This is compiled into <code>c:\temp\work.exe</code>. Obviously, the program simply write each argument into a separate line in the file.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;string&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;fstream&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">using</span> <span style="color:#66d9ef">namespace</span> std;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>(<span style="color:#66d9ef">int</span> argc, <span style="color:#66d9ef">char</span><span style="color:#f92672">**</span> argv)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    ofstream outputFile(<span style="color:#e6db74">&#34;c:</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">temp</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">output.txt&#34;</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; i <span style="color:#f92672">&lt;</span> argc; i<span style="color:#f92672">++</span>)
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        outputFile <span style="color:#f92672">&lt;&lt;</span> argv[i] <span style="color:#f92672">&lt;&lt;</span> endl;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    outputFile.close();
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>This is compiled into <code>c:\temp\work.exe</code>. Obviously, the program simply write each argument into a separate line in the file.</p>
 <p>The next natural step is to automate the launching of this executable. We write this script and launch it as usual.</p>
-<pre><code>.shell -i- -o- c:\temp\work.exe 
+<pre tabindex="0"><code>.shell -i- -o- c:\temp\work.exe 
 q
 </code></pre><p>You would expect the debugger would quit after running the command, but it actually doesn&rsquo;t. Inspecting <code>c:\temp\output.txt</code> would find</p>
-<pre><code>c:\temp\work.exe 
+<pre tabindex="0"><code>c:\temp\work.exe 
 ;q
 </code></pre><p>Now the mystery is clear. WinDBG is interpreting everything after the .shell as the executable name and then their arguments, making it impossible to chain any command after it.</p>
 <p>How can we solve this problem? We can make a separate script that contains only the <code>.shell</code> command and chain it using the master script as follow:</p>
 <p><code>autodbg.script</code></p>
-<pre><code>$$&gt;a&lt;run.script
+<pre tabindex="0"><code>$$&gt;a&lt;run.script
 q
 </code></pre><p><code>run.script</code></p>
-<pre><code>.shell -i- -o- c:\temp\work.exe &quot;what a test&quot;
+<pre tabindex="0"><code>.shell -i- -o- c:\temp\work.exe &#34;what a test&#34;
 </code></pre><p>This will produce exactly what we want. The script runs, launch the executable with right arguments, and quits.</p>
 <h1 id="summary">Summary</h1>
 <p>The post documented the process of automating WinDBG in various scenarios. Here are the key takeaways:</p>
 <h2 id="command-line">Command Line</h2>
 <p>Here is the command to run autodbg.script on startup:</p>
-<pre><code>windbg.exe -c $$^&gt;a^&lt;autodbg.script cmd.exe
+<pre tabindex="0"><code>windbg.exe -c $$^&gt;a^&lt;autodbg.script cmd.exe
 </code></pre><h2 id="registry-for-crash-processing">Registry for crash processing</h2>
 <p>Put this string into</p>
-<pre><code>&quot;c:\toolssw\debuggers\amd64\windbg.exe&quot; -c $$&gt;a&lt;c:\temp\autodbg.script -p %ld -e %ld -g
+<pre tabindex="0"><code>&#34;c:\toolssw\debuggers\amd64\windbg.exe&#34; -c $$&gt;a&lt;c:\temp\autodbg.script -p %ld -e %ld -g
 </code></pre><p>this registry key</p>
-<pre><code>HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\AeDebug:Debugger
+<pre tabindex="0"><code>HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\AeDebug:Debugger
 </code></pre><p>to have WinDBG to process crashes with autodbg.script.</p>
 <h2 id="launching-executable">Launching executable</h2>
 <p>Put the <code>.shell -i- -o-</code> command in a separate script file and chain it with the master script to avoid interpreting the rest of the commands as arguments.</p>

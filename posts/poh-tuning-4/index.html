@@ -9,10 +9,10 @@
     <meta name="description" content="Benchmark design Armed with the knowledge about how the allocation ratios works in the previous post. Now we can design our benchmarks. My goal is to produce a pair of benchmarks so that I can compare pinning objects by using the old pinned handle, or by the new pinned object heap.
 In the pinned handle case, we can have a general design like this:
 Out of 1,000 objects in the SOH, \( a \) of them survives and \( b \) of them are pinned.">
-    <meta name="generator" content="Hugo 0.73.0-DEV" />
+    <meta name="generator" content="Hugo 0.96.0" />
     
     
-      <META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
+      <META NAME="ROBOTS" CONTENT="INDEX, FOLLOW">
     
 
     
@@ -37,29 +37,28 @@ Out of 1,000 objects in the SOH, \( a \) of them survives and \( b \) of them ar
 In the pinned handle case, we can have a general design like this:
 Out of 1,000 objects in the SOH, \( a \) of them survives and \( b \) of them are pinned." />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://cshung.github.io/posts/poh-tuning-4/" />
+<meta property="og:url" content="https://cshung.github.io/posts/poh-tuning-4/" /><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2021-03-05T19:55:26-08:00" />
 <meta property="article:modified_time" content="2021-03-05T19:55:26-08:00" />
+
 <meta itemprop="name" content="POH Tuning (Part 4 - Benchmark design and the performance infrastructure)">
 <meta itemprop="description" content="Benchmark design Armed with the knowledge about how the allocation ratios works in the previous post. Now we can design our benchmarks. My goal is to produce a pair of benchmarks so that I can compare pinning objects by using the old pinned handle, or by the new pinned object heap.
 In the pinned handle case, we can have a general design like this:
-Out of 1,000 objects in the SOH, \( a \) of them survives and \( b \) of them are pinned.">
-<meta itemprop="datePublished" content="2021-03-05T19:55:26-08:00" />
+Out of 1,000 objects in the SOH, \( a \) of them survives and \( b \) of them are pinned."><meta itemprop="datePublished" content="2021-03-05T19:55:26-08:00" />
 <meta itemprop="dateModified" content="2021-03-05T19:55:26-08:00" />
 <meta itemprop="wordCount" content="561">
-
-
-
 <meta itemprop="keywords" content="" /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="POH Tuning (Part 4 - Benchmark design and the performance infrastructure)"/>
 <meta name="twitter:description" content="Benchmark design Armed with the knowledge about how the allocation ratios works in the previous post. Now we can design our benchmarks. My goal is to produce a pair of benchmarks so that I can compare pinning objects by using the old pinned handle, or by the new pinned object heap.
 In the pinned handle case, we can have a general design like this:
 Out of 1,000 objects in the SOH, \( a \) of them survives and \( b \) of them are pinned."/>
 
+      
+    
 	
   </head>
 
-  <body class="ma0 avenir bg-near-white">
+  <body class="ma0 avenir bg-near-white production">
     <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
     <script>mermaid.initialize({startOnLoad:true});</script>
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
@@ -169,18 +168,18 @@ Out of \( b \) objects in the POH, \( b \) of them survives and \( b \) of them 
 </ul>
 <p>As an example, we could pick \( a \) to be 100 and \( b \) to be 10. That would lead to:</p>
 <p>In the pinning handle case:</p>
-<pre><code>sohsi=1000/100=10
+<pre tabindex="0"><code>sohsi=1000/100=10
 sohpi=100/10=10
 pohar=0
 pohsi=0
 </code></pre><p>And in the POH case</p>
-<pre><code>sohsi=(1000-10)/(100-10)=11
+<pre tabindex="0"><code>sohsi=(1000-10)/(100-10)=11
 sohpi=0
 pohar=10
 pohsi=1
 </code></pre><h1 id="the-gc-performance-infrastructure">The GC Performance infrastructure</h1>
 <p>To put the design into practice, we will use the GC performance infrastructure. It is basically a test harness. It takes in a benchmark description, run <code>GCPerfSim</code> as instructed with trace collection enabled. The tool also automates the parsing of the trace and provide the data to us for further analysis. It is much easier to figure what it is by looking at an example, here is what I wrote for the benchmarks above:</p>
-<pre><code>vary: coreclr
+<pre tabindex="0"><code>vary: coreclr
 test_executables:
   defgcperfsim: C:\dev\performance\artifacts\bin\GCPerfSim\release\netcoreapp5.0\GCPerfSim.dll
 coreclrs:

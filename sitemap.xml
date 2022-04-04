@@ -1,163 +1,102 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
-  
   <url>
+    <loc>https://cshung.github.io/posts/debug-maui-android/</loc>
+    <lastmod>2022-04-04T08:20:54-07:00</lastmod>
+  </url><url>
     <loc>https://cshung.github.io/</loc>
-    <lastmod>2021-12-26T10:52:35-08:00</lastmod>
-  </url>
-  
-  <url>
+    <lastmod>2022-04-04T08:20:54-07:00</lastmod>
+  </url><url>
     <loc>https://cshung.github.io/posts/</loc>
-    <lastmod>2021-12-26T10:52:35-08:00</lastmod>
-  </url>
-  
-  <url>
+    <lastmod>2022-04-04T08:20:54-07:00</lastmod>
+  </url><url>
     <loc>https://cshung.github.io/posts/sais/</loc>
     <lastmod>2021-12-26T10:52:35-08:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://cshung.github.io/posts/spurious-interrupts/</loc>
     <lastmod>2021-10-23T16:32:21-07:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://cshung.github.io/posts/ps2-and-a20/</loc>
     <lastmod>2021-10-22T20:15:34-07:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://cshung.github.io/posts/ready-to-run-delay-load/</loc>
     <lastmod>2021-10-14T12:27:20-07:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://cshung.github.io/posts/optimize-bricks/</loc>
     <lastmod>2021-10-06T16:04:13-07:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://cshung.github.io/posts/fake-interior-pointer/</loc>
     <lastmod>2021-09-10T09:50:21-07:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://cshung.github.io/posts/false-memory-leak/</loc>
     <lastmod>2021-08-13T12:18:40-07:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://cshung.github.io/posts/memory-corruption-2/</loc>
     <lastmod>2021-07-02T15:01:10-07:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://cshung.github.io/posts/memory-corruption-1/</loc>
     <lastmod>2021-05-29T11:09:44-07:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://cshung.github.io/posts/git-merge-squash/</loc>
     <lastmod>2021-04-21T12:57:39-07:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://cshung.github.io/posts/brick/</loc>
     <lastmod>2021-04-17T00:00:00-08:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://cshung.github.io/posts/card/</loc>
     <lastmod>2021-04-17T00:00:00-08:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://cshung.github.io/posts/poh-tuning-5/</loc>
     <lastmod>2021-03-08T10:57:05-08:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://cshung.github.io/posts/poh-tuning-6/</loc>
     <lastmod>2021-03-08T10:57:05-08:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://cshung.github.io/posts/poh-tuning-4/</loc>
     <lastmod>2021-03-05T19:55:26-08:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://cshung.github.io/posts/poh-tuning-3/</loc>
     <lastmod>2021-03-01T20:55:26-08:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://cshung.github.io/posts/poh-tuning-2/</loc>
     <lastmod>2021-03-01T19:55:26-08:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://cshung.github.io/posts/debug-info-debugging/</loc>
     <lastmod>2021-01-18T13:25:05-08:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://cshung.github.io/posts/poh-tuning-1/</loc>
     <lastmod>2021-01-15T11:18:17-08:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://cshung.github.io/posts/generation-aware-analysis/</loc>
     <lastmod>2021-01-05T14:47:10-08:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://cshung.github.io/posts/gc-objects-2/</loc>
     <lastmod>2021-01-04T14:14:15-08:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://cshung.github.io/posts/gc-objects-1/</loc>
     <lastmod>2021-01-04T12:11:37-08:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://cshung.github.io/posts/hello-reflection/</loc>
     <lastmod>2020-12-05T14:53:55-08:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://cshung.github.io/posts/coreclrgc-mono/</loc>
     <lastmod>2020-12-04T11:52:15-08:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://cshung.github.io/posts/automate-windbg/</loc>
     <lastmod>2020-08-31T17:01:33-07:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://cshung.github.io/posts/ilspy-readytorun/</loc>
     <lastmod>2020-07-25T19:50:22-07:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://cshung.github.io/posts/xv6-on-v86/</loc>
     <lastmod>2020-06-28T09:27:30-07:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://cshung.github.io/posts/introduction-to-ilcompiler-reflection-readytorun/</loc>
     <lastmod>2020-06-25T08:08:17-07:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://cshung.github.io/categories/</loc>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://cshung.github.io/tags/</loc>
   </url>
-  
 </urlset>

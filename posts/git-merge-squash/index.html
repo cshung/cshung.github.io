@@ -8,10 +8,10 @@
     <meta name="viewport" content="width=device-width,minimum-scale=1">
     <meta name="description" content="Git Merge Squash This is a short article documenting my process of reusing someone else&rsquo;s change. It is not particularly easy and therefore I would like a document to remember how I did it.
 The problem? Imagine my partner and I were working on the same repository. I am working on a feature and he is working on a fix that I need. However, for whatever reasons, my partner couldn&rsquo;t merge the fix in, but I would really like to apply his change in my code base so that my scenario work (at least locally), how should I do it?">
-    <meta name="generator" content="Hugo 0.73.0-DEV" />
+    <meta name="generator" content="Hugo 0.96.0" />
     
     
-      <META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
+      <META NAME="ROBOTS" CONTENT="INDEX, FOLLOW">
     
 
     
@@ -35,27 +35,26 @@ The problem? Imagine my partner and I were working on the same repository. I am 
 <meta property="og:description" content="Git Merge Squash This is a short article documenting my process of reusing someone else&rsquo;s change. It is not particularly easy and therefore I would like a document to remember how I did it.
 The problem? Imagine my partner and I were working on the same repository. I am working on a feature and he is working on a fix that I need. However, for whatever reasons, my partner couldn&rsquo;t merge the fix in, but I would really like to apply his change in my code base so that my scenario work (at least locally), how should I do it?" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://cshung.github.io/posts/git-merge-squash/" />
+<meta property="og:url" content="https://cshung.github.io/posts/git-merge-squash/" /><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2021-04-21T12:57:39-07:00" />
 <meta property="article:modified_time" content="2021-04-21T12:57:39-07:00" />
+
 <meta itemprop="name" content="Git Merge Squash">
 <meta itemprop="description" content="Git Merge Squash This is a short article documenting my process of reusing someone else&rsquo;s change. It is not particularly easy and therefore I would like a document to remember how I did it.
-The problem? Imagine my partner and I were working on the same repository. I am working on a feature and he is working on a fix that I need. However, for whatever reasons, my partner couldn&rsquo;t merge the fix in, but I would really like to apply his change in my code base so that my scenario work (at least locally), how should I do it?">
-<meta itemprop="datePublished" content="2021-04-21T12:57:39-07:00" />
+The problem? Imagine my partner and I were working on the same repository. I am working on a feature and he is working on a fix that I need. However, for whatever reasons, my partner couldn&rsquo;t merge the fix in, but I would really like to apply his change in my code base so that my scenario work (at least locally), how should I do it?"><meta itemprop="datePublished" content="2021-04-21T12:57:39-07:00" />
 <meta itemprop="dateModified" content="2021-04-21T12:57:39-07:00" />
 <meta itemprop="wordCount" content="796">
-
-
-
 <meta itemprop="keywords" content="" /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Git Merge Squash"/>
 <meta name="twitter:description" content="Git Merge Squash This is a short article documenting my process of reusing someone else&rsquo;s change. It is not particularly easy and therefore I would like a document to remember how I did it.
 The problem? Imagine my partner and I were working on the same repository. I am working on a feature and he is working on a fix that I need. However, for whatever reasons, my partner couldn&rsquo;t merge the fix in, but I would really like to apply his change in my code base so that my scenario work (at least locally), how should I do it?"/>
 
+      
+    
 	
   </head>
 
-  <body class="ma0 avenir bg-near-white">
+  <body class="ma0 avenir bg-near-white production">
     <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
     <script>mermaid.initialize({startOnLoad:true});</script>
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
@@ -167,27 +166,27 @@ The problem? Imagine my partner and I were working on the same repository. I am 
 <h3 id="rebase">Rebase</h3>
 <p>Alternatively, we can use <code>git rebase upstream/main</code>. This will make sure all the local commits are made on top of the ones coming from <code>upstream/main</code>.</p>
 <p>The difference of these are best illustrated by an example. Suppose the feature branch started when we have 2 commits:</p>
-<pre><code>v2 &lt;- fork/main
+<pre tabindex="0"><code>v2 &lt;- fork/main
 v1
 </code></pre><p>Now we are working on the feature, and created a few commits</p>
-<pre><code>f2 &lt;- fork/feature
+<pre tabindex="0"><code>f2 &lt;- fork/feature
 f1
 v2 &lt;- fork/main
 v1  
 </code></pre><p>At this time, the upstream moved forward:</p>
-<pre><code>v4 &lt;- upstream/main
+<pre tabindex="0"><code>v4 &lt;- upstream/main
 v3
 v2 &lt;- fork/main
 v1  
 </code></pre><p>and we wanted to stay in sync, we could have done a merge like this</p>
-<pre><code>f3 &lt;- fork/feature
+<pre tabindex="0"><code>f3 &lt;- fork/feature
 f2
 f1
 v2 &lt;- fork/main
 v1
 </code></pre><p>The <code>f3</code> is a merge commit. It contains all changes from <code>v3</code>, <code>v4</code>, and perhaps potential changes required to due with conflicts. <code>f3</code> will have two parents, pointing to both <code>v4</code> and <code>f2</code>.</p>
 <p>We could also do a rebase:</p>
-<pre><code>f2
+<pre tabindex="0"><code>f2
 f1
 v4
 v3
@@ -199,20 +198,20 @@ v1
 <p>I could have cherry-picked the 3 of them, but when the list of commits get long, it will be tedious and error prone. Fortunately, git has a solution for everything.</p>
 <h2 id="squashing-a-branch">Squashing a branch</h2>
 <p>In GitHub, there is a squash and merge button that can turn a PR into a single commit and merge into the upstream. This is something we can do locally as follow:</p>
-<pre><code>git checkout main
+<pre tabindex="0"><code>git checkout main
 git checkout -b temp1
 git checkout feature
 git checkout -b temp2
 git merge temp1
 git checkout temp1
 git merge --squash temp2
-git commit -m &quot;Feature!&quot;
+git commit -m &#34;Feature!&#34;
 </code></pre><p>Now we can use the commit, <code>cherry-pick</code> to where we needed it.</p>
 <p>This needs some explanation. We assume <code>main</code> is a branch that is more recent then when <code>feature</code> is developed upon. To ensure we are not changing either <code>main</code> or <code>feature</code>, we created new branches <code>temp1</code> and <code>temp2</code> for them.</p>
 <p>The fifth command makes sure <code>temp2</code> can be interpreted as a change on top of <code>temp1</code>. If we knew when exactly is the last merge for <code>feature</code>, we could have skip this step. In practice, it is difficult to figure that out, and it is much easier to just give the branch a new base.</p>
 <p>The magic command is the seventh command. On the temp1 branch, we wanted to create a single commit that represents the change to <code>temp1</code> overall from <code>temp2</code>. The merge command itself won&rsquo;t commit, it will just put it in the staging area, and therefore we need the last command to create a commit for it.</p>
 <p>Just remember to remove the temp branches when they are done.</p>
-<pre><code>git branch -D temp1
+<pre tabindex="0"><code>git branch -D temp1
 git branch -D temp2
 </code></pre><ul class="pa0">
   

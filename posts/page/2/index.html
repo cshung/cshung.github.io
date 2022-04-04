@@ -7,10 +7,10 @@
     <title>My Blog</title>
     <meta name="viewport" content="width=device-width,minimum-scale=1">
     <meta name="description" content="">
-    <meta name="generator" content="Hugo 0.73.0-DEV" />
+    <meta name="generator" content="Hugo 0.96.0" />
     
     
-      <META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
+      <META NAME="ROBOTS" CONTENT="INDEX, FOLLOW">
     
 
     
@@ -39,16 +39,18 @@
 <meta property="og:description" content="" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://cshung.github.io/posts/" />
-<meta property="og:updated_time" content="2021-12-26T10:52:35-08:00" />
+
 <meta itemprop="name" content="Posts">
 <meta itemprop="description" content=""><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Posts"/>
 <meta name="twitter:description" content=""/>
 
+      
+    
 	
   </head>
 
-  <body class="ma0 avenir bg-near-white">
+  <body class="ma0 avenir bg-near-white production">
     <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
     <script>mermaid.initialize({startOnLoad:true});</script>
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
@@ -103,6 +105,22 @@
   <article class="pa3 pa4-ns nested-copy-line-height nested-img">
     <section class="cf ph3 ph5-l pv3 pv4-l f4 tc-l center measure-wide lh-copy mid-gray"></section>
     <section class="flex-ns flex-wrap justify-around mt5">
+      
+        <div class="relative w-100 w-30-l mb4 bg-white"><div class="relative w-100 mb4 bg-white nested-copy-line-height">
+  <div class="bg-white mb3 pa4 gray overflow-hidden">
+    <span class="f6 db">Posts</span>
+    <h1 class="f3 near-black">
+      <a href="https://cshung.github.io/posts/git-merge-squash/" class="link black dim">
+        Git Merge Squash
+      </a>
+    </h1>
+    <div class="nested-links f5 lh-copy nested-copy-line-height">
+      Git Merge Squash This is a short article documenting my process of reusing someone else&rsquo;s change. It is not particularly easy and therefore I would like a document to remember how I did it.
+The problem? Imagine my partner and I were working on the same repository. I am working on a feature and he is working on a fix that I need. However, for whatever reasons, my partner couldn&rsquo;t merge the fix in, but I would really like to apply his change in my code base so that my scenario work (at least locally), how should I do it?
+    </div>
+  </div>
+</div>
+</div>
       
         <div class="relative w-100 w-30-l mb4 bg-white"><div class="relative w-100 mb4 bg-white nested-copy-line-height">
   <div class="bg-white mb3 pa4 gray overflow-hidden">
@@ -163,7 +181,7 @@ To use the notebook to get to the data frame, we need to run the first cell (as 
     <div class="nested-links f5 lh-copy nested-copy-line-height">
       Varying the benchmark In the last post, we showed that in a particular scenario, allocating pinned objects on pinned object heap is a better choice from both the speed perspective and the heap size perspective. How about other scenarios?
 In part 4, we already discussed the criterion what is feasible to test under GCPerfSim, so we will simply generate all the possibilities here with this simple Python script
-for a in range(1, 100): if 1000 % a == 0: for b in range(1, a): if a % b == 0: if ((1000 - b) % (a - b) == 0): pin_sohsi = 1000 // a pin_sohpi = a // b poh_sohsi = (1000 - b) // (a - b) poh_pohar = b print(&#34; 2gb_pin_%s_%s:&#34; % (a, b)); print(&#34; arguments:&#34;); print(&#34; tc: 6&#34;); print(&#34; tagb: 100&#34;); print(&#34; tlgb: 2&#34;); print(&#34; lohar: 0&#34;); print(&#34; pohar: 0&#34;); print(&#34; sohsr: 100-4000&#34;); print(&#34; pohsr: 100-4000&#34;); print(&#34; sohsi: %s&#34; % pin_sohsi); print(&#34; lohsi: 0&#34;); print(&#34; pohsi: 0&#34;); print(&#34; sohpi: %s&#34; % pin_sohpi); print(&#34; lohpi: 0&#34;); print(&#34; sohfi: 0&#34;); print(&#34; lohfi: 0&#34;); print(&#34; pohfi: 0&#34;); print(&#34; allocType: reference&#34;); print(&#34; testKind: time&#34;); print(&#34; 2gb_poh_%s_%s:&#34; % (a, b)); print(&#34; arguments:&#34;); print(&#34; tc: 6&#34;); print(&#34; tagb: 100&#34;); print(&#34; tlgb: 2&#34;); print(&#34; lohar: 0&#34;); print(&#34; pohar: %s&#34; % poh_pohar); print(&#34; sohsr: 100-4000&#34;); print(&#34; pohsr: 100-4000&#34;); print(&#34; sohsi: %s&#34; % poh_sohsi); print(&#34; lohsi: 0&#34;); print(&#34; pohsi: 1&#34;); print(&#34; sohpi: 0&#34;); print(&#34; lohpi: 0&#34;); print(&#34; sohfi: 0&#34;); print(&#34; lohfi: 0&#34;); print(&#34; pohfi: 0&#34;); print(&#34; allocType: reference&#34;); print(&#34; testKind: time&#34;); Preprocessing the result As usual, we can create a pandas data frame for all the runs.
+for a in range(1, 100):  if 1000 % a == 0:  for b in range(1, a):  if a % b == 0:  if ((1000 - b) % (a - b) == 0):  pin_sohsi = 1000 // a  pin_sohpi = a // b  poh_sohsi = (1000 - b) // (a - b)  poh_pohar = b  print(&#34; 2gb_pin_%s_%s:&#34; % (a, b));  print(&#34; arguments:&#34;);  print(&#34; tc: 6&#34;);  print(&#34; tagb: 100&#34;);  print(&#34; tlgb: 2&#34;);  print(&#34; lohar: 0&#34;);  print(&#34; pohar: 0&#34;);  print(&#34; sohsr: 100-4000&#34;);  print(&#34; pohsr: 100-4000&#34;);  print(&#34; sohsi: %s&#34; % pin_sohsi);  print(&#34; lohsi: 0&#34;);  print(&#34; pohsi: 0&#34;);  print(&#34; sohpi: %s&#34; % pin_sohpi);  print(&#34; lohpi: 0&#34;);  print(&#34; sohfi: 0&#34;);  print(&#34; lohfi: 0&#34;);  print(&#34; pohfi: 0&#34;);  print(&#34; allocType: reference&#34;);  print(&#34; testKind: time&#34;);  print(&#34; 2gb_poh_%s_%s:&#34; % (a, b));  print(&#34; arguments:&#34;);  print(&#34; tc: 6&#34;);  print(&#34; tagb: 100&#34;);  print(&#34; tlgb: 2&#34;);  print(&#34; lohar: 0&#34;);  print(&#34; pohar: %s&#34; % poh_pohar);  print(&#34; sohsr: 100-4000&#34;);  print(&#34; pohsr: 100-4000&#34;);  print(&#34; sohsi: %s&#34; % poh_sohsi);  print(&#34; lohsi: 0&#34;);  print(&#34; pohsi: 1&#34;);  print(&#34; sohpi: 0&#34;);  print(&#34; lohpi: 0&#34;);  print(&#34; sohfi: 0&#34;);  print(&#34; lohfi: 0&#34;);  print(&#34; pohfi: 0&#34;);  print(&#34; allocType: reference&#34;);  print(&#34; testKind: time&#34;); Preprocessing the result As usual, we can create a pandas data frame for all the runs.
     </div>
   </div>
 </div>
@@ -250,79 +268,30 @@ Pinned Object Heap size (and the event tracing mechanisms) With the tools availa
 </div>
 </div>
       
-        <div class="relative w-100 w-30-l mb4 bg-white"><div class="relative w-100 mb4 bg-white nested-copy-line-height">
-  <div class="bg-white mb3 pa4 gray overflow-hidden">
-    <span class="f6 db">Posts</span>
-    <h1 class="f3 near-black">
-      <a href="https://cshung.github.io/posts/generation-aware-analysis/" class="link black dim">
-        Generation Aware Analysis
-      </a>
-    </h1>
-    <div class="nested-links f5 lh-copy nested-copy-line-height">
-      The problem? The .NET GC is generational, it makes the assumption that allocations are broadly divided into two classes, either they are short-lived (e.g. temporary objects) or they are long-lived (e.g. constants, caches for repeated uses). This assumption is often true, but once in a while, that&rsquo;s not true, often due to programmer mistakes. If a pile of objects meant for short-term usage is leaked into gen2, that can cost a short-term spike in ephemeral GC latency, and a long-term memory cost for storing them.
-    </div>
-  </div>
-</div>
-</div>
-      
     </section>
-
-<ul class="pagination">
-    
-    <li class="page-item">
-        <a href="/posts/" class="page-link" aria-label="First"><span aria-hidden="true">&laquo;&laquo;</span></a>
-    </li>
-    
-    <li class="page-item">
-    <a href="/posts/" class="page-link" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a>
-    </li>
-    
-    
-    
-    
-    
-    
-    
-        
-        
-    
-    
-    <li class="page-item"><a class="page-link" href="/posts/">1</a></li>
-    
-    
-    
-    
-    
-    
-        
-        
-    
-    
-    <li class="page-item active"><a class="page-link" href="/posts/page/2/">2</a></li>
-    
-    
-    
-    
-    
-    
-        
-        
-    
-    
-    <li class="page-item"><a class="page-link" href="/posts/page/3/">3</a></li>
-    
-    
-    <li class="page-item">
-    <a href="/posts/page/3/" class="page-link" aria-label="Next"><span aria-hidden="true">&raquo;</span></a>
-    </li>
-    
-    <li class="page-item">
-        <a href="/posts/page/3/" class="page-link" aria-label="Last"><span aria-hidden="true">&raquo;&raquo;</span></a>
-    </li>
-    
-</ul>
-
-</article>
+    <ul class="pagination pagination-default">
+      <li class="page-item">
+        <a href="/posts/" aria-label="First" class="page-link" role="button"><span aria-hidden="true">&laquo;&laquo;</span></a>
+      </li>
+      <li class="page-item">
+        <a href="/posts/" aria-label="Previous" class="page-link" role="button"><span aria-hidden="true">&laquo;</span></a>
+      </li>
+      <li class="page-item">
+        <a href="/posts/" aria-label="Page 1" class="page-link" role="button">1</a>
+      </li>
+      <li class="page-item active">
+        <a aria-current="page" aria-label="Page 2" class="page-link" role="button">2</a>
+      </li>
+      <li class="page-item">
+        <a href="/posts/page/3/" aria-label="Page 3" class="page-link" role="button">3</a>
+      </li>
+      <li class="page-item">
+        <a href="/posts/page/3/" aria-label="Next" class="page-link" role="button"><span aria-hidden="true">&raquo;</span></a>
+      </li>
+      <li class="page-item">
+        <a href="/posts/page/3/" aria-label="Last" class="page-link" role="button"><span aria-hidden="true">&raquo;&raquo;</span></a>
+      </li>
+    </ul></article>
 
     </main>
     <footer class="bg-black bottom-0 w-100 pa3" role="contentinfo">

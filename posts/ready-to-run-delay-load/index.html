@@ -8,11 +8,11 @@
     <meta name="viewport" content="width=device-width,minimum-scale=1">
     <meta name="description" content="In this series of posts, I will deep dive into ReadyToRun to understand its mechanisms. In my previous post, I briefly explained what is ReadyToRun and what problems do we need to solve. Now we will look into the exact mechanisms.
 The example We will start with this very simple example:
-using System; namespace ReadyToDebug { class Program { static void Main(string[] args) { for (int i = 0; i &lt; 3; i&#43;&#43;) { Console.">
-    <meta name="generator" content="Hugo 0.73.0-DEV" />
+using System;  namespace ReadyToDebug {  class Program  {  static void Main(string[] args)  {  for (int i = 0; i &lt; 3; i&#43;&#43;)  {  Console.">
+    <meta name="generator" content="Hugo 0.96.0" />
     
     
-      <META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
+      <META NAME="ROBOTS" CONTENT="INDEX, FOLLOW">
     
 
     
@@ -35,31 +35,30 @@ using System; namespace ReadyToDebug { class Program { static void Main(string[]
     <meta property="og:title" content="Ready to Run Delay Load" />
 <meta property="og:description" content="In this series of posts, I will deep dive into ReadyToRun to understand its mechanisms. In my previous post, I briefly explained what is ReadyToRun and what problems do we need to solve. Now we will look into the exact mechanisms.
 The example We will start with this very simple example:
-using System; namespace ReadyToDebug { class Program { static void Main(string[] args) { for (int i = 0; i &lt; 3; i&#43;&#43;) { Console." />
+using System;  namespace ReadyToDebug {  class Program  {  static void Main(string[] args)  {  for (int i = 0; i &lt; 3; i&#43;&#43;)  {  Console." />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://cshung.github.io/posts/ready-to-run-delay-load/" />
+<meta property="og:url" content="https://cshung.github.io/posts/ready-to-run-delay-load/" /><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2021-10-14T12:27:20-07:00" />
 <meta property="article:modified_time" content="2021-10-14T12:27:20-07:00" />
+
 <meta itemprop="name" content="Ready to Run Delay Load">
 <meta itemprop="description" content="In this series of posts, I will deep dive into ReadyToRun to understand its mechanisms. In my previous post, I briefly explained what is ReadyToRun and what problems do we need to solve. Now we will look into the exact mechanisms.
 The example We will start with this very simple example:
-using System; namespace ReadyToDebug { class Program { static void Main(string[] args) { for (int i = 0; i &lt; 3; i&#43;&#43;) { Console.">
-<meta itemprop="datePublished" content="2021-10-14T12:27:20-07:00" />
+using System;  namespace ReadyToDebug {  class Program  {  static void Main(string[] args)  {  for (int i = 0; i &lt; 3; i&#43;&#43;)  {  Console."><meta itemprop="datePublished" content="2021-10-14T12:27:20-07:00" />
 <meta itemprop="dateModified" content="2021-10-14T12:27:20-07:00" />
 <meta itemprop="wordCount" content="1732">
-
-
-
 <meta itemprop="keywords" content="" /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Ready to Run Delay Load"/>
 <meta name="twitter:description" content="In this series of posts, I will deep dive into ReadyToRun to understand its mechanisms. In my previous post, I briefly explained what is ReadyToRun and what problems do we need to solve. Now we will look into the exact mechanisms.
 The example We will start with this very simple example:
-using System; namespace ReadyToDebug { class Program { static void Main(string[] args) { for (int i = 0; i &lt; 3; i&#43;&#43;) { Console."/>
+using System;  namespace ReadyToDebug {  class Program  {  static void Main(string[] args)  {  for (int i = 0; i &lt; 3; i&#43;&#43;)  {  Console."/>
 
+      
+    
 	
   </head>
 
-  <body class="ma0 avenir bg-near-white">
+  <body class="ma0 avenir bg-near-white production">
     <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
     <script>mermaid.initialize({startOnLoad:true});</script>
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
@@ -156,29 +155,29 @@ using System; namespace ReadyToDebug { class Program { static void Main(string[]
     <div class="nested-copy-line-height lh-copy serif f4 nested-links nested-img mid-gray pr4-l w-two-thirds-l"><p>In this series of posts, I will deep dive into ReadyToRun to understand its mechanisms. In my <a href="/posts/introduction-to-ilcompiler-reflection-readytorun">previous post</a>, I briefly explained what is ReadyToRun and what problems do we need to solve. Now we will look into the exact mechanisms.</p>
 <h1 id="the-example">The example</h1>
 <p>We will start with this very simple example:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c#" data-lang="c#"><span style="color:#66d9ef">using</span> System;
-
-<span style="color:#66d9ef">namespace</span> ReadyToDebug
-{
-    <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Program</span>
-    {
-        <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> Main(<span style="color:#66d9ef">string</span>[] args)
-        {
-            <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> i = <span style="color:#ae81ff">0</span>; i &lt; <span style="color:#ae81ff">3</span>; i++)
-            {
-                Console.WriteLine(<span style="color:#e6db74">&#34;Hello World!&#34;</span>);
-            }
-        }
-    }
-}
-</code></pre></div><p>To be precise, I put it in a project targetting .NET 6.0, and compiled using the ready to run option as follow:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c#" data-lang="c#"><span style="display:flex;"><span><span style="color:#66d9ef">using</span> System;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">namespace</span> ReadyToDebug
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Program</span>
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> Main(<span style="color:#66d9ef">string</span>[] args)
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> i = <span style="color:#ae81ff">0</span>; i &lt; <span style="color:#ae81ff">3</span>; i++)
+</span></span><span style="display:flex;"><span>            {
+</span></span><span style="display:flex;"><span>                Console.WriteLine(<span style="color:#e6db74">&#34;Hello World!&#34;</span>);
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>To be precise, I put it in a project targetting .NET 6.0, and compiled using the ready to run option as follow:</p>
 <p><code>dotnet publish -r win-x64 /p:PublishReadyToRun=true</code></p>
 <p>Of course, the program simply prints &ldquo;Hello World&rdquo; 3 times.</p>
 <h1 id="the-tools">The tools</h1>
 <p>We will use <a href="https://github.com/icsharpcode/ILSpy/wiki/ILSpy.ReadyToRun">ILSpy.ReadyToRun</a> to disassemble the compiled code, and we will use the <a href="https://docs.microsoft.com/en-us/windows-hardware/drivers/debugger/time-travel-debugging-record">Time Travel Debugging</a> in WinDBG capability to make debugging easier.</p>
 <h1 id="disassembling-the-code">Disassembling the code</h1>
 <p>Using ILSpy.ReadyToRun, here is the method disassembled.</p>
-<pre><code>; void ReadyToDebug.Program.Main(string[])
+<pre tabindex="0"><code>; void ReadyToDebug.Program.Main(string[])
 ; Prolog
 00000000000017C0 57                   push      rdi
 00000000000017C1 56                   push      rsi
@@ -217,15 +216,15 @@ using System; namespace ReadyToDebug { class Program { static void Main(string[]
 <p>This will show the normal debugging session, and we will start debugging it.</p>
 <h1 id="analyzing-the-trace">Analyzing the trace</h1>
 <p>We would like to know what happened on the indirect calls. So naturally we would like to set a breakpoint to it. Right now, <code>ReadyToDebug.dll</code> is not even loaded in the process yet. So the first thing to do is to run until it is loaded. We can do that using this command</p>
-<pre><code>0:000&gt; sxe ld ReadyToDebug
+<pre tabindex="0"><code>0:000&gt; sxe ld ReadyToDebug
 0:000&gt; g
 </code></pre><p>This will run until <code>ReadyToDebug.dll</code> is loaded, and when it does, the debugger shows:</p>
-<pre><code>...
+<pre tabindex="0"><code>...
 ModLoad: 000001e2`f7b50000 000001e2`f7b54000   c:\Garbage\ReadyToDebug\bin\Debug\net6.0\win-x64\publish\ReadyToDebug.dll
 </code></pre><p>The first address, <code>000001e2f7b50000</code>, is the base address of the module. It may or may not be the same on other machines (and even executions on the same machine). But once we have this address, then we have this very simple formula:</p>
-<pre><code>virtual address = base address + relative virtual address
+<pre tabindex="0"><code>virtual address = base address + relative virtual address
 </code></pre><p>The virtual refers to virtual memory (which is used in practically any OS today). So if we ignore the word virtual, this is basically saying the address is the base address plus the relative address. Therefore, or call site is simply <code>000001e2f7b50000 + 17d2 = 000001e2f7b517d2</code>. We will set a breakpoint there.</p>
-<pre><code>0:000&gt; bp 000001e2f7b517d2
+<pre tabindex="0"><code>0:000&gt; bp 000001e2f7b517d2
 0:000&gt; g
 ...
 Breakpoint 0 hit
@@ -246,7 +245,7 @@ TTD: End of trace reached.
 </code></pre><p>As we can see, the breakpoint hit 3 times, and then the process terminates. Of course, that matches our expectation that <code>Console.WriteLine</code> is called 3 times.</p>
 <h1 id="the-first-call">The first call</h1>
 <p>Now we will go back in time to see what happened in the first call.</p>
-<pre><code>0:000&gt; !tt 171F7:9
+<pre tabindex="0"><code>0:000&gt; !tt 171F7:9
 Setting position: 171F7:9
 0:000&gt; dq 000001e2`f7b520a0 L1
 000001e2`f7b520a0  000001e2`f7b51804
@@ -258,7 +257,7 @@ Setting position: 171F7:9
 </code></pre><p>Remember we said the address to the actual call site is stored in <code>20a0</code>? We inspected the call site and found this code. This code is weird, we do not setup a frame and just push and jump. This pattern is often called a trunk or a trampoline. Roughly speaking, this is not a function, but a decorator of the function. If we think about the decorator pattern, you can use a decorator to execute something before of after a method. This is exactly what we are trying to do here.</p>
 <p>The key thing to notice here is that we set <code>eax</code> to 0 and pushed two more values onto the stack. Overall, the stack remain unchanged. So the argument to the target function and the return address are still there!</p>
 <p>Next, we look at the last jump.</p>
-<pre><code>0:000&gt; dq 000001e2`f7b52088 L1
+<pre tabindex="0"><code>0:000&gt; dq 000001e2`f7b52088 L1
 000001e2`f7b52088  00007ffd`39f349a0
 0:000&gt; uf 00007ffd`39f349a0
 coreclr!DelayLoad_MethodCall:
@@ -307,7 +306,7 @@ coreclr!DelayLoad_MethodCall:
 <p>Note that at the end we popped <code>r14</code> and <code>r15</code> which is not pushed. This is to make sure we balance out the two additional pushes before we reach <code>DelayLoad_MethodCall</code>. By the time we jump, the stack will be exactly as it was at the callsite.</p>
 <p>Looking at just the stack, this is simply another trunk. The key is what <code>ExternalMethodFixupWorker</code> to prepare the <code>ExternalMethodFixupPatchLabel</code>.</p>
 <p>Note that the last jump is NOT an indirect jump, all it does is simply jumping to where <code>rax</code> points to:</p>
-<pre><code>0:000&gt; u 00007ffd`39f3499a
+<pre tabindex="0"><code>0:000&gt; u 00007ffd`39f3499a
 coreclr!ExternalMethodFixupPatchLabel:
 00007ffd`39f3499a 48ffe0          jmp     rax
 </code></pre><p><code>rax</code> is of course the return value of ExternalMethodFixupWorker.</p>
@@ -318,13 +317,13 @@ coreclr!ExternalMethodFixupPatchLabel:
 <p>Further downstream, we will simply run the <code>Console.WriteLine</code> implementation, so we will skip that.</p>
 <h1 id="the-third-call">The third call</h1>
 <p>Now you might wonder, why do I call the function 3 times to show you how a method call is done? The reason is that calling <code>ExternalMethodFixupWorker</code> is expensive, and we don&rsquo;t want want to call it repeatedly after we already know where it should be. Let&rsquo;s inspect the 3rd call now.</p>
-<pre><code>0:000&gt; !tt 1A9A1:16
+<pre tabindex="0"><code>0:000&gt; !tt 1A9A1:16
 0:000&gt; dq 000001e2`f7b520a0 L1
 000001e2`f7b520a0  00007ffc`da3a2a68
 0:000&gt; u 00007ffc`da3a2a68
 00007ffc`da3a2a68 e9effaffff      jmp     00007ffc`da3a255c
 </code></pre><p>The code changed! This is why we called it multiple times. At the third call, we no longer do the <code>DelayLoad_MethodCall</code> work and instead just jump directly to the implementation. Something must have changed the code!</p>
-<pre><code>0:000&gt; !ttpw 000001e2`f7b520a0
+<pre tabindex="0"><code>0:000&gt; !ttpw 000001e2`f7b520a0
 Time Travel Position: 1A995:217 [Unindexed] Index
 0:000&gt; k
  # Child-SP          RetAddr               Call Site

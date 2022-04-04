@@ -8,10 +8,10 @@
     <meta name="viewport" content="width=device-width,minimum-scale=1">
     <meta name="description" content="I am writing this post to share a memory leak investigation which turns out to be a false positive (i.e. we are not having a managed memory leak). This goal of this document is to share the analysis method so that it could be applied to similar situations.
 Highlights Before I go into the details, here is a one line summary of the conclusion. This case is NOT a managed memory leak, but because a compiler generated temp is considered a reference and therefore the garbage collector cannot eliminate it.">
-    <meta name="generator" content="Hugo 0.73.0-DEV" />
+    <meta name="generator" content="Hugo 0.96.0" />
     
     
-      <META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
+      <META NAME="ROBOTS" CONTENT="INDEX, FOLLOW">
     
 
     
@@ -35,27 +35,26 @@ Highlights Before I go into the details, here is a one line summary of the concl
 <meta property="og:description" content="I am writing this post to share a memory leak investigation which turns out to be a false positive (i.e. we are not having a managed memory leak). This goal of this document is to share the analysis method so that it could be applied to similar situations.
 Highlights Before I go into the details, here is a one line summary of the conclusion. This case is NOT a managed memory leak, but because a compiler generated temp is considered a reference and therefore the garbage collector cannot eliminate it." />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://cshung.github.io/posts/false-memory-leak/" />
+<meta property="og:url" content="https://cshung.github.io/posts/false-memory-leak/" /><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2021-08-13T12:18:40-07:00" />
 <meta property="article:modified_time" content="2021-08-13T12:18:40-07:00" />
+
 <meta itemprop="name" content="False Memory Leak">
 <meta itemprop="description" content="I am writing this post to share a memory leak investigation which turns out to be a false positive (i.e. we are not having a managed memory leak). This goal of this document is to share the analysis method so that it could be applied to similar situations.
-Highlights Before I go into the details, here is a one line summary of the conclusion. This case is NOT a managed memory leak, but because a compiler generated temp is considered a reference and therefore the garbage collector cannot eliminate it.">
-<meta itemprop="datePublished" content="2021-08-13T12:18:40-07:00" />
+Highlights Before I go into the details, here is a one line summary of the conclusion. This case is NOT a managed memory leak, but because a compiler generated temp is considered a reference and therefore the garbage collector cannot eliminate it."><meta itemprop="datePublished" content="2021-08-13T12:18:40-07:00" />
 <meta itemprop="dateModified" content="2021-08-13T12:18:40-07:00" />
 <meta itemprop="wordCount" content="1726">
-
-
-
 <meta itemprop="keywords" content="" /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="False Memory Leak"/>
 <meta name="twitter:description" content="I am writing this post to share a memory leak investigation which turns out to be a false positive (i.e. we are not having a managed memory leak). This goal of this document is to share the analysis method so that it could be applied to similar situations.
 Highlights Before I go into the details, here is a one line summary of the conclusion. This case is NOT a managed memory leak, but because a compiler generated temp is considered a reference and therefore the garbage collector cannot eliminate it."/>
 
+      
+    
 	
   </head>
 
-  <body class="ma0 avenir bg-near-white">
+  <body class="ma0 avenir bg-near-white production">
     <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
     <script>mermaid.initialize({startOnLoad:true});</script>
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
@@ -167,17 +166,17 @@ Highlights Before I go into the details, here is a one line summary of the concl
 <p>The expectation is that since the worker thread eliminated all but one node, we should have exactly one node left on the heap when we generate the heap dump.</p>
 <h1 id="the-repro-steps">The repro steps</h1>
 <p>To reproduce the issue, we need a way to observe how many objects are there still alive on the heap. To do that, we first build the project. For my convenience, this investigation is done on Windows, x64. But I expect exactly the same happens on Linux ARM as well.</p>
-<pre><code>C:\FalseLeakRepro&gt; dotnet build
+<pre tabindex="0"><code>C:\FalseLeakRepro&gt; dotnet build
 C:\FalseLeakRepro&gt; windbg bin\Debug\net5.0\FalseLeakRepro.exe
 </code></pre><p>In the debugger, we let the process go. To make sure the objects goes away, I used &lsquo;R&rsquo;, &lsquo;G&rsquo;, &lsquo;H&rsquo;. That make sure the work thread terminates and we forced full blocking gen 2 GC. Then we take a look at the heap using the <code>!DumpHeap</code> SOS extension command.</p>
-<pre><code>0:000&gt; !DumpHeap
+<pre tabindex="0"><code>0:000&gt; !DumpHeap
 ...
 00007ffdce947768       10          320 FalseLeakRepro.Node
 ...
 </code></pre><p>So we have reproduced the problem! All the 10 nodes are still on the heap after forcing the GC.</p>
 <h1 id="analysis">Analysis</h1>
 <p>Next, we wanted to understand why they are still on the heap. We can use the <code>!gcroot</code> SOS extension command to do that. First, we take a look at the individual objects with this type:</p>
-<pre><code>0:000&gt; !DumpHeap -mt 00007ffdce947768
+<pre tabindex="0"><code>0:000&gt; !DumpHeap -mt 00007ffdce947768
          Address               MT     Size
 0000025a2e2536c0 00007ffdce947768       32     
 0000025a2e2536f8 00007ffdce947768       32     
@@ -196,7 +195,7 @@ Statistics:
 Total 10 objects
 ...
 </code></pre><p>This gave us the addresses to the 10 objects, now we pick a random one (to avoid picking the <code>Head</code> or <code>Tail</code> which is just not interesting) and ask for the GC root.</p>
-<pre><code>0:000&gt; !gcroot 0000025a2e2537d8
+<pre tabindex="0"><code>0:000&gt; !gcroot 0000025a2e2537d8
 Thread 464c:
     000000C7FC57E170 00007FFDCE876E03 FalseLeakRepro.Program.Run(System.String[]) [C:\dev\blog-samples\FalseLeakRepro\Program.cs @ 124]
         rbp-a0: 000000c7fc57e240
@@ -208,14 +207,14 @@ Thread 464c:
             -&gt;  0000025A2E2537A0 FalseLeakRepro.Node
             -&gt;  0000025A2E2537D8 FalseLeakRepro.Node
 
-Found 1 unique roots (run '!gcroot -all' to see all roots).
+Found 1 unique roots (run &#39;!gcroot -all&#39; to see all roots).
 </code></pre><p>Now the debugger output tells us that the node is alive because of this chain of references. The most important one being the <code>RootNode</code>. If we think about it, the root node should be the first one that got removed in the worker thread, why does it still there? The debugger tells us it is <code>rbp-a0</code> of the <code>Run</code> method stack frame.</p>
 <p>The stack frame is supposed to have parameters, return address and local variables. Run has no parameters (except the <code>this</code> pointer), the return address cannot be the <code>RootNode</code>, and we don&rsquo;t have a local variable of type <code>RootNode</code>. So what is going on here?</p>
 <h1 id="looking-at-jitdump">Looking at JITDump</h1>
 <p>While we could look at the disassembly and try to figure it out, it is much more informational to let the JIT tells us what is going on with <a href="https://github.com/dotnet/runtime/blob/main/docs/design/coreclr/jit/viewing-jit-dumps.md"><code>JITDump</code></a>. We need to patch the runtime with a debug build, and enable dumping the method with the following environment variable:</p>
-<pre><code>set COMPLUS_JITDump=FalseLeakRepro.Program:Run(System.String[]):this
+<pre tabindex="0"><code>set COMPLUS_JITDump=FalseLeakRepro.Program:Run(System.String[]):this
 </code></pre><p>Here are the relevant parts - the full JITDump can be found <a href="https://raw.githubusercontent.com/cshung/blog-samples/main/FalseLeakRepro/debug.bug.jitdump.txt">here</a>:</p>
-<pre><code>IL_0024  7d 05 00 00 04    stfld        0x4000005
+<pre tabindex="0"><code>IL_0024  7d 05 00 00 04    stfld        0x4000005
 IL_0029  02                ldarg.0     
 IL_002a  7b 05 00 00 04    ldfld        0x4000005
 IL_002f  7b 03 00 00 04    ldfld        0x4000003
@@ -243,11 +242,11 @@ STMT00013 (IL   ???...  ???)
                [000033] ------------                    \--*  LCL_VAR   ref    V00 this         
 Marked V24 as a single def temp
 ...
-;  V24 tmp6         [V24    ] (  1,  1   )     ref  -&gt;  [rbp-A0H]   do-not-enreg[] must-init class-hnd &quot;impAppendStmt&quot;
+;  V24 tmp6         [V24    ] (  1,  1   )     ref  -&gt;  [rbp-A0H]   do-not-enreg[] must-init class-hnd &#34;impAppendStmt&#34;
 ...
 </code></pre><p>The right way to read this is to start from the bottom. We have a variable internally named <code>V24</code> on <code>rbp-A0H</code>. <code>V24</code> is introduced when trying to compile the expression tree that get <code>this._myList.Head</code>, and this is because the IL source on <code>IL_0029</code> is asking for it.</p>
 <p>ILSpy can be an awesome tool to map IL back to C# source code using the IL with C# view. Here is the relevant part:</p>
-<pre><code>	// _myList.Head.Data = new object();
+<pre tabindex="0"><code>	// _myList.Head.Data = new object();
 	IL_0029: ldarg.0
 	IL_002a: ldfld class FalseLeakRepro.List FalseLeakRepro.Program::_myList
 	IL_002f: ldfld class FalseLeakRepro.Node FalseLeakRepro.List::Head
@@ -258,14 +257,14 @@ Marked V24 as a single def temp
 <p>This particular behavior is actually expected in debug mode. In debug mode, all the variables are defined to be untracked, meaning that they will be considered live throughout the whole method. This is by design to make debugging easier. It would be a hassle to see if a certain variable cannot be inspected during debugging while the method is still running.</p>
 <p>Also, in debug mode, you want to iterate with the code fast. By leaving all the variables (even the compiler generated temps) untracked, we can potentially JIT the code faster.</p>
 <p>In the view of this, let&rsquo;s experiment with a release build. By repeating the steps: I confirmed that the memory leak is gone.</p>
-<pre><code>0:000&gt; !DumpHeap
+<pre tabindex="0"><code>0:000&gt; !DumpHeap
 ...
 00007ffdcdc06508        1           32 FalseLeakRepro.Node
 ...
 </code></pre><h1 id="optimized-jitdump">Optimized JITDump</h1>
 <p>It remains the analyze what happen under the optimized build.</p>
 <p>Here are the relevant parts - the full JITDump can be found <a href="https://raw.githubusercontent.com/cshung/blog-samples/main/FalseLeakRepro/release.jitdump.txt">here</a>:</p>
-<pre><code>lvaGrabTemp returning 10 (V10 tmp3) called for impAppendStmt.
+<pre tabindex="0"><code>lvaGrabTemp returning 10 (V10 tmp3) called for impAppendStmt.
 
 
 STMT00007 (IL   ???...  ???)
@@ -281,7 +280,7 @@ Generating: N091 (  1,  1) [000031] ------------        t31 =    LCL_VAR   ref  
 Generating: N093 (  2,  2) [000287] ------------       t287 = *  LEA(b+16) byref  REG rcx
 							V10 in reg rdi is becoming dead  [000031]
 ...
-;  V10 tmp3         [V10,T14] (  2,  4   )     ref  -&gt;  rdi         class-hnd single-def &quot;impAppendStmt&quot;
+;  V10 tmp3         [V10,T14] (  2,  4   )     ref  -&gt;  rdi         class-hnd single-def &#34;impAppendStmt&#34;
 ...
 </code></pre><p>We have the same temp defined, this time it is called <code>V10</code>. With an optimizing compiler, we are assigning it to a register <code>rdi</code>. To perform optimal register allocation, the compiler tracks when the value is defined, used, and unneeded. The compiler is able to detect <code>V10</code> is dead after generating <code>N093</code>, that&rsquo;s why it is able to repurpose <code>rdi</code> to store something else later, and it is also why the problem is gone because <code>rdi</code> no longer store the reference to the <code>RootNode</code>.</p>
 <h1 id="does-optimized-build-always-work">Does optimized build always work?</h1>

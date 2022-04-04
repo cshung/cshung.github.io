@@ -8,10 +8,10 @@
     <meta name="viewport" content="width=device-width,minimum-scale=1">
     <meta name="description" content="Understanding the brick table A brick table is a data structure that helps finding an object in the heap. To begin with the discussion, it makes sense to clarify what does finding an object mean.
 What is the find object problem? There are various situation that we are given a random pointer inside the heap, and we wanted to find the pointer to the object that is using the address.">
-    <meta name="generator" content="Hugo 0.73.0-DEV" />
+    <meta name="generator" content="Hugo 0.96.0" />
     
     
-      <META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
+      <META NAME="ROBOTS" CONTENT="INDEX, FOLLOW">
     
 
     
@@ -35,27 +35,26 @@ What is the find object problem? There are various situation that we are given a
 <meta property="og:description" content="Understanding the brick table A brick table is a data structure that helps finding an object in the heap. To begin with the discussion, it makes sense to clarify what does finding an object mean.
 What is the find object problem? There are various situation that we are given a random pointer inside the heap, and we wanted to find the pointer to the object that is using the address." />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://cshung.github.io/posts/brick/" />
+<meta property="og:url" content="https://cshung.github.io/posts/brick/" /><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2021-04-17T00:00:00-08:00" />
 <meta property="article:modified_time" content="2021-04-17T00:00:00-08:00" />
+
 <meta itemprop="name" content="Understanding the brick table">
 <meta itemprop="description" content="Understanding the brick table A brick table is a data structure that helps finding an object in the heap. To begin with the discussion, it makes sense to clarify what does finding an object mean.
-What is the find object problem? There are various situation that we are given a random pointer inside the heap, and we wanted to find the pointer to the object that is using the address.">
-<meta itemprop="datePublished" content="2021-04-17T00:00:00-08:00" />
+What is the find object problem? There are various situation that we are given a random pointer inside the heap, and we wanted to find the pointer to the object that is using the address."><meta itemprop="datePublished" content="2021-04-17T00:00:00-08:00" />
 <meta itemprop="dateModified" content="2021-04-17T00:00:00-08:00" />
 <meta itemprop="wordCount" content="671">
-
-
-
 <meta itemprop="keywords" content="" /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Understanding the brick table"/>
 <meta name="twitter:description" content="Understanding the brick table A brick table is a data structure that helps finding an object in the heap. To begin with the discussion, it makes sense to clarify what does finding an object mean.
 What is the find object problem? There are various situation that we are given a random pointer inside the heap, and we wanted to find the pointer to the object that is using the address."/>
 
+      
+    
 	
   </head>
 
-  <body class="ma0 avenir bg-near-white">
+  <body class="ma0 avenir bg-near-white production">
     <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
     <script>mermaid.initialize({startOnLoad:true});</script>
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
@@ -160,18 +159,18 @@ What is the find object problem? There are various situation that we are given a
 <h2 id="idea-to-speed-it-up">Idea to speed it up</h2>
 <p>To speed it up, we would like to start the search closer to the given random pointer. Suppose we know some object&rsquo;s begin address that is before and closer to the random pointer, we can simply start the search from there.</p>
 <p>To do so, we split the heap range into bricks. Each brick has size 2048/4096 for 32/64 bits. We can easily convert an address to its corresponding brick and a brick to its corresponding <em>base</em> address as follow:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#66d9ef">inline</span>
-size_t gc_heap<span style="color:#f92672">::</span>brick_of (<span style="color:#66d9ef">uint8_t</span><span style="color:#f92672">*</span> add)
-{
-    <span style="color:#66d9ef">return</span> (size_t)(add <span style="color:#f92672">-</span> lowest_address) <span style="color:#f92672">/</span> brick_size;
-}
-
-<span style="color:#66d9ef">inline</span>
-<span style="color:#66d9ef">uint8_t</span><span style="color:#f92672">*</span> gc_heap<span style="color:#f92672">::</span>brick_address (size_t brick)
-{
-    <span style="color:#66d9ef">return</span> lowest_address <span style="color:#f92672">+</span> (brick_size <span style="color:#f92672">*</span> brick);
-}
-</code></pre></div><p><em>The lowest address is simply the smallest address that the GC manages.</em></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#66d9ef">inline</span>
+</span></span><span style="display:flex;"><span>size_t gc_heap<span style="color:#f92672">::</span>brick_of (<span style="color:#66d9ef">uint8_t</span><span style="color:#f92672">*</span> add)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> (size_t)(add <span style="color:#f92672">-</span> lowest_address) <span style="color:#f92672">/</span> brick_size;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">inline</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">uint8_t</span><span style="color:#f92672">*</span> gc_heap<span style="color:#f92672">::</span>brick_address (size_t brick)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> lowest_address <span style="color:#f92672">+</span> (brick_size <span style="color:#f92672">*</span> brick);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p><em>The lowest address is simply the smallest address that the GC manages.</em></p>
 <p>Now we can store something to describe a brick. In particular, we wanted to know where does an object begin within a brick. Since a brick is small, we can simply store a within brick offset there, this has to be a non-negatve number less than the size of the brick, which can comfortably store in a 16-bits number (8-bits is apparently insufficient).</p>
 <h2 id="interesting-cases">Interesting cases</h2>
 <p>We have a couple issues here:</p>

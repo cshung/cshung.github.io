@@ -6,10 +6,16 @@
     <description>Recent content in Posts on My Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 26 Dec 2021 10:52:35 -0800</lastBuildDate>
-    
-	<atom:link href="https://cshung.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
-    
+    <lastBuildDate>Mon, 04 Apr 2022 08:20:54 -0700</lastBuildDate><atom:link href="https://cshung.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Debug MAUI Android</title>
+      <link>https://cshung.github.io/posts/debug-maui-android/</link>
+      <pubDate>Mon, 04 Apr 2022 08:20:54 -0700</pubDate>
+      
+      <guid>https://cshung.github.io/posts/debug-maui-android/</guid>
+      <description>These days I have been helping the MAUI team to fix some bugs. I always learn something new when I work on something new, and this time is no different. Today I am going to write about how to debug the Android code running inside a MAUI app.
+Procedure Step 1: Launching the App. I start the MAUI app in Visual Studio as usual. In this post, I am going to assume that we know how to start an App in Visual Studio.</description>
+    </item>
     
     <item>
       <title>SA-IS Algorithm</title>
@@ -49,7 +55,7 @@ The hardware side The best way to think of spurious interrupts is to think like 
       <guid>https://cshung.github.io/posts/ready-to-run-delay-load/</guid>
       <description>In this series of posts, I will deep dive into ReadyToRun to understand its mechanisms. In my previous post, I briefly explained what is ReadyToRun and what problems do we need to solve. Now we will look into the exact mechanisms.
 The example We will start with this very simple example:
-using System; namespace ReadyToDebug { class Program { static void Main(string[] args) { for (int i = 0; i &amp;lt; 3; i++) { Console.</description>
+using System;  namespace ReadyToDebug {  class Program  {  static void Main(string[] args)  {  for (int i = 0; i &amp;lt; 3; i++)  {  Console.</description>
     </item>
     
     <item>
@@ -70,7 +76,7 @@ Scenario One of our customers reported that occassionally, they are observing ge
       <guid>https://cshung.github.io/posts/fake-interior-pointer/</guid>
       <description>GC reporting basics When CoreCLR performs a garbage collection, the GC asks the VM where the roots are. The runtime will report to the GC the pointers to the pointers of the objects. This process is called GC reporting.
 Suppose we have a pointer on the stack pointing to an object on the GC heap, it will look like this:
-Stack: Heap0x00001000: .......... 0x00F00000:..........: .......... ..........: ....................: .</description>
+Stack: Heap 0x00001000: .......... 0x00F00000: ..........: .......... ..........: .......... ..........: .</description>
     </item>
     
     <item>
@@ -91,7 +97,7 @@ Highlights Before I go into the details, here is a one line summary of the concl
       <guid>https://cshung.github.io/posts/memory-corruption-2/</guid>
       <description>Another memory corruption bug In this post, we will talk about another memory corruption bug I found and fix. Check out my previous post for more context and examples.
 The symptom We are hitting an access violation at this location:
-inline size_t my_get_size (Object* ob) { MethodTable* mT = header(ob)-&amp;gt;GetMethodTable(); return (mT-&amp;gt;GetBaseSize() + (mT-&amp;gt;HasComponentSize() ? ((size_t)((CObjectHeader*)ob)-&amp;gt;GetNumComponents() * mT-&amp;gt;RawGetComponentSize()) : 0)); } When the access violation happens, mT is a nullptr and therefore it cannot be dereferenced.</description>
+inline size_t my_get_size (Object* ob) {  MethodTable* mT = header(ob)-&amp;gt;GetMethodTable();   return (mT-&amp;gt;GetBaseSize() +  (mT-&amp;gt;HasComponentSize() ?  ((size_t)((CObjectHeader*)ob)-&amp;gt;GetNumComponents() * mT-&amp;gt;RawGetComponentSize()) : 0)); } When the access violation happens, mT is a nullptr and therefore it cannot be dereferenced.</description>
     </item>
     
     <item>
@@ -151,7 +157,7 @@ To use the notebook to get to the data frame, we need to run the first cell (as 
       <guid>https://cshung.github.io/posts/poh-tuning-6/</guid>
       <description>Varying the benchmark In the last post, we showed that in a particular scenario, allocating pinned objects on pinned object heap is a better choice from both the speed perspective and the heap size perspective. How about other scenarios?
 In part 4, we already discussed the criterion what is feasible to test under GCPerfSim, so we will simply generate all the possibilities here with this simple Python script
-for a in range(1, 100): if 1000 % a == 0: for b in range(1, a): if a % b == 0: if ((1000 - b) % (a - b) == 0): pin_sohsi = 1000 // a pin_sohpi = a // b poh_sohsi = (1000 - b) // (a - b) poh_pohar = b print(&amp;#34; 2gb_pin_%s_%s:&amp;#34; % (a, b)); print(&amp;#34; arguments:&amp;#34;); print(&amp;#34; tc: 6&amp;#34;); print(&amp;#34; tagb: 100&amp;#34;); print(&amp;#34; tlgb: 2&amp;#34;); print(&amp;#34; lohar: 0&amp;#34;); print(&amp;#34; pohar: 0&amp;#34;); print(&amp;#34; sohsr: 100-4000&amp;#34;); print(&amp;#34; pohsr: 100-4000&amp;#34;); print(&amp;#34; sohsi: %s&amp;#34; % pin_sohsi); print(&amp;#34; lohsi: 0&amp;#34;); print(&amp;#34; pohsi: 0&amp;#34;); print(&amp;#34; sohpi: %s&amp;#34; % pin_sohpi); print(&amp;#34; lohpi: 0&amp;#34;); print(&amp;#34; sohfi: 0&amp;#34;); print(&amp;#34; lohfi: 0&amp;#34;); print(&amp;#34; pohfi: 0&amp;#34;); print(&amp;#34; allocType: reference&amp;#34;); print(&amp;#34; testKind: time&amp;#34;); print(&amp;#34; 2gb_poh_%s_%s:&amp;#34; % (a, b)); print(&amp;#34; arguments:&amp;#34;); print(&amp;#34; tc: 6&amp;#34;); print(&amp;#34; tagb: 100&amp;#34;); print(&amp;#34; tlgb: 2&amp;#34;); print(&amp;#34; lohar: 0&amp;#34;); print(&amp;#34; pohar: %s&amp;#34; % poh_pohar); print(&amp;#34; sohsr: 100-4000&amp;#34;); print(&amp;#34; pohsr: 100-4000&amp;#34;); print(&amp;#34; sohsi: %s&amp;#34; % poh_sohsi); print(&amp;#34; lohsi: 0&amp;#34;); print(&amp;#34; pohsi: 1&amp;#34;); print(&amp;#34; sohpi: 0&amp;#34;); print(&amp;#34; lohpi: 0&amp;#34;); print(&amp;#34; sohfi: 0&amp;#34;); print(&amp;#34; lohfi: 0&amp;#34;); print(&amp;#34; pohfi: 0&amp;#34;); print(&amp;#34; allocType: reference&amp;#34;); print(&amp;#34; testKind: time&amp;#34;); Preprocessing the result As usual, we can create a pandas data frame for all the runs.</description>
+for a in range(1, 100):  if 1000 % a == 0:  for b in range(1, a):  if a % b == 0:  if ((1000 - b) % (a - b) == 0):  pin_sohsi = 1000 // a  pin_sohpi = a // b  poh_sohsi = (1000 - b) // (a - b)  poh_pohar = b  print(&amp;#34; 2gb_pin_%s_%s:&amp;#34; % (a, b));  print(&amp;#34; arguments:&amp;#34;);  print(&amp;#34; tc: 6&amp;#34;);  print(&amp;#34; tagb: 100&amp;#34;);  print(&amp;#34; tlgb: 2&amp;#34;);  print(&amp;#34; lohar: 0&amp;#34;);  print(&amp;#34; pohar: 0&amp;#34;);  print(&amp;#34; sohsr: 100-4000&amp;#34;);  print(&amp;#34; pohsr: 100-4000&amp;#34;);  print(&amp;#34; sohsi: %s&amp;#34; % pin_sohsi);  print(&amp;#34; lohsi: 0&amp;#34;);  print(&amp;#34; pohsi: 0&amp;#34;);  print(&amp;#34; sohpi: %s&amp;#34; % pin_sohpi);  print(&amp;#34; lohpi: 0&amp;#34;);  print(&amp;#34; sohfi: 0&amp;#34;);  print(&amp;#34; lohfi: 0&amp;#34;);  print(&amp;#34; pohfi: 0&amp;#34;);  print(&amp;#34; allocType: reference&amp;#34;);  print(&amp;#34; testKind: time&amp;#34;);  print(&amp;#34; 2gb_poh_%s_%s:&amp;#34; % (a, b));  print(&amp;#34; arguments:&amp;#34;);  print(&amp;#34; tc: 6&amp;#34;);  print(&amp;#34; tagb: 100&amp;#34;);  print(&amp;#34; tlgb: 2&amp;#34;);  print(&amp;#34; lohar: 0&amp;#34;);  print(&amp;#34; pohar: %s&amp;#34; % poh_pohar);  print(&amp;#34; sohsr: 100-4000&amp;#34;);  print(&amp;#34; pohsr: 100-4000&amp;#34;);  print(&amp;#34; sohsi: %s&amp;#34; % poh_sohsi);  print(&amp;#34; lohsi: 0&amp;#34;);  print(&amp;#34; pohsi: 1&amp;#34;);  print(&amp;#34; sohpi: 0&amp;#34;);  print(&amp;#34; lohpi: 0&amp;#34;);  print(&amp;#34; sohfi: 0&amp;#34;);  print(&amp;#34; lohfi: 0&amp;#34;);  print(&amp;#34; pohfi: 0&amp;#34;);  print(&amp;#34; allocType: reference&amp;#34;);  print(&amp;#34; testKind: time&amp;#34;); Preprocessing the result As usual, we can create a pandas data frame for all the runs.</description>
     </item>
     
     <item>
@@ -221,7 +227,7 @@ Pinned Object Heap size (and the event tracing mechanisms) With the tools availa
       
       <guid>https://cshung.github.io/posts/gc-objects-2/</guid>
       <description>In addition to size described in an earlier post, it is also important for the GC to know where the pointers are in an object. This is because in the mark phase, we need to traverse the object graph. Here is a function for the mark phase in gc.cpp line 19415-19452.
-Where is the code that perform the traversal? //this method assumes that *po is in the [low. high[ range void gc_heap::mark_object_simple (uint8_t** po THREAD_NUMBER_DCL) { uint8_t* o = *po; /* some code that does not change o or po */ if (gc_mark1 (o)) { /* some code that does not change o or po */ { go_through_object_cl (method_table(o), o, s, poo, { uint8_t* oo = *poo; /* some code to recursively mark oo */ } ); } } } Imagine this is run during the mark phase, if we discover an unmarked object, then we traverse into its pointers and recursively mark the objects it points to.</description>
+Where is the code that perform the traversal? //this method assumes that *po is in the [low. high[ range void gc_heap::mark_object_simple (uint8_t** po THREAD_NUMBER_DCL) {  uint8_t* o = *po;  /* some code that does not change o or po */  if (gc_mark1 (o))  {  /* some code that does not change o or po */  {  go_through_object_cl (method_table(o), o, s, poo,  {  uint8_t* oo = *poo;  /* some code to recursively mark oo */  }  );  }  } } Imagine this is run during the mark phase, if we discover an unmarked object, then we traverse into its pointers and recursively mark the objects it points to.</description>
     </item>
     
     <item>
@@ -242,7 +248,7 @@ Why does it matter? The GC expects the heap to be tightly packed with objects. I
       <guid>https://cshung.github.io/posts/hello-reflection/</guid>
       <description>To get started using ILCompiler.Reflection.ReadyToRun, let&amp;rsquo;s construct a simple HelloWorld project. If you don&amp;rsquo;t know what it is, please take a look at the previous post.
 Getting started We will create a .NET Core console application. Create a folder named HelloReflection and invoke dotnet new console.
-C:\dev&amp;gt;mkdir HelloReflectionC:\dev&amp;gt;cd HelloReflectionC:\dev\HelloReflection&amp;gt;dotnet new consoleThe template &amp;quot;Console Application&amp;quot; was created successfully.Processing post-creation actions...Running &#39;dotnet restore&#39; on C:\dev\HelloReflection\HelloReflection.csproj...Determining projects to restore.</description>
+C:\dev&amp;gt;mkdir HelloReflection C:\dev&amp;gt;cd HelloReflection C:\dev\HelloReflection&amp;gt;dotnet new console The template &amp;#34;Console Application&amp;#34; was created successfully. Processing post-creation actions... Running &amp;#39;dotnet restore&amp;#39; on C:\dev\HelloReflection\HelloReflection.csproj... Determining projects to restore.</description>
     </item>
     
     <item>

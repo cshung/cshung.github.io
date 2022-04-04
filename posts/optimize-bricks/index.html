@@ -8,10 +8,10 @@
     <meta name="viewport" content="width=device-width,minimum-scale=1">
     <meta name="description" content="In this post, I am going to talk about an optimization I made in the GC to reduce tail latency.
 Scenario One of our customers reported that occassionally, they are observing gen 1 GC taking longer time than usual. Usually, their gen 1 GC takes around 4 milliseconds, but once in a while it could be as long as 15 milliseconds, and this is getting into their tail latencies measurements.">
-    <meta name="generator" content="Hugo 0.73.0-DEV" />
+    <meta name="generator" content="Hugo 0.96.0" />
     
     
-      <META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
+      <META NAME="ROBOTS" CONTENT="INDEX, FOLLOW">
     
 
     
@@ -35,27 +35,26 @@ Scenario One of our customers reported that occassionally, they are observing ge
 <meta property="og:description" content="In this post, I am going to talk about an optimization I made in the GC to reduce tail latency.
 Scenario One of our customers reported that occassionally, they are observing gen 1 GC taking longer time than usual. Usually, their gen 1 GC takes around 4 milliseconds, but once in a while it could be as long as 15 milliseconds, and this is getting into their tail latencies measurements." />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://cshung.github.io/posts/optimize-bricks/" />
+<meta property="og:url" content="https://cshung.github.io/posts/optimize-bricks/" /><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2021-10-06T16:04:13-07:00" />
 <meta property="article:modified_time" content="2021-10-06T16:04:13-07:00" />
+
 <meta itemprop="name" content="Optimize Bricks">
 <meta itemprop="description" content="In this post, I am going to talk about an optimization I made in the GC to reduce tail latency.
-Scenario One of our customers reported that occassionally, they are observing gen 1 GC taking longer time than usual. Usually, their gen 1 GC takes around 4 milliseconds, but once in a while it could be as long as 15 milliseconds, and this is getting into their tail latencies measurements.">
-<meta itemprop="datePublished" content="2021-10-06T16:04:13-07:00" />
+Scenario One of our customers reported that occassionally, they are observing gen 1 GC taking longer time than usual. Usually, their gen 1 GC takes around 4 milliseconds, but once in a while it could be as long as 15 milliseconds, and this is getting into their tail latencies measurements."><meta itemprop="datePublished" content="2021-10-06T16:04:13-07:00" />
 <meta itemprop="dateModified" content="2021-10-06T16:04:13-07:00" />
 <meta itemprop="wordCount" content="766">
-
-
-
 <meta itemprop="keywords" content="" /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Optimize Bricks"/>
 <meta name="twitter:description" content="In this post, I am going to talk about an optimization I made in the GC to reduce tail latency.
 Scenario One of our customers reported that occassionally, they are observing gen 1 GC taking longer time than usual. Usually, their gen 1 GC takes around 4 milliseconds, but once in a while it could be as long as 15 milliseconds, and this is getting into their tail latencies measurements."/>
 
+      
+    
 	
   </head>
 
-  <body class="ma0 avenir bg-near-white">
+  <body class="ma0 avenir bg-near-white production">
     <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
     <script>mermaid.initialize({startOnLoad:true});</script>
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>

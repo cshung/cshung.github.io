@@ -7,10 +7,10 @@
     <title>Generation Aware Analysis | My Blog</title>
     <meta name="viewport" content="width=device-width,minimum-scale=1">
     <meta name="description" content="The problem? The .NET GC is generational, it makes the assumption that allocations are broadly divided into two classes, either they are short-lived (e.g. temporary objects) or they are long-lived (e.g. constants, caches for repeated uses). This assumption is often true, but once in a while, that&rsquo;s not true, often due to programmer mistakes. If a pile of objects meant for short-term usage is leaked into gen2, that can cost a short-term spike in ephemeral GC latency, and a long-term memory cost for storing them.">
-    <meta name="generator" content="Hugo 0.73.0-DEV" />
+    <meta name="generator" content="Hugo 0.96.0" />
     
     
-      <META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
+      <META NAME="ROBOTS" CONTENT="INDEX, FOLLOW">
     
 
     
@@ -33,25 +33,24 @@
     <meta property="og:title" content="Generation Aware Analysis" />
 <meta property="og:description" content="The problem? The .NET GC is generational, it makes the assumption that allocations are broadly divided into two classes, either they are short-lived (e.g. temporary objects) or they are long-lived (e.g. constants, caches for repeated uses). This assumption is often true, but once in a while, that&rsquo;s not true, often due to programmer mistakes. If a pile of objects meant for short-term usage is leaked into gen2, that can cost a short-term spike in ephemeral GC latency, and a long-term memory cost for storing them." />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://cshung.github.io/posts/generation-aware-analysis/" />
+<meta property="og:url" content="https://cshung.github.io/posts/generation-aware-analysis/" /><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2021-01-05T14:47:10-08:00" />
 <meta property="article:modified_time" content="2021-01-05T14:47:10-08:00" />
+
 <meta itemprop="name" content="Generation Aware Analysis">
-<meta itemprop="description" content="The problem? The .NET GC is generational, it makes the assumption that allocations are broadly divided into two classes, either they are short-lived (e.g. temporary objects) or they are long-lived (e.g. constants, caches for repeated uses). This assumption is often true, but once in a while, that&rsquo;s not true, often due to programmer mistakes. If a pile of objects meant for short-term usage is leaked into gen2, that can cost a short-term spike in ephemeral GC latency, and a long-term memory cost for storing them.">
-<meta itemprop="datePublished" content="2021-01-05T14:47:10-08:00" />
+<meta itemprop="description" content="The problem? The .NET GC is generational, it makes the assumption that allocations are broadly divided into two classes, either they are short-lived (e.g. temporary objects) or they are long-lived (e.g. constants, caches for repeated uses). This assumption is often true, but once in a while, that&rsquo;s not true, often due to programmer mistakes. If a pile of objects meant for short-term usage is leaked into gen2, that can cost a short-term spike in ephemeral GC latency, and a long-term memory cost for storing them."><meta itemprop="datePublished" content="2021-01-05T14:47:10-08:00" />
 <meta itemprop="dateModified" content="2021-01-05T14:47:10-08:00" />
 <meta itemprop="wordCount" content="1335">
-
-
-
 <meta itemprop="keywords" content="" /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Generation Aware Analysis"/>
 <meta name="twitter:description" content="The problem? The .NET GC is generational, it makes the assumption that allocations are broadly divided into two classes, either they are short-lived (e.g. temporary objects) or they are long-lived (e.g. constants, caches for repeated uses). This assumption is often true, but once in a while, that&rsquo;s not true, often due to programmer mistakes. If a pile of objects meant for short-term usage is leaked into gen2, that can cost a short-term spike in ephemeral GC latency, and a long-term memory cost for storing them."/>
 
+      
+    
 	
   </head>
 
-  <body class="ma0 avenir bg-near-white">
+  <body class="ma0 avenir bg-near-white production">
     <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
     <script>mermaid.initialize({startOnLoad:true});</script>
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
@@ -149,64 +148,64 @@
 <p>The .NET GC is generational, it makes the assumption that allocations are broadly divided into two classes, either they are short-lived (e.g. temporary objects) or they are long-lived (e.g. constants, caches for repeated uses). This assumption is often true, but once in a while, that&rsquo;s not true, often due to programmer mistakes. If a pile of objects meant for short-term usage is leaked into gen2, that can cost a short-term spike in ephemeral GC latency, and a long-term memory cost for storing them. We would like to be able to detect it and analyze what happened.</p>
 <h1 id="scenario">Scenario</h1>
 <p>Here is a sample program that demonstrates such a leak. This is the whole program, a copy with the project files can be found <a href="https://github.com/cshung/blog-samples/blob/main/GenAwareDemo">here</a>.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c#" data-lang="c#"><span style="color:#66d9ef">namespace</span> GenAwareDemo
-{
-    <span style="color:#66d9ef">using</span> System;
-    <span style="color:#66d9ef">using</span> System.Diagnostics;
-
-    <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">LongTermObject</span>
-    {
-        <span style="color:#66d9ef">public</span> ShortTermObject leak;
-    }
-
-    <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">ShortTermObject</span>
-    {
-        <span style="color:#66d9ef">public</span> ShortTermObject prev;
-        <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">byte</span>[] weight;
-    }
-
-    <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Program</span>
-    {
-        <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> Main(<span style="color:#66d9ef">string</span>[] args)
-        {
-            Console.WriteLine(<span style="color:#e6db74">&#34;My process id is &#34;</span> + Process.GetCurrentProcess().Id);
-            Console.ReadLine();
-            LongTermObject LongTermObject = <span style="color:#66d9ef">new</span> LongTermObject();
-            GC.Collect();
-            GC.Collect();
-            <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> phase = <span style="color:#ae81ff">0</span>; phase &lt; <span style="color:#ae81ff">2</span>; phase++)
-            {
-                <span style="color:#75715e">// The 0th phase is an emulated startup phase and should be ignored.
-</span><span style="color:#75715e"></span>                <span style="color:#66d9ef">int</span> counter = <span style="color:#ae81ff">0</span>;
-                <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> iteration = <span style="color:#ae81ff">0</span>; iteration &lt; <span style="color:#ae81ff">10000</span>; iteration++)
-                {
-                    ShortTermObject head = <span style="color:#66d9ef">new</span> ShortTermObject();
-                    <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> i = <span style="color:#ae81ff">0</span>; i &lt; <span style="color:#ae81ff">1000</span>; i++)
-                    {
-                        ShortTermObject next = <span style="color:#66d9ef">new</span> ShortTermObject();
-                        next.weight = <span style="color:#66d9ef">new</span> <span style="color:#66d9ef">byte</span>[<span style="color:#ae81ff">1000</span>];
-                        next.prev = head;
-                        head = next;
-                    }
-                    counter++;
-                    <span style="color:#75715e">// Emulate a leak of a ephemeral object to LongTermObject.
-</span><span style="color:#75715e"></span>                    <span style="color:#66d9ef">if</span> (counter % <span style="color:#ae81ff">1000</span> == <span style="color:#ae81ff">0</span>)
-                    {
-                        Console.WriteLine(<span style="color:#e6db74">&#34;Leaked&#34;</span>);
-                        LongTermObject.leak = head;
-                    }
-                }
-            }
-        }
-    }
-}
-</code></pre></div><p>Roughly speaking, every <code>ShortTermObject</code> has a weight of 1000 bytes. In each iteration, we create 1000 of them, arranged in a linked list, and then it will be discarded. Once in a while (i.e. when <code>counter % 1000 == 0</code>), the linked list is leaked into the <code>LongTermObject</code>.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c#" data-lang="c#"><span style="display:flex;"><span><span style="color:#66d9ef">namespace</span> GenAwareDemo
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">using</span> System;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">using</span> System.Diagnostics;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">LongTermObject</span>
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">public</span> ShortTermObject leak;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">ShortTermObject</span>
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">public</span> ShortTermObject prev;
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">byte</span>[] weight;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Program</span>
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> Main(<span style="color:#66d9ef">string</span>[] args)
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>            Console.WriteLine(<span style="color:#e6db74">&#34;My process id is &#34;</span> + Process.GetCurrentProcess().Id);
+</span></span><span style="display:flex;"><span>            Console.ReadLine();
+</span></span><span style="display:flex;"><span>            LongTermObject LongTermObject = <span style="color:#66d9ef">new</span> LongTermObject();
+</span></span><span style="display:flex;"><span>            GC.Collect();
+</span></span><span style="display:flex;"><span>            GC.Collect();
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> phase = <span style="color:#ae81ff">0</span>; phase &lt; <span style="color:#ae81ff">2</span>; phase++)
+</span></span><span style="display:flex;"><span>            {
+</span></span><span style="display:flex;"><span>                <span style="color:#75715e">// The 0th phase is an emulated startup phase and should be ignored.</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">int</span> counter = <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> iteration = <span style="color:#ae81ff">0</span>; iteration &lt; <span style="color:#ae81ff">10000</span>; iteration++)
+</span></span><span style="display:flex;"><span>                {
+</span></span><span style="display:flex;"><span>                    ShortTermObject head = <span style="color:#66d9ef">new</span> ShortTermObject();
+</span></span><span style="display:flex;"><span>                    <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> i = <span style="color:#ae81ff">0</span>; i &lt; <span style="color:#ae81ff">1000</span>; i++)
+</span></span><span style="display:flex;"><span>                    {
+</span></span><span style="display:flex;"><span>                        ShortTermObject next = <span style="color:#66d9ef">new</span> ShortTermObject();
+</span></span><span style="display:flex;"><span>                        next.weight = <span style="color:#66d9ef">new</span> <span style="color:#66d9ef">byte</span>[<span style="color:#ae81ff">1000</span>];
+</span></span><span style="display:flex;"><span>                        next.prev = head;
+</span></span><span style="display:flex;"><span>                        head = next;
+</span></span><span style="display:flex;"><span>                    }
+</span></span><span style="display:flex;"><span>                    counter++;
+</span></span><span style="display:flex;"><span>                    <span style="color:#75715e">// Emulate a leak of a ephemeral object to LongTermObject.</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#66d9ef">if</span> (counter % <span style="color:#ae81ff">1000</span> == <span style="color:#ae81ff">0</span>)
+</span></span><span style="display:flex;"><span>                    {
+</span></span><span style="display:flex;"><span>                        Console.WriteLine(<span style="color:#e6db74">&#34;Leaked&#34;</span>);
+</span></span><span style="display:flex;"><span>                        LongTermObject.leak = head;
+</span></span><span style="display:flex;"><span>                    }
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Roughly speaking, every <code>ShortTermObject</code> has a weight of 1000 bytes. In each iteration, we create 1000 of them, arranged in a linked list, and then it will be discarded. Once in a while (i.e. when <code>counter % 1000 == 0</code>), the linked list is leaked into the <code>LongTermObject</code>.</p>
 <p>To make this post easier for first time readers, let&rsquo;s assume we already observed that the promoted bytes are usually 1MB, but once in a while the promoted bytes spikes up to 2MB. To understand what happened, we would like to capture that moment.</p>
 <p>For the curious, at the <a href="#diagnosing-a-promoted-byte-spike" title="About Us">end</a> of this post, we will discuss how we can use the performance infrastructure to discover this information.</p>
 <h1 id="capturing">Capturing</h1>
 <p>Starting from .NET 5.0, we can use the generational aware analysis tool I introduced in this <a href="https://github.com/dotnet/runtime/pull/40332">PR</a> to capture the moment when the promotion happens.</p>
 <p>To use the feature, set the following environment variables before launching the process.</p>
-<pre><code>set COMPlus_GCGenAnalysisGen=1
+<pre tabindex="0"><code>set COMPlus_GCGenAnalysisGen=1
 set COMPlus_GCGenAnalysisBytes=16E360
 set COMPlus_GCGenAnalysisIndex=3E8
 </code></pre><p>We would like to command the runtime to perform a generational aware analysis and capture the moment when a gen 1 GC promoted more than 1.5 MB (<code>16E360</code> is <code>1,500,000</code> in decimal). To avoid capturing the promoted bytes corresponding to the startup phase, we ignore the first 1,000 GCs (<code>3E8</code> is 1,000 in decimal).</p>
@@ -227,44 +226,44 @@ set COMPlus_GCGenAnalysisIndex=3E8
 <h1 id="collecting-a-dump">Collecting a dump</h1>
 <p>In some scenario, it would be beneficial to collect a dump. For example, if the leaking is caused by setting a static field, it will be shown in PerfView as being held by a pinned object array, but you will not know which field it is. Another common case is the leak is caused by a delegate, in this case, it will be shown as an <code>Action&lt;T&gt;</code>, in which you will not know which method is causing the leak. Either case, we can figure that out in the debugger if we have a memory dump.</p>
 <p>To collect a dump, we can use the new environment variable introduced in .NET 6</p>
-<pre><code>set COMPlus_GCGenAnalysisDump=1
+<pre tabindex="0"><code>set COMPlus_GCGenAnalysisDump=1
 </code></pre><p>This will collect a dump in addition to the trace we already collected. If a dump is sufficient and you would like to avoid collecting a trace as well, we can disable the tracing by setting this new environment variable:</p>
-<pre><code>set COMPlus_GCGenAnalysisTrace=0
+<pre tabindex="0"><code>set COMPlus_GCGenAnalysisTrace=0
 </code></pre><p>The generated dump is called <code>gcgenaware.dmp</code> and it can be analyzed with a debugger.</p>
 <h1 id="diagnosing-a-promoted-byte-spike">Diagnosing a promoted byte spike</h1>
 <p>In this following, I will describe what we missed earlier. How do we know there is a promoted byte spiking problem to begin with?</p>
 <h1 id="collecting-a-trace">Collecting a trace</h1>
 <p>To detect the fact that there is a leak of a pile of ephemeral objects into the next generation, we leverage the fact that the ephemeral generation GC will have a spike in the promoted bytes.</p>
 <p>I ran PerfView with <code>GCCollectOnly</code> and collected a trace. In and administrative prompt, we can run</p>
-<pre><code>perfview /GCCollectOnly /nogui collect
+<pre tabindex="0"><code>perfview /GCCollectOnly /nogui collect
 </code></pre><p>and press &lsquo;S&rsquo; when this is done. This will create a zip file containing the trace in the current directory.</p>
 <h1 id="analyze-the-trace">Analyze the trace</h1>
 <p>The GC performance infrastructure is available as a subdirectory in the <a href="https://github.com/dotnet/performance/tree/main/src/benchmarks/gc">dotnet/performance</a> repo. The README is generally up-to-date. Just clone the repo and follow the instruction you will have a basic setup. Note that you do <strong>NOT</strong> need to run a benchmark, in this post, we will use it only to analyze a collected trace. Make sure we also set up the prerequisites for using the Jupyter notebook.</p>
 <h2 id="preparing-for-analysis">Preparing for analysis</h2>
 <p>To get started, unzip the collected trace and rename the <code>etl</code> file to <code>GenAware.etl</code>. I placed the file under <code>C:/GenAware</code> folder. To help the infrastructure, we create a <a href="https://github.com/dotnet/performance/blob/main/src/benchmarks/gc/docs/test_status_files.md"><code>test_status_file</code></a>. the daunting appearance of the file is only apparent, we can get by with a tiny file with just these 3 lines.</p>
-<pre><code>success: true
+<pre tabindex="0"><code>success: true
 trace_file_name: GenAware.etl
 process_id: 1348
 </code></pre><p>Of course, the process_id needs to match file the program&rsquo;s output.</p>
 <h2 id="create-a-plot">Create a plot</h2>
 <p>Open <code>jupyter_notebook.py</code> in Visual Studio Code. Again, the daunting pile of code in the notebook is only apparent. All we needed is the first cell. All the code in the other cells is meant to be examples. We can just ignore them.</p>
 <p>The notebook loads the trace and makes it available as a Python object, we can create a plot out of it. Here is what I did to gather all the gen 0 GC promoted bytes and make a plot.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py"><span style="color:#75715e">#%% </span>
-_TRACE <span style="color:#f92672">=</span> get_trace_with_everything(Path(<span style="color:#e6db74">&#34;C:/GenAware/GenAware.yaml&#34;</span>))
-metrics_dict <span style="color:#f92672">=</span> {}
-metrics_dict[<span style="color:#e6db74">&#34;promoted_bytes&#34;</span>] <span style="color:#f92672">=</span> []
-<span style="color:#66d9ef">for</span> gc <span style="color:#f92672">in</span> _TRACE<span style="color:#f92672">.</span>gcs:
-    <span style="color:#66d9ef">if</span> gc<span style="color:#f92672">.</span>Generation <span style="color:#f92672">==</span> Gens<span style="color:#f92672">.</span>Gen0:
-        metrics_dict[<span style="color:#e6db74">&#34;promoted_bytes&#34;</span>]<span style="color:#f92672">.</span>append(gc<span style="color:#f92672">.</span>unwrap_metric_from_name(<span style="color:#e6db74">&#34;PromotedMB&#34;</span>))
-    <span style="color:#66d9ef">else</span>:
-        <span style="color:#75715e"># Just to make sure the x-axis corresponds to the GC index for filtering.</span>
-        metrics_dict[<span style="color:#e6db74">&#34;promoted_bytes&#34;</span>]<span style="color:#f92672">.</span>append(<span style="color:#ae81ff">0</span>)
-
-metrics_frame <span style="color:#f92672">=</span> pandas<span style="color:#f92672">.</span>DataFrame<span style="color:#f92672">.</span>from_dict(metrics_dict)
-metrics_frame<span style="color:#f92672">.</span>plot()
-</code></pre></div><p>The first line <code>#%%</code> indicates that this is a new Jupyter notebook cell that can be run independently. The rest is mostly just copied and pasted from the templates and makes a plot. Here is how the plot looks like:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-py" data-lang="py"><span style="display:flex;"><span><span style="color:#75715e">#%% </span>
+</span></span><span style="display:flex;"><span>_TRACE <span style="color:#f92672">=</span> get_trace_with_everything(Path(<span style="color:#e6db74">&#34;C:/GenAware/GenAware.yaml&#34;</span>))
+</span></span><span style="display:flex;"><span>metrics_dict <span style="color:#f92672">=</span> {}
+</span></span><span style="display:flex;"><span>metrics_dict[<span style="color:#e6db74">&#34;promoted_bytes&#34;</span>] <span style="color:#f92672">=</span> []
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">for</span> gc <span style="color:#f92672">in</span> _TRACE<span style="color:#f92672">.</span>gcs:
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> gc<span style="color:#f92672">.</span>Generation <span style="color:#f92672">==</span> Gens<span style="color:#f92672">.</span>Gen0:
+</span></span><span style="display:flex;"><span>        metrics_dict[<span style="color:#e6db74">&#34;promoted_bytes&#34;</span>]<span style="color:#f92672">.</span>append(gc<span style="color:#f92672">.</span>unwrap_metric_from_name(<span style="color:#e6db74">&#34;PromotedMB&#34;</span>))
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">else</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># Just to make sure the x-axis corresponds to the GC index for filtering.</span>
+</span></span><span style="display:flex;"><span>        metrics_dict[<span style="color:#e6db74">&#34;promoted_bytes&#34;</span>]<span style="color:#f92672">.</span>append(<span style="color:#ae81ff">0</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>metrics_frame <span style="color:#f92672">=</span> pandas<span style="color:#f92672">.</span>DataFrame<span style="color:#f92672">.</span>from_dict(metrics_dict)
+</span></span><span style="display:flex;"><span>metrics_frame<span style="color:#f92672">.</span>plot()
+</span></span></code></pre></div><p>The first line <code>#%%</code> indicates that this is a new Jupyter notebook cell that can be run independently. The rest is mostly just copied and pasted from the templates and makes a plot. Here is how the plot looks like:</p>
 <p><img src="/generation-aware-analysis/generation-aware-analysis-01.png" alt="generation-aware-analysis-01.png" title="generation-aware-analysis-01.png"></p>
-<p>So we confirm there is indeed a spike in the promoted bytes. Not just that, the &lsquo;normal&rsquo; promoted bytes never exceed 1.0, which is measured in MB. Earlier we said the lists have 1000 elements of size 1000 bytes, that is why we normally promote at most that much (the worst case happen when the list is about to be discarded but just not quite because the next iteration haven&rsquo;t started to overwrite that variable yet)</p>
+<p>So we confirm there is indeed a spike in the promoted bytes. Not just that, the &rsquo;normal&rsquo; promoted bytes never exceed 1.0, which is measured in MB. Earlier we said the lists have 1000 elements of size 1000 bytes, that is why we normally promote at most that much (the worst case happen when the list is about to be discarded but just not quite because the next iteration haven&rsquo;t started to overwrite that variable yet)</p>
 <ul class="pa0">
   
 </ul>

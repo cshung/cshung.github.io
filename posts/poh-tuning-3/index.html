@@ -8,10 +8,10 @@
     <meta name="viewport" content="width=device-width,minimum-scale=1">
     <meta name="description" content="In the last post, we discussed what the benchmark does and how the weights are computed. In this post, we will talk about some other interesting statistical properties. The lesson learned here is that we know how objects behave in the benchmark, and we can use this to judge whether or not the benchmark actually matches with real-life use cases.
 Object lifetime In this previous post, we know about an object&rsquo;s life cycle.">
-    <meta name="generator" content="Hugo 0.73.0-DEV" />
+    <meta name="generator" content="Hugo 0.96.0" />
     
     
-      <META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
+      <META NAME="ROBOTS" CONTENT="INDEX, FOLLOW">
     
 
     
@@ -35,27 +35,26 @@ Object lifetime In this previous post, we know about an object&rsquo;s life cycl
 <meta property="og:description" content="In the last post, we discussed what the benchmark does and how the weights are computed. In this post, we will talk about some other interesting statistical properties. The lesson learned here is that we know how objects behave in the benchmark, and we can use this to judge whether or not the benchmark actually matches with real-life use cases.
 Object lifetime In this previous post, we know about an object&rsquo;s life cycle." />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://cshung.github.io/posts/poh-tuning-3/" />
+<meta property="og:url" content="https://cshung.github.io/posts/poh-tuning-3/" /><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2021-03-01T20:55:26-08:00" />
 <meta property="article:modified_time" content="2021-03-01T20:55:26-08:00" />
+
 <meta itemprop="name" content="POH Tuning (Part 3 - Other statistical properties)">
 <meta itemprop="description" content="In the last post, we discussed what the benchmark does and how the weights are computed. In this post, we will talk about some other interesting statistical properties. The lesson learned here is that we know how objects behave in the benchmark, and we can use this to judge whether or not the benchmark actually matches with real-life use cases.
-Object lifetime In this previous post, we know about an object&rsquo;s life cycle.">
-<meta itemprop="datePublished" content="2021-03-01T20:55:26-08:00" />
+Object lifetime In this previous post, we know about an object&rsquo;s life cycle."><meta itemprop="datePublished" content="2021-03-01T20:55:26-08:00" />
 <meta itemprop="dateModified" content="2021-03-01T20:55:26-08:00" />
 <meta itemprop="wordCount" content="836">
-
-
-
 <meta itemprop="keywords" content="" /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="POH Tuning (Part 3 - Other statistical properties)"/>
 <meta name="twitter:description" content="In the last post, we discussed what the benchmark does and how the weights are computed. In this post, we will talk about some other interesting statistical properties. The lesson learned here is that we know how objects behave in the benchmark, and we can use this to judge whether or not the benchmark actually matches with real-life use cases.
 Object lifetime In this previous post, we know about an object&rsquo;s life cycle."/>
 
+      
+    
 	
   </head>
 
-  <body class="ma0 avenir bg-near-white">
+  <body class="ma0 avenir bg-near-white production">
     <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
     <script>mermaid.initialize({startOnLoad:true});</script>
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
@@ -165,8 +164,8 @@ Object lifetime In this previous post, we know about an object&rsquo;s life cycl
 <p>Assuming we reached a steady-state, then the probability of creating a list of length \( x \) is equal to the probability of destroying a list of the same length \( x \). That leads to these recursive equations that we could use to solve:</p>
 <p>$$
 \begin{eqnarray}
-\frac{a_1}{A} &amp;=&amp; p \\<br>
-\frac{a_k}{A} &amp;=&amp; (1-p)\frac{a_{k-1}}{A} \\<br>
+\frac{a_1}{A} &amp;=&amp; p \\
+\frac{a_k}{A} &amp;=&amp; (1-p)\frac{a_{k-1}}{A} \\
 \end{eqnarray}
 $$</p>
 <p>It is not hard to see that \( a_{k} = p(1-p)^{k - 1}A \). Again, we see the geometric distribution pattern. The longer the list, the less probable it is. This matches experimental observation pretty well.</p>

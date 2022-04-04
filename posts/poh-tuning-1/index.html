@@ -8,10 +8,10 @@
     <meta name="viewport" content="width=device-width,minimum-scale=1">
     <meta name="description" content="In this series, I am going to talk about my work to tune the pinned object heap. The first step to tuning is to understand how it performs now. Unfortunately, the tools for analyzing the performance is incomplete.
 Pinned Object Heap size (and the event tracing mechanisms) With the tools available in .NET 5 time frame, we did not know the size of the pinned object heap. We had the information in the trace, but we did not have the parser to understand them.">
-    <meta name="generator" content="Hugo 0.73.0-DEV" />
+    <meta name="generator" content="Hugo 0.96.0" />
     
     
-      <META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
+      <META NAME="ROBOTS" CONTENT="INDEX, FOLLOW">
     
 
     
@@ -35,27 +35,26 @@ Pinned Object Heap size (and the event tracing mechanisms) With the tools availa
 <meta property="og:description" content="In this series, I am going to talk about my work to tune the pinned object heap. The first step to tuning is to understand how it performs now. Unfortunately, the tools for analyzing the performance is incomplete.
 Pinned Object Heap size (and the event tracing mechanisms) With the tools available in .NET 5 time frame, we did not know the size of the pinned object heap. We had the information in the trace, but we did not have the parser to understand them." />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://cshung.github.io/posts/poh-tuning-1/" />
+<meta property="og:url" content="https://cshung.github.io/posts/poh-tuning-1/" /><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2021-01-15T11:18:17-08:00" />
 <meta property="article:modified_time" content="2021-01-15T11:18:17-08:00" />
+
 <meta itemprop="name" content="POH Tuning (Part 1 - What is my pinned object heap size?)">
 <meta itemprop="description" content="In this series, I am going to talk about my work to tune the pinned object heap. The first step to tuning is to understand how it performs now. Unfortunately, the tools for analyzing the performance is incomplete.
-Pinned Object Heap size (and the event tracing mechanisms) With the tools available in .NET 5 time frame, we did not know the size of the pinned object heap. We had the information in the trace, but we did not have the parser to understand them.">
-<meta itemprop="datePublished" content="2021-01-15T11:18:17-08:00" />
+Pinned Object Heap size (and the event tracing mechanisms) With the tools available in .NET 5 time frame, we did not know the size of the pinned object heap. We had the information in the trace, but we did not have the parser to understand them."><meta itemprop="datePublished" content="2021-01-15T11:18:17-08:00" />
 <meta itemprop="dateModified" content="2021-01-15T11:18:17-08:00" />
 <meta itemprop="wordCount" content="1077">
-
-
-
 <meta itemprop="keywords" content="" /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="POH Tuning (Part 1 - What is my pinned object heap size?)"/>
 <meta name="twitter:description" content="In this series, I am going to talk about my work to tune the pinned object heap. The first step to tuning is to understand how it performs now. Unfortunately, the tools for analyzing the performance is incomplete.
 Pinned Object Heap size (and the event tracing mechanisms) With the tools available in .NET 5 time frame, we did not know the size of the pinned object heap. We had the information in the trace, but we did not have the parser to understand them."/>
 
+      
+    
 	
   </head>
 
-  <body class="ma0 avenir bg-near-white">
+  <body class="ma0 avenir bg-near-white production">
     <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
     <script>mermaid.initialize({startOnLoad:true});</script>
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
@@ -171,7 +170,7 @@ graph TD;
 <p>We will take a look at these components one by one, having a focus on the on-the-wire format of the event.</p>
 <h2 id="runtime-event-emission">Runtime Event Emission</h2>
 <p>To understand how the runtime emits events, we would like to get the debugger to stop at the point where it is serializing the event. The magic function we wanted to stop is <code>EventPipeWriteEventGCHeapStats_V2</code>. If we run an application with tracing turned on using EventPipe, we should see this breakpoint got hit with the following call stack:</p>
-<pre><code>CoreCLR!EventPipeWriteEventGCHeapStats_V2
+<pre tabindex="0"><code>CoreCLR!EventPipeWriteEventGCHeapStats_V2
 CoreCLR!FireEtwGCHeapStats_V2
 CoreCLR!GCToCLREventSink::FireGCHeapStats_V2
 CoreCLR!GCEventFireGCHeapStats_V2
@@ -179,68 +178,67 @@ CoreCLR!WKS::GCHeap::UpdatePostGCCounters
 ...
 </code></pre><h3 id="some-metaprogramming-tricks">Some metaprogramming tricks</h3>
 <p>You will never find the implementation of the first two frames in our code because it is code-generated during the build process. This is nothing new, serializers are typically code generated at compile time. The third frame is just a forwarder to avoid GC being coupled to the generated code. The most interesting frame is actually frame 5, where the event originates. It uses a <code>FIRE_EVENT</code> macro, which is defined as follow in gceventstatus.h line 267:</p>
-<pre><code>#define FIRE_EVENT(name, ...) GCEventFire##name(__VA_ARGS__)
+<pre tabindex="0"><code>#define FIRE_EVENT(name, ...) GCEventFire##name(__VA_ARGS__)
 </code></pre><p>For those who are unfamiliar, the <code>##</code> is the <a href="https://docs.microsoft.com/en-us/cpp/preprocessor/token-pasting-operator-hash-hash?view=msvc-160">token pasting operator</a>. It allows the macro preprocessor to translate <code>FIRE_EVENT(A, b, c)</code> to <code>GCEventFireA(b, c)</code>.</p>
 <p>The <code>GCEventFireGCHeapStats_V2</code> is actually defined just a few lines above. Note that the code defined a <code>KNOWN_EVENT</code> macro and then included <code>gcevents.h</code>. <code>gcevents.h</code> invokes the <code>KNOWN_EVENT</code> macro many times, once for each type of event. That turns into a code generator that generates all the <code>GCEventFire*</code> functions!</p>
 <h3 id="actual-serialization">Actual serialization</h3>
 <p>At the core of <code>EventPipeWriteEventGCHeapStats_V2</code>, the core of the code look like this:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">    <span style="color:#66d9ef">bool</span> success <span style="color:#f92672">=</span> true;
-    success <span style="color:#f92672">&amp;=</span> WriteToBuffer(GenerationSize0, buffer, offset, size, fixedBuffer);
-    success <span style="color:#f92672">&amp;=</span> WriteToBuffer(TotalPromotedSize0, buffer, offset, size, fixedBuffer);
-    success <span style="color:#f92672">&amp;=</span> WriteToBuffer(GenerationSize1, buffer, offset, size, fixedBuffer);
-</code></pre></div><p>Although it looks like we are always writing to the same offset, actually, offset is passed by reference and is advanced by the size of the argument. So in reality, this code simply put all of them in sequential order.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#66d9ef">template</span> <span style="color:#f92672">&lt;</span><span style="color:#66d9ef">typename</span> T<span style="color:#f92672">&gt;</span>
-<span style="color:#66d9ef">bool</span> WriteToBuffer(<span style="color:#66d9ef">const</span> T <span style="color:#f92672">&amp;</span>value, <span style="color:#66d9ef">char</span> <span style="color:#f92672">*&amp;</span>buffer, size_t<span style="color:#f92672">&amp;</span> offset, size_t<span style="color:#f92672">&amp;</span> size, <span style="color:#66d9ef">bool</span> <span style="color:#f92672">&amp;</span>fixedBuffer)
-{
-    <span style="color:#66d9ef">if</span> (<span style="color:#66d9ef">sizeof</span>(T) <span style="color:#f92672">+</span> offset <span style="color:#f92672">&gt;</span> size)
-    {
-        <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>ResizeBuffer(buffer, size, offset, size <span style="color:#f92672">+</span> <span style="color:#66d9ef">sizeof</span>(T), fixedBuffer))
-            <span style="color:#66d9ef">return</span> false;
-    }
-
-    memcpy(buffer <span style="color:#f92672">+</span> offset, (<span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>)<span style="color:#f92672">&amp;</span>value, <span style="color:#66d9ef">sizeof</span>(T));
-    offset <span style="color:#f92672">+=</span> <span style="color:#66d9ef">sizeof</span>(T);
-    <span style="color:#66d9ef">return</span> true;
-}
-
-</code></pre></div><p>This concludes the serialization of the event into a sequence of bytes. Subsequent code will pack them up and write them into the <code>nettrace</code> file.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span>    <span style="color:#66d9ef">bool</span> success <span style="color:#f92672">=</span> true;
+</span></span><span style="display:flex;"><span>    success <span style="color:#f92672">&amp;=</span> WriteToBuffer(GenerationSize0, buffer, offset, size, fixedBuffer);
+</span></span><span style="display:flex;"><span>    success <span style="color:#f92672">&amp;=</span> WriteToBuffer(TotalPromotedSize0, buffer, offset, size, fixedBuffer);
+</span></span><span style="display:flex;"><span>    success <span style="color:#f92672">&amp;=</span> WriteToBuffer(GenerationSize1, buffer, offset, size, fixedBuffer);
+</span></span></code></pre></div><p>Although it looks like we are always writing to the same offset, actually, offset is passed by reference and is advanced by the size of the argument. So in reality, this code simply put all of them in sequential order.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#66d9ef">template</span> <span style="color:#f92672">&lt;</span><span style="color:#66d9ef">typename</span> T<span style="color:#f92672">&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">bool</span> WriteToBuffer(<span style="color:#66d9ef">const</span> T <span style="color:#f92672">&amp;</span>value, <span style="color:#66d9ef">char</span> <span style="color:#f92672">*&amp;</span>buffer, size_t<span style="color:#f92672">&amp;</span> offset, size_t<span style="color:#f92672">&amp;</span> size, <span style="color:#66d9ef">bool</span> <span style="color:#f92672">&amp;</span>fixedBuffer)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (<span style="color:#66d9ef">sizeof</span>(T) <span style="color:#f92672">+</span> offset <span style="color:#f92672">&gt;</span> size)
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>ResizeBuffer(buffer, size, offset, size <span style="color:#f92672">+</span> <span style="color:#66d9ef">sizeof</span>(T), fixedBuffer))
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> false;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    memcpy(buffer <span style="color:#f92672">+</span> offset, (<span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>)<span style="color:#f92672">&amp;</span>value, <span style="color:#66d9ef">sizeof</span>(T));
+</span></span><span style="display:flex;"><span>    offset <span style="color:#f92672">+=</span> <span style="color:#66d9ef">sizeof</span>(T);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> true;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>This concludes the serialization of the event into a sequence of bytes. Subsequent code will pack them up and write them into the <code>nettrace</code> file.</p>
 <h2 id="traceevent-deserialization">TraceEvent Deserialization</h2>
 <p>The general idea of TraceEvent is that it works on callbacks. It is easiest to understand that by starting from <code>PerfViewGCData.WriteHtmlBody()</code>. The code looks like this:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c#" data-lang="c#"><span style="color:#66d9ef">protected</span> <span style="color:#66d9ef">override</span> <span style="color:#66d9ef">void</span> WriteHtmlBody(TraceLog dataFile, TextWriter writer, <span style="color:#66d9ef">string</span> fileName, TextWriter log)
-{
-    <span style="color:#66d9ef">using</span> (<span style="color:#66d9ef">var</span> source = dataFile.Events.GetSource())
-    {
-        m_gcStats = <span style="color:#66d9ef">new</span> Dictionary&lt;<span style="color:#66d9ef">int</span>, Microsoft.Diagnostics.Tracing.Analysis.TraceProcess&gt;();
-        Microsoft.Diagnostics.Tracing.Analysis.TraceLoadedDotNetRuntimeExtensions.NeedLoadedDotNetRuntimes(source);
-        <span style="color:#75715e">// ...
-</span><span style="color:#75715e"></span>        source.Process();
-        <span style="color:#75715e">// ...
-</span><span style="color:#75715e"></span>    }
-}
-</code></pre></div><p>To begin with, we setup a <code>source</code>. During the call to <code>NeedLoadedDotNetRuntimes</code>, we will call <code>TraceLoadedDotNetRuntime.SetupCallbacks</code>. This function registers a callback as follow:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c#" data-lang="c#">source.Clr.GCHeapStats += <span style="color:#66d9ef">delegate</span> (GCHeapStatsTraceData data)
-{
-    <span style="color:#66d9ef">var</span> process = data.Process();
-    <span style="color:#66d9ef">var</span> stats = currentManagedProcess(data);
-    TraceGC _gc = TraceGarbageCollector.GetCurrentGC(stats);
-
-    <span style="color:#66d9ef">var</span> sizeAfterMB = (data.GenerationSize1 + data.GenerationSize2 + data.GenerationSize3 + data.GenerationSize4) / <span style="color:#ae81ff">1000000.0</span>;
-    <span style="color:#66d9ef">if</span> (_gc != <span style="color:#66d9ef">null</span>)
-    {
-        _gc.HeapStats = <span style="color:#66d9ef">new</span> GCHeapStats()
-        {
-            <span style="color:#75715e">// ...
-</span><span style="color:#75715e"></span>        }
-    }
-}
-</code></pre></div><p>The <code>data</code> is an instance of <code>GCHeapStatsTraceData</code>, which is constructed only twice during the setup. Those instances are the templates. When we call <code>source.Process()</code>, trace event will use these template objects to issue callbacks. These callbacks will use the properties on the <code>data</code>. Here is how these properties are implemented:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c#" data-lang="c#"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">long</span> GenerationSize0 { <span style="color:#66d9ef">get</span> { <span style="color:#66d9ef">return</span> GetInt64At(<span style="color:#ae81ff">0</span>); } }
-<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">long</span> TotalPromotedSize0 { <span style="color:#66d9ef">get</span> { <span style="color:#66d9ef">return</span> GetInt64At(<span style="color:#ae81ff">8</span>); } }
-<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">long</span> GenerationSize1 { <span style="color:#66d9ef">get</span> { <span style="color:#66d9ef">return</span> GetInt64At(<span style="color:#ae81ff">16</span>); } }
-...
-<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">long</span> GenerationSize4 { <span style="color:#66d9ef">get</span> { <span style="color:#66d9ef">if</span> (Version &gt;= <span style="color:#ae81ff">2</span>) { <span style="color:#66d9ef">return</span> GetInt64At(<span style="color:#ae81ff">94</span>); } <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>; } }
-<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">long</span> TotalPromotedSize4 { <span style="color:#66d9ef">get</span> { <span style="color:#66d9ef">if</span> (Version &gt;= <span style="color:#ae81ff">2</span>) { <span style="color:#66d9ef">return</span> GetInt64At(<span style="color:#ae81ff">102</span>); } <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>; } }
-</code></pre></div><p>The idea is that the underlying data is shifted to read different events, therefore the call to the <code>GenerationSize0</code> property will read the 0th byte to the 7th byte of the underlying event object and reinterpret that as a <code>long</code>. This correlates with the serialization code above.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c#" data-lang="c#"><span style="display:flex;"><span><span style="color:#66d9ef">protected</span> <span style="color:#66d9ef">override</span> <span style="color:#66d9ef">void</span> WriteHtmlBody(TraceLog dataFile, TextWriter writer, <span style="color:#66d9ef">string</span> fileName, TextWriter log)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">using</span> (<span style="color:#66d9ef">var</span> source = dataFile.Events.GetSource())
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        m_gcStats = <span style="color:#66d9ef">new</span> Dictionary&lt;<span style="color:#66d9ef">int</span>, Microsoft.Diagnostics.Tracing.Analysis.TraceProcess&gt;();
+</span></span><span style="display:flex;"><span>        Microsoft.Diagnostics.Tracing.Analysis.TraceLoadedDotNetRuntimeExtensions.NeedLoadedDotNetRuntimes(source);
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// ...</span>
+</span></span><span style="display:flex;"><span>        source.Process();
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// ...</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>To begin with, we setup a <code>source</code>. During the call to <code>NeedLoadedDotNetRuntimes</code>, we will call <code>TraceLoadedDotNetRuntime.SetupCallbacks</code>. This function registers a callback as follow:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c#" data-lang="c#"><span style="display:flex;"><span>source.Clr.GCHeapStats += <span style="color:#66d9ef">delegate</span> (GCHeapStatsTraceData data)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> process = data.Process();
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> stats = currentManagedProcess(data);
+</span></span><span style="display:flex;"><span>    TraceGC <span style="color:#ae81ff">_</span>gc = TraceGarbageCollector.GetCurrentGC(stats);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> sizeAfterMB = (data.GenerationSize1 + data.GenerationSize2 + data.GenerationSize3 + data.GenerationSize4) / <span style="color:#ae81ff">1000000.0</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (<span style="color:#ae81ff">_</span>gc != <span style="color:#66d9ef">null</span>)
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        <span style="color:#ae81ff">_</span>gc.HeapStats = <span style="color:#66d9ef">new</span> GCHeapStats()
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// ...</span>
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>The <code>data</code> is an instance of <code>GCHeapStatsTraceData</code>, which is constructed only twice during the setup. Those instances are the templates. When we call <code>source.Process()</code>, trace event will use these template objects to issue callbacks. These callbacks will use the properties on the <code>data</code>. Here is how these properties are implemented:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c#" data-lang="c#"><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">long</span> GenerationSize0 { <span style="color:#66d9ef">get</span> { <span style="color:#66d9ef">return</span> GetInt64At(<span style="color:#ae81ff">0</span>); } }
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">long</span> TotalPromotedSize0 { <span style="color:#66d9ef">get</span> { <span style="color:#66d9ef">return</span> GetInt64At(<span style="color:#ae81ff">8</span>); } }
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">long</span> GenerationSize1 { <span style="color:#66d9ef">get</span> { <span style="color:#66d9ef">return</span> GetInt64At(<span style="color:#ae81ff">16</span>); } }
+</span></span><span style="display:flex;"><span>...
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">long</span> GenerationSize4 { <span style="color:#66d9ef">get</span> { <span style="color:#66d9ef">if</span> (Version &gt;= <span style="color:#ae81ff">2</span>) { <span style="color:#66d9ef">return</span> GetInt64At(<span style="color:#ae81ff">94</span>); } <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>; } }
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">long</span> TotalPromotedSize4 { <span style="color:#66d9ef">get</span> { <span style="color:#66d9ef">if</span> (Version &gt;= <span style="color:#ae81ff">2</span>) { <span style="color:#66d9ef">return</span> GetInt64At(<span style="color:#ae81ff">102</span>); } <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>; } }
+</span></span></code></pre></div><p>The idea is that the underlying data is shifted to read different events, therefore the call to the <code>GenerationSize0</code> property will read the 0th byte to the 7th byte of the underlying event object and reinterpret that as a <code>long</code>. This correlates with the serialization code above.</p>
 <p>The last two lines were added by me to fix the parsing of the pinned object heap size. Notice that I have a version check there to make sure when we read old traces, we won&rsquo;t be reading things that do not exist there. In general, this is how event versioning work, as we introduce new fields into the event, we just put it at the very end so that the old trace reader will just ignore that. The fact that the pinned object heap size is unknown is exactly this. Before the change, it just read up to version 1.</p>
 <h1 id="consumption-of-these-new-properties">Consumption of these new properties</h1>
 <p>This will introduce a new property called GenerationSize4 in <code>GCHeapStat</code> class, but it is not useful if we just leave it there. Various places in PerfView consuming <code>GenerationSize3</code> is now modified to also consume <code>GenerationSize4</code> in a reasonable way. That concludes the whole fix to the tooling to support pinned object heap size.</p>

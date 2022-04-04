@@ -7,10 +7,10 @@
     <title>My Blog</title>
     <meta name="viewport" content="width=device-width,minimum-scale=1">
     <meta name="description" content="">
-    <meta name="generator" content="Hugo 0.73.0-DEV" />
+    <meta name="generator" content="Hugo 0.96.0" />
     
     
-      <META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
+      <META NAME="ROBOTS" CONTENT="INDEX, FOLLOW">
     
 
     
@@ -39,16 +39,18 @@
 <meta property="og:description" content="" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://cshung.github.io/posts/" />
-<meta property="og:updated_time" content="2021-12-26T10:52:35-08:00" />
+
 <meta itemprop="name" content="Posts">
 <meta itemprop="description" content=""><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Posts"/>
 <meta name="twitter:description" content=""/>
 
+      
+    
 	
   </head>
 
-  <body class="ma0 avenir bg-near-white">
+  <body class="ma0 avenir bg-near-white production">
     <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
     <script>mermaid.initialize({startOnLoad:true});</script>
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
@@ -103,6 +105,22 @@
   <article class="pa3 pa4-ns nested-copy-line-height nested-img">
     <section class="cf ph3 ph5-l pv3 pv4-l f4 tc-l center measure-wide lh-copy mid-gray"></section>
     <section class="flex-ns flex-wrap justify-around mt5">
+      
+        <div class="relative w-100 w-30-l mb4 bg-white"><div class="relative w-100 mb4 bg-white nested-copy-line-height">
+  <div class="bg-white mb3 pa4 gray overflow-hidden">
+    <span class="f6 db">Posts</span>
+    <h1 class="f3 near-black">
+      <a href="https://cshung.github.io/posts/debug-maui-android/" class="link black dim">
+        Debug MAUI Android
+      </a>
+    </h1>
+    <div class="nested-links f5 lh-copy nested-copy-line-height">
+      These days I have been helping the MAUI team to fix some bugs. I always learn something new when I work on something new, and this time is no different. Today I am going to write about how to debug the Android code running inside a MAUI app.
+Procedure Step 1: Launching the App. I start the MAUI app in Visual Studio as usual. In this post, I am going to assume that we know how to start an App in Visual Studio.
+    </div>
+  </div>
+</div>
+</div>
       
         <div class="relative w-100 w-30-l mb4 bg-white"><div class="relative w-100 mb4 bg-white nested-copy-line-height">
   <div class="bg-white mb3 pa4 gray overflow-hidden">
@@ -163,7 +181,7 @@ The hardware side The best way to think of spurious interrupts is to think like 
     <div class="nested-links f5 lh-copy nested-copy-line-height">
       In this series of posts, I will deep dive into ReadyToRun to understand its mechanisms. In my previous post, I briefly explained what is ReadyToRun and what problems do we need to solve. Now we will look into the exact mechanisms.
 The example We will start with this very simple example:
-using System; namespace ReadyToDebug { class Program { static void Main(string[] args) { for (int i = 0; i &lt; 3; i++) { Console.
+using System;  namespace ReadyToDebug {  class Program  {  static void Main(string[] args)  {  for (int i = 0; i &lt; 3; i++)  {  Console.
     </div>
   </div>
 </div>
@@ -196,7 +214,7 @@ Scenario One of our customers reported that occassionally, they are observing ge
     <div class="nested-links f5 lh-copy nested-copy-line-height">
       GC reporting basics When CoreCLR performs a garbage collection, the GC asks the VM where the roots are. The runtime will report to the GC the pointers to the pointers of the objects. This process is called GC reporting.
 Suppose we have a pointer on the stack pointing to an object on the GC heap, it will look like this:
-Stack: Heap0x00001000: .......... 0x00F00000:..........: .......... ..........: ....................: .
+Stack: Heap 0x00001000: .......... 0x00F00000: ..........: .......... ..........: .......... ..........: .
     </div>
   </div>
 </div>
@@ -229,7 +247,7 @@ Highlights Before I go into the details, here is a one line summary of the concl
     <div class="nested-links f5 lh-copy nested-copy-line-height">
       Another memory corruption bug In this post, we will talk about another memory corruption bug I found and fix. Check out my previous post for more context and examples.
 The symptom We are hitting an access violation at this location:
-inline size_t my_get_size (Object* ob) { MethodTable* mT = header(ob)-&gt;GetMethodTable(); return (mT-&gt;GetBaseSize() + (mT-&gt;HasComponentSize() ? ((size_t)((CObjectHeader*)ob)-&gt;GetNumComponents() * mT-&gt;RawGetComponentSize()) : 0)); } When the access violation happens, mT is a nullptr and therefore it cannot be dereferenced.
+inline size_t my_get_size (Object* ob) {  MethodTable* mT = header(ob)-&gt;GetMethodTable();   return (mT-&gt;GetBaseSize() +  (mT-&gt;HasComponentSize() ?  ((size_t)((CObjectHeader*)ob)-&gt;GetNumComponents() * mT-&gt;RawGetComponentSize()) : 0)); } When the access violation happens, mT is a nullptr and therefore it cannot be dereferenced.
     </div>
   </div>
 </div>
@@ -250,80 +268,30 @@ inline size_t my_get_size (Object* ob) { MethodTable* mT = header(ob)-&gt;GetMet
 </div>
 </div>
       
-        <div class="relative w-100 w-30-l mb4 bg-white"><div class="relative w-100 mb4 bg-white nested-copy-line-height">
-  <div class="bg-white mb3 pa4 gray overflow-hidden">
-    <span class="f6 db">Posts</span>
-    <h1 class="f3 near-black">
-      <a href="https://cshung.github.io/posts/git-merge-squash/" class="link black dim">
-        Git Merge Squash
-      </a>
-    </h1>
-    <div class="nested-links f5 lh-copy nested-copy-line-height">
-      Git Merge Squash This is a short article documenting my process of reusing someone else&rsquo;s change. It is not particularly easy and therefore I would like a document to remember how I did it.
-The problem? Imagine my partner and I were working on the same repository. I am working on a feature and he is working on a fix that I need. However, for whatever reasons, my partner couldn&rsquo;t merge the fix in, but I would really like to apply his change in my code base so that my scenario work (at least locally), how should I do it?
-    </div>
-  </div>
-</div>
-</div>
-      
     </section>
-
-<ul class="pagination">
-    
-    <li class="page-item">
-        <a href="/posts/" class="page-link" aria-label="First"><span aria-hidden="true">&laquo;&laquo;</span></a>
-    </li>
-    
-    <li class="page-item disabled">
-    <a  class="page-link" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a>
-    </li>
-    
-    
-    
-    
-    
-    
-    
-        
-        
-    
-    
-    <li class="page-item active"><a class="page-link" href="/posts/">1</a></li>
-    
-    
-    
-    
-    
-    
-        
-        
-    
-    
-    <li class="page-item"><a class="page-link" href="/posts/page/2/">2</a></li>
-    
-    
-    
-    
-    
-    
-        
-        
-    
-    
-    <li class="page-item"><a class="page-link" href="/posts/page/3/">3</a></li>
-    
-    
-    <li class="page-item">
-    <a href="/posts/page/2/" class="page-link" aria-label="Next"><span aria-hidden="true">&raquo;</span></a>
-    </li>
-    
-    <li class="page-item">
-        <a href="/posts/page/3/" class="page-link" aria-label="Last"><span aria-hidden="true">&raquo;&raquo;</span></a>
-    </li>
-    
-</ul>
-
-</article>
+    <ul class="pagination pagination-default">
+      <li class="page-item disabled">
+        <a aria-disabled="true" aria-label="First" class="page-link" role="button" tabindex="-1"><span aria-hidden="true">&laquo;&laquo;</span></a>
+      </li>
+      <li class="page-item disabled">
+        <a aria-disabled="true" aria-label="Previous" class="page-link" role="button" tabindex="-1"><span aria-hidden="true">&laquo;</span></a>
+      </li>
+      <li class="page-item active">
+        <a aria-current="page" aria-label="Page 1" class="page-link" role="button">1</a>
+      </li>
+      <li class="page-item">
+        <a href="/posts/page/2/" aria-label="Page 2" class="page-link" role="button">2</a>
+      </li>
+      <li class="page-item">
+        <a href="/posts/page/3/" aria-label="Page 3" class="page-link" role="button">3</a>
+      </li>
+      <li class="page-item">
+        <a href="/posts/page/2/" aria-label="Next" class="page-link" role="button"><span aria-hidden="true">&raquo;</span></a>
+      </li>
+      <li class="page-item">
+        <a href="/posts/page/3/" aria-label="Last" class="page-link" role="button"><span aria-hidden="true">&raquo;&raquo;</span></a>
+      </li>
+    </ul></article>
 
     </main>
     <footer class="bg-black bottom-0 w-100 pa3" role="contentinfo">

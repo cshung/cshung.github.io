@@ -7,10 +7,10 @@
     <title>PS/2 and A20 | My Blog</title>
     <meta name="viewport" content="width=device-width,minimum-scale=1">
     <meta name="description" content="PS/2 and A20 If the title of the post doesn&rsquo;t make any sense for you, you are just too young. Well, just kidding. These are really old technologies but still impacting our journey to host Xv6 on v86. In our last post, we were able to run a scenario, but it isn&rsquo;t perfect, it looks like all keyboard inputs are ignored and one must input the command through the UART port.">
-    <meta name="generator" content="Hugo 0.73.0-DEV" />
+    <meta name="generator" content="Hugo 0.96.0" />
     
     
-      <META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
+      <META NAME="ROBOTS" CONTENT="INDEX, FOLLOW">
     
 
     
@@ -33,25 +33,24 @@
     <meta property="og:title" content="PS/2 and A20" />
 <meta property="og:description" content="PS/2 and A20 If the title of the post doesn&rsquo;t make any sense for you, you are just too young. Well, just kidding. These are really old technologies but still impacting our journey to host Xv6 on v86. In our last post, we were able to run a scenario, but it isn&rsquo;t perfect, it looks like all keyboard inputs are ignored and one must input the command through the UART port." />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://cshung.github.io/posts/ps2-and-a20/" />
+<meta property="og:url" content="https://cshung.github.io/posts/ps2-and-a20/" /><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2021-10-22T20:15:34-07:00" />
 <meta property="article:modified_time" content="2021-10-22T20:15:34-07:00" />
+
 <meta itemprop="name" content="PS/2 and A20">
-<meta itemprop="description" content="PS/2 and A20 If the title of the post doesn&rsquo;t make any sense for you, you are just too young. Well, just kidding. These are really old technologies but still impacting our journey to host Xv6 on v86. In our last post, we were able to run a scenario, but it isn&rsquo;t perfect, it looks like all keyboard inputs are ignored and one must input the command through the UART port.">
-<meta itemprop="datePublished" content="2021-10-22T20:15:34-07:00" />
+<meta itemprop="description" content="PS/2 and A20 If the title of the post doesn&rsquo;t make any sense for you, you are just too young. Well, just kidding. These are really old technologies but still impacting our journey to host Xv6 on v86. In our last post, we were able to run a scenario, but it isn&rsquo;t perfect, it looks like all keyboard inputs are ignored and one must input the command through the UART port."><meta itemprop="datePublished" content="2021-10-22T20:15:34-07:00" />
 <meta itemprop="dateModified" content="2021-10-22T20:15:34-07:00" />
 <meta itemprop="wordCount" content="1100">
-
-
-
 <meta itemprop="keywords" content="" /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="PS/2 and A20"/>
 <meta name="twitter:description" content="PS/2 and A20 If the title of the post doesn&rsquo;t make any sense for you, you are just too young. Well, just kidding. These are really old technologies but still impacting our journey to host Xv6 on v86. In our last post, we were able to run a scenario, but it isn&rsquo;t perfect, it looks like all keyboard inputs are ignored and one must input the command through the UART port."/>
 
+      
+    
 	
   </head>
 
-  <body class="ma0 avenir bg-near-white">
+  <body class="ma0 avenir bg-near-white production">
     <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
     <script>mermaid.initialize({startOnLoad:true});</script>
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
@@ -151,23 +150,23 @@
 <h1 id="where-is-my-interrupt">Where is my interrupt?</h1>
 <p>We know I/O in x86 system is interrupt-driven. Therefore, we expect when we hit the keyboard, the virtual machine should send an interrupt to the operating system, and the operating system will process it. Now the key question to answer is whether or not the virtual machine raised an interrupt or not?</p>
 <p>To confirm that, ideally, one would like to set a breakpoint on the <code>kbdintr</code> function. To do so, we look up the assembly and figured out the function has virtual address <code>801027c0</code>. Therefore, we can capture the event in the <code>cycle_internal</code> function as follow:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-js" data-lang="js"><span style="color:#a6e22e">CPU</span>.<span style="color:#a6e22e">prototype</span>.<span style="color:#a6e22e">cycle_internal</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">function</span>()
-{
-    <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">previous_ip</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">instruction_pointer</span>;
-
-    <span style="color:#66d9ef">if</span> (<span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">previous_ip</span> <span style="color:#f92672">==</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">2146424896</span>) <span style="color:#75715e">// -2146424896 = 0x801027c0
-</span><span style="color:#75715e"></span>    {
-        <span style="color:#66d9ef">debugger</span>;
-    }
-    ...
-}
-</code></pre></div><p>We noticed the <code>debugger</code> statement is never hit, so we conclude the virtual machine is not raising the interrupt, why?</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-js" data-lang="js"><span style="display:flex;"><span><span style="color:#a6e22e">CPU</span>.<span style="color:#a6e22e">prototype</span>.<span style="color:#a6e22e">cycle_internal</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">function</span>()
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">previous_ip</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">instruction_pointer</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (<span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">previous_ip</span> <span style="color:#f92672">==</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">2146424896</span>) <span style="color:#75715e">// -2146424896 = 0x801027c0
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">debugger</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    ...
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>We noticed the <code>debugger</code> statement is never hit, so we conclude the virtual machine is not raising the interrupt, why?</p>
 <h1 id="how-interrupt-works">How interrupt works</h1>
 <p>To figure out how interrupt works in v86, we set a breakpoint earlier in the <code>trap</code> function at <code>80105850</code>, which is called for any interrupt. It does, but the stack reveals nothing interesting. Similarly, for the even earlier entry point <code>alltraps</code> at <code>80105772</code>. We have a good reason to believe that the interrupt is processed by not leaving a frame on the stack. So we turn our attention to the log.</p>
 <p>By turning on <code>CPU_LOG_VERBOSE</code> at the very beginning of the <code>cpu.js</code>, I see this log statement.</p>
-<pre><code>22:54:03+720 [CPU ] mode=prot/32 paging=1 iopl=0 cpl=0 if=0 cs:eip=0x0008:0x80105D8A cs_off=0x00000000 flgs=0x000092 (  a s    ) ss:esp=0x0010:0x8010B548 ssize=1 in int end
+<pre tabindex="0"><code>22:54:03+720 [CPU ] mode=prot/32 paging=1 iopl=0 cpl=0 if=0 cs:eip=0x0008:0x80105D8A cs_off=0x00000000 flgs=0x000092 (  a s    ) ss:esp=0x0010:0x8010B548 ssize=1 in int end
 </code></pre><p>The <code>int end</code> caught my attention. Does it mean interrupt processing ends? Searching in the code show me that is exactly the case, the code emitting the log is right at the end of <code>call_interrupt_vector</code> method. Setting a breakpoint on this function reveals how interrupt is processed. The stack gives one example on how an interrupt is processed.</p>
-<pre><code>CPU.call_interrupt_vector (cpu.js:1801)
+<pre tabindex="0"><code>CPU.call_interrupt_vector (cpu.js:1801)
 CPU.pic_call_irq (cpu.js:3701)
 PIC.acknowledge_irq (pic.js:157)
 CPU.handle_irqs (cpu.js:3719)
@@ -190,7 +189,7 @@ CPU.do_run (cpu.js:1115)
 <p>With a bit of code reading, we notice <code>acknowledge_irq</code> checks if <code>this.requested_irq</code> is -1. If that&rsquo;s the case, that means there is no interrupt requested and therefore will not lead to the <code>pic_call_irq</code> code path. Therefore we would like to know how <code>this.requested_irq</code> changes.</p>
 <h1 id="programmable-interrupt-controller">Programmable Interrupt Controller</h1>
 <p>It isn&rsquo;t hard to figure out the <code>check_irq</code> function set the <code>this.requested_irq</code> value. Setting a breakpoint on that line yield a very common stack.</p>
-<pre><code>PIC.check_irqs (pic.js:117)
+<pre tabindex="0"><code>PIC.check_irqs (pic.js:117)
 PIC.set_irq (pic.js:305)
 CPU.device_raise_irq (cpu.js:3734)
 PIT.timer (pit.js:116)
@@ -203,7 +202,7 @@ CPU.do_run (cpu.js:1112)
 <p>By searching <code>device_raise_irq</code> over the code base, it is not hard to figure out the keyboard irq is raised by the <code>ps2.js</code>. PS/2 was a keyboard and mouse port designed in 1987, a very old technologies, but it is still supported in major OS. I set a breakpoint at <code>kbd_irq</code>, I notice the method is called a few times, but no longer get called even I type on the keyboard, so something interesting is going on.</p>
 <p>It looks like the upstream function, <code>raise_irq</code> is called whenever the keyboard is pressed. The issue is that we have a check for <code>next_byte_is_ready</code> and it got filtered away there. So why <code>next_byte_is_ready</code>?</p>
 <p>Ideally, we would like to know when is the last time <code>next_byte_is_ready</code> is set. By setting a breakpoint on all places where <code>next_byte_is_ready</code> is set. We got around 10 hits during the boot process, and the last hit was raised by this stack:</p>
-<pre><code>PS2.kbd_irq (ps2.js:225)
+<pre tabindex="0"><code>PS2.kbd_irq (ps2.js:225)
 PS2.port60_write (ps2.js:637)
 IO.port_write8 (io.js:343)
 t.&lt;computed&gt; (instructions.js:1120)
@@ -213,7 +212,7 @@ CPU.do_many_cycles (cpu.js:1129)
 CPU.do_run (cpu.js:1115)
 ...
 </code></pre><p>And the <code>this.previous_ip</code> is <code>31771</code>, which correspond to this line in the boot loader.</p>
-<pre><code>  # Physical address line A20 is tied to zero so that the first PCs 
+<pre tabindex="0"><code>  # Physical address line A20 is tied to zero so that the first PCs 
   # with 2 MB would run software that assumed 1 MB.  Undo that.
   ...
   movb    $0xdf,%al               # 0xdf -&gt; port 0x60

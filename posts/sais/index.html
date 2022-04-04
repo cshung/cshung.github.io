@@ -9,10 +9,10 @@
     <meta name="description" content="Today, I would like to write about my understanding of the SA-IS algorithm for constructing a suffix array.
 What is a suffix array? Consider the string &ldquo;banana&rdquo;, this string has 6 suffixes.
    suffix index     banana 0   anana 1   nana 2   ana 3   na 4   a 5    And if we sort them, we have these:">
-    <meta name="generator" content="Hugo 0.73.0-DEV" />
+    <meta name="generator" content="Hugo 0.96.0" />
     
     
-      <META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
+      <META NAME="ROBOTS" CONTENT="INDEX, FOLLOW">
     
 
     
@@ -37,29 +37,28 @@ What is a suffix array? Consider the string &ldquo;banana&rdquo;, this string ha
 What is a suffix array? Consider the string &ldquo;banana&rdquo;, this string has 6 suffixes.
    suffix index     banana 0   anana 1   nana 2   ana 3   na 4   a 5    And if we sort them, we have these:" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://cshung.github.io/posts/sais/" />
+<meta property="og:url" content="https://cshung.github.io/posts/sais/" /><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2021-12-26T10:52:35-08:00" />
 <meta property="article:modified_time" content="2021-12-26T10:52:35-08:00" />
+
 <meta itemprop="name" content="SA-IS Algorithm">
 <meta itemprop="description" content="Today, I would like to write about my understanding of the SA-IS algorithm for constructing a suffix array.
 What is a suffix array? Consider the string &ldquo;banana&rdquo;, this string has 6 suffixes.
-   suffix index     banana 0   anana 1   nana 2   ana 3   na 4   a 5    And if we sort them, we have these:">
-<meta itemprop="datePublished" content="2021-12-26T10:52:35-08:00" />
+   suffix index     banana 0   anana 1   nana 2   ana 3   na 4   a 5    And if we sort them, we have these:"><meta itemprop="datePublished" content="2021-12-26T10:52:35-08:00" />
 <meta itemprop="dateModified" content="2021-12-26T10:52:35-08:00" />
 <meta itemprop="wordCount" content="3721">
-
-
-
 <meta itemprop="keywords" content="" /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="SA-IS Algorithm"/>
 <meta name="twitter:description" content="Today, I would like to write about my understanding of the SA-IS algorithm for constructing a suffix array.
 What is a suffix array? Consider the string &ldquo;banana&rdquo;, this string has 6 suffixes.
    suffix index     banana 0   anana 1   nana 2   ana 3   na 4   a 5    And if we sort them, we have these:"/>
 
+      
+    
 	
   </head>
 
-  <body class="ma0 avenir bg-near-white">
+  <body class="ma0 avenir bg-near-white production">
     <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
     <script>mermaid.initialize({startOnLoad:true});</script>
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
@@ -248,13 +247,13 @@ What is a suffix array? Consider the string &ldquo;banana&rdquo;, this string ha
 <p>Intuitively, the S stands for smaller, and L stands for larger. We will soon see this is a bit misleading &hellip;</p>
 </blockquote>
 <p>Following our banana example, the suffix types are as follow:</p>
-<pre><code>banana$
+<pre tabindex="0"><code>banana$
 LSLSLLS
 </code></pre><p>Computing the type is fairly easy. The key idea is to compute it from the right. The &lsquo;$&rsquo; sign is always type &lsquo;S&rsquo;. How about the others?
 Determining that &lsquo;a$&rsquo; is L type is trivial, all we need to do is to check that &lsquo;a&rsquo; &gt; &lsquo;$&rsquo;. In fact, in &lsquo;banana&rsquo;, all characters can be checked this way.</p>
 <p>The only tricky part is if the initial characters are the same, then we cannot just compare one character.</p>
 <p>In this case, we claim that the type is simply the type of the one on its right hand side. Here is an example.</p>
-<pre><code>paab$
+<pre tabindex="0"><code>paab$
  ?SLS
 </code></pre><p>To determine the type of <code>aab$</code>, we claim that since &lsquo;a&rsquo; = &lsquo;a&rsquo;, therefore, the type of <code>aab$</code> is simply the same as the type of <code>ab$</code>, which is S.</p>
 <p>If we think about it, this is exactly leveraging our observation that string comparisons are overlapping. The string comparison is simply comparing the first letter and then compare the rest, but the rest is already computed, so we just use what we already have!</p>
@@ -352,7 +351,7 @@ Determining that &lsquo;a$&rsquo; is L type is trivial, all we need to do is to 
 <p>Although we display that as a table, in code we will simply represent it as an array together with an auxillary array that tell us where the bucket starts and ends.</p>
 <h1 id="sorting-the-l-type-suffixes-given-the-s-types-are-sorted">Sorting the L type suffixes given the S types are sorted</h1>
 <p>Suppose we have the S type suffixes sorted (i.e. they are placed in the right positions in the suffix array), we can easily get the fully sorted suffix array using this surprising algorithm.</p>
-<pre><code>Scan the array from left to right
+<pre tabindex="0"><code>Scan the array from left to right
 If the current suffix is not the full string
   If the suffix to the left of that suffix is L type
     Insert that into the end of the corresponding L type bucket
@@ -431,7 +430,7 @@ If the current suffix is not the full string
 </tr>
 </tbody>
 </table>
-<p>Step 3: The next one we find is &lsquo;a$&rsquo;. The left suffix is &lsquo;na$&rsquo;, it is L type, so we put it into the right bucket.</p>
+<p>Step 3: The next one we find is &lsquo;a$&rsquo;. The left suffix is &rsquo;na$&rsquo;, it is L type, so we put it into the right bucket.</p>
 <table>
 <thead>
 <tr>
@@ -468,7 +467,7 @@ If the current suffix is not the full string
 </tr>
 </tbody>
 </table>
-<p>Step 4: The next one we find is &lsquo;ana$&rsquo;. The left suffix is &lsquo;nana$&rsquo;, it is L type, so we put it into the right bucket.</p>
+<p>Step 4: The next one we find is &lsquo;ana$&rsquo;. The left suffix is &rsquo;nana$&rsquo;, it is L type, so we put it into the right bucket.</p>
 <table>
 <thead>
 <tr>
@@ -572,11 +571,11 @@ If the current suffix is not the full string
 </li>
 </ol>
 <p>In order to proceed with step 9, if it happens that both \( \alpha \) and \( \beta \) are type L, we can still use the induction hypothesis. If exactly one of \( \alpha \) and \( \beta \) are type S, then we can still argue that the original order should not mess up the relative ordering of L type and S type. The last case, that both \( \alpha \) and \( \beta \) are type S, is the true problem. We do need to make sure they were ordered properly before the algorithm starts.</p>
-<p>It is just too good to be true if we can assume nothing and get the L type suffix sorted, turn out we still must sort some S type suffixes, but not all of them. It matters only if they cab be \( \alpha \) or \( \beta \) above. This type of S suffixes has a special property that they are the immediate right hand side of a L type suffix. In other words, they are the left most S type suffixes, or LMS for short.</p>
+<p>It is just too good to be true if we can assume nothing and get the L type suffix sorted, turn out we still must sort some S type suffixes, but not all of them. It matters only if they can be \( \alpha \) or \( \beta \) above. This type of S suffixes has a special property that they are the immediate right hand side of a L type suffix. In other words, they are the left most S type suffixes, or LMS for short.</p>
 <p>Suppose we can get the LMS suffixes sorted, then we can use the inductive sort to get the L type suffixes sorted. Now the problem how about the S type suffixes?</p>
 <h1 id="sorting-the-s-type-suffixes-as-well">Sorting the S type suffixes as well</h1>
 <p>Intuition tells us L and S are symmetric, can we run the inductive sort in reverse and sort the S type suffixes given the L type suffixes. Yes we can.</p>
-<pre><code>Scan the array from right to left
+<pre tabindex="0"><code>Scan the array from right to left
 If the current suffix is not the full string
   If the suffix to the left that suffix is S type
     Insert that into the beginning of the corresponding bucket
@@ -615,14 +614,14 @@ If the current suffix is not the full string
 <p>The problem of producing the suffix array is now reduced to sorting the LMS suffixes. We have a good news, because a LMS suffix must have a L right next to a S, at most half of the suffixes can be LMS.</p>
 <p>Suppose we can recursively solve the problem of sorting the LMS suffixes, then we are done. Because \( T(n) = T(n/2) + O(n) \implies T(n) = O(n) \).</p>
 <p>The only problem is that sorting the LMS suffixes is not the same problem as creating a suffix array, so it is unclear how we would recursively solve a different problem. Unless we turn it into one. Looking at our banana again:</p>
-<pre><code>banana$
+<pre tabindex="0"><code>banana$
 LSLSLLS
 </code></pre><p>The LMS suffixes are</p>
-<pre><code>anana$
+<pre tabindex="0"><code>anana$
 ana$
 $
 </code></pre><p>Wouldn&rsquo;t it be cool if we could rename the substrings into an alphabet this way:</p>
-<pre><code>pq$
+<pre tabindex="0"><code>pq$
 q$
 $
 </code></pre><p>And therefore, what we are really solving is the suffix array problem for the string <code>pq$</code>.</p>
