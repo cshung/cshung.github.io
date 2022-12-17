@@ -2,13 +2,16 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://cshung.github.io/posts/debug-maui-android/</loc>
-    <lastmod>2022-04-04T08:20:54-07:00</lastmod>
-  </url><url>
     <loc>https://cshung.github.io/</loc>
-    <lastmod>2022-04-04T08:20:54-07:00</lastmod>
+    <lastmod>2022-12-17T10:32:43-08:00</lastmod>
   </url><url>
     <loc>https://cshung.github.io/posts/</loc>
+    <lastmod>2022-12-17T10:32:43-08:00</lastmod>
+  </url><url>
+    <loc>https://cshung.github.io/posts/soccer-with-socks/</loc>
+    <lastmod>2022-12-17T10:32:43-08:00</lastmod>
+  </url><url>
+    <loc>https://cshung.github.io/posts/debug-maui-android/</loc>
     <lastmod>2022-04-04T08:20:54-07:00</lastmod>
   </url><url>
     <loc>https://cshung.github.io/posts/sais/</loc>

@@ -110,6 +110,23 @@
   <div class="bg-white mb3 pa4 gray overflow-hidden">
     <span class="f6 db">Posts</span>
     <h1 class="f3 near-black">
+      <a href="https://cshung.github.io/posts/soccer-with-socks/" class="link black dim">
+        Watch Soccer with SOCKS
+      </a>
+    </h1>
+    <div class="nested-links f5 lh-copy nested-copy-line-height">
+      As of the time of writing, tomorrow is the final for World Cup 2022. It is a pity to miss it. Unfortunately, in the US, unlike most other places in the world, you can&rsquo;t watch it for free, while it is available for free online in many other countries.
+To get around that restriction, I &hellip;
+ hosted a cheap Linux virtual machine on Azure. used SSH as a sock server.
+    </div>
+  </div>
+</div>
+</div>
+      
+        <div class="relative w-100 w-30-l mb4 bg-white"><div class="relative w-100 mb4 bg-white nested-copy-line-height">
+  <div class="bg-white mb3 pa4 gray overflow-hidden">
+    <span class="f6 db">Posts</span>
+    <h1 class="f3 near-black">
       <a href="https://cshung.github.io/posts/debug-maui-android/" class="link black dim">
         Debug MAUI Android
       </a>
@@ -248,21 +265,6 @@ Highlights Before I go into the details, here is a one line summary of the concl
       Another memory corruption bug In this post, we will talk about another memory corruption bug I found and fix. Check out my previous post for more context and examples.
 The symptom We are hitting an access violation at this location:
 inline size_t my_get_size (Object* ob) {  MethodTable* mT = header(ob)-&gt;GetMethodTable();   return (mT-&gt;GetBaseSize() +  (mT-&gt;HasComponentSize() ?  ((size_t)((CObjectHeader*)ob)-&gt;GetNumComponents() * mT-&gt;RawGetComponentSize()) : 0)); } When the access violation happens, mT is a nullptr and therefore it cannot be dereferenced.
-    </div>
-  </div>
-</div>
-</div>
-      
-        <div class="relative w-100 w-30-l mb4 bg-white"><div class="relative w-100 mb4 bg-white nested-copy-line-height">
-  <div class="bg-white mb3 pa4 gray overflow-hidden">
-    <span class="f6 db">Posts</span>
-    <h1 class="f3 near-black">
-      <a href="https://cshung.github.io/posts/memory-corruption-1/" class="link black dim">
-        Memory Corruption (1)
-      </a>
-    </h1>
-    <div class="nested-links f5 lh-copy nested-copy-line-height">
-      Debugging a memory corruption problem A memory corruption issue refers to a problem that is caused by the fact that the memory content is wrong. For example, the code is having an access violation because it tried to dereference a pointer that is not valid. Debugging a memory corruption issue is hard because we don&rsquo;t know how the process get into a corrupted state to begin with. In this post, I am going to share my experience debugging a memory issue caused by the GC.
     </div>
   </div>
 </div>
