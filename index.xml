@@ -6,7 +6,18 @@
     <description>Recent content on My Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 17 Dec 2022 10:32:43 -0800</lastBuildDate><atom:link href="https://cshung.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 17 Dec 2022 12:31:46 -0800</lastBuildDate><atom:link href="https://cshung.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Memory Corruption (3)</title>
+      <link>https://cshung.github.io/posts/memory-corruption-3/</link>
+      <pubDate>Sat, 17 Dec 2022 12:31:46 -0800</pubDate>
+      
+      <guid>https://cshung.github.io/posts/memory-corruption-3/</guid>
+      <description>Another memory corruption bug In this post, I will talk about another memory corruption bug we found and fix together with Mukund. Check out my previous post for more context and examples.
+Symptom As reported in this issue, we hit an access violation while we are trying to compare objects for equality when running a test case that is doing some concurrent dictionary of buffers allocated on the POH.
+A first look When the program crashes at the object equality check.</description>
+    </item>
+    
     <item>
       <title>Watch Soccer with SOCKS</title>
       <link>https://cshung.github.io/posts/soccer-with-socks/</link>

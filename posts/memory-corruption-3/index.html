@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    
+    <title>Memory Corruption (3) | My Blog</title>
+    <meta name="viewport" content="width=device-width,minimum-scale=1">
+    <meta name="description" content="Another memory corruption bug In this post, I will talk about another memory corruption bug we found and fix together with Mukund. Check out my previous post for more context and examples.
+Symptom As reported in this issue, we hit an access violation while we are trying to compare objects for equality when running a test case that is doing some concurrent dictionary of buffers allocated on the POH.
+A first look When the program crashes at the object equality check.">
+    <meta name="generator" content="Hugo 0.96.0" />
+    
+    
+      <META NAME="ROBOTS" CONTENT="INDEX, FOLLOW">
+    
+
+    
+
+  
+  
+    <link rel="stylesheet" href="/ananke/dist/main.css_5c99d70a7725bacd4c701e995b969fea.css" >
+  
+
+
+
+
+    
+      
+
+    
+
+    
+    
+    <meta property="og:title" content="Memory Corruption (3)" />
+<meta property="og:description" content="Another memory corruption bug In this post, I will talk about another memory corruption bug we found and fix together with Mukund. Check out my previous post for more context and examples.
+Symptom As reported in this issue, we hit an access violation while we are trying to compare objects for equality when running a test case that is doing some concurrent dictionary of buffers allocated on the POH.
+A first look When the program crashes at the object equality check." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://cshung.github.io/posts/memory-corruption-3/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2022-12-17T12:31:46-08:00" />
+<meta property="article:modified_time" content="2022-12-17T12:31:46-08:00" />
+
+<meta itemprop="name" content="Memory Corruption (3)">
+<meta itemprop="description" content="Another memory corruption bug In this post, I will talk about another memory corruption bug we found and fix together with Mukund. Check out my previous post for more context and examples.
+Symptom As reported in this issue, we hit an access violation while we are trying to compare objects for equality when running a test case that is doing some concurrent dictionary of buffers allocated on the POH.
+A first look When the program crashes at the object equality check."><meta itemprop="datePublished" content="2022-12-17T12:31:46-08:00" />
+<meta itemprop="dateModified" content="2022-12-17T12:31:46-08:00" />
+<meta itemprop="wordCount" content="1303">
+<meta itemprop="keywords" content="" /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Memory Corruption (3)"/>
+<meta name="twitter:description" content="Another memory corruption bug In this post, I will talk about another memory corruption bug we found and fix together with Mukund. Check out my previous post for more context and examples.
+Symptom As reported in this issue, we hit an access violation while we are trying to compare objects for equality when running a test case that is doing some concurrent dictionary of buffers allocated on the POH.
+A first look When the program crashes at the object equality check."/>
+
+      
+    
+	
+  </head>
+
+  <body class="ma0 avenir bg-near-white production">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <script>mermaid.initialize({startOnLoad:true});</script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+   
+  
+
+  <header>
+    <div class="bg-black">
+      <nav class="pv3 ph3 ph4-ns" role="navigation">
+  <div class="flex-l justify-between items-center center">
+    <a href="/" class="f3 fw2 hover-white no-underline white-90 dib">
+      
+        My Blog
+      
+    </a>
+    <div class="flex-l items-center">
+      
+
+      
+      
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    </div>
+  </div>
+</nav>
+
+    </div>
+  </header>
+
+
+
+    <main class="pb7" role="main">
+      
+  
+  <article class="flex-l flex-wrap justify-between mw8 center ph3">
+    <header class="mt4 w-100">
+      <aside class="instapaper_ignoref b helvetica tracked">
+          
+        POSTS
+      </aside>
+      
+
+
+
+
+  <div id="sharing" class="mt3">
+
+    
+    <a href="https://www.facebook.com/sharer.php?u=https://cshung.github.io/posts/memory-corruption-3/" class="facebook no-underline" aria-label="share on Facebook">
+      <svg height="32px"  style="enable-background:new 0 0 67 67;" version="1.1" viewBox="0 0 67 67" width="32px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path d="M28.765,50.32h6.744V33.998h4.499l0.596-5.624h-5.095  l0.007-2.816c0-1.466,0.14-2.253,2.244-2.253h2.812V17.68h-4.5c-5.405,0-7.307,2.729-7.307,7.317v3.377h-3.369v5.625h3.369V50.32z   M33,64C16.432,64,3,50.569,3,34S16.432,4,33,4s30,13.431,30,30S49.568,64,33,64z" style="fill-rule:evenodd;clip-rule:evenodd;"/></svg>
+
+    </a>
+
+    
+    
+    <a href="https://twitter.com/share?url=https://cshung.github.io/posts/memory-corruption-3/&amp;text=Memory%20Corruption%20%283%29" class="twitter no-underline" aria-label="share on Twitter">
+      <svg height="32px"  style="enable-background:new 0 0 67 67;" version="1.1" viewBox="0 0 67 67" width="32px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path d="M37.167,22.283c-2.619,0.953-4.274,3.411-4.086,6.101  l0.063,1.038l-1.048-0.127c-3.813-0.487-7.145-2.139-9.974-4.915l-1.383-1.377l-0.356,1.017c-0.754,2.267-0.272,4.661,1.299,6.271  c0.838,0.89,0.649,1.017-0.796,0.487c-0.503-0.169-0.943-0.296-0.985-0.233c-0.146,0.149,0.356,2.076,0.754,2.839  c0.545,1.06,1.655,2.097,2.871,2.712l1.027,0.487l-1.215,0.021c-1.173,0-1.215,0.021-1.089,0.467  c0.419,1.377,2.074,2.839,3.918,3.475l1.299,0.444l-1.131,0.678c-1.676,0.976-3.646,1.526-5.616,1.568  C19.775,43.256,19,43.341,19,43.405c0,0.211,2.557,1.397,4.044,1.864c4.463,1.377,9.765,0.783,13.746-1.568  c2.829-1.673,5.657-5,6.978-8.221c0.713-1.716,1.425-4.851,1.425-6.354c0-0.975,0.063-1.102,1.236-2.267  c0.692-0.678,1.341-1.419,1.467-1.631c0.21-0.403,0.188-0.403-0.88-0.043c-1.781,0.636-2.033,0.551-1.152-0.402  c0.649-0.678,1.425-1.907,1.425-2.267c0-0.063-0.314,0.042-0.671,0.233c-0.377,0.212-1.215,0.53-1.844,0.72l-1.131,0.361l-1.027-0.7  c-0.566-0.381-1.361-0.805-1.781-0.932C39.766,21.902,38.131,21.944,37.167,22.283z M33,64C16.432,64,3,50.569,3,34S16.432,4,33,4  s30,13.431,30,30S49.568,64,33,64z" style="fill-rule:evenodd;clip-rule:evenodd;fill:;"/></svg>
+
+    </a>
+
+    
+    <a href="https://www.linkedin.com/shareArticle?mini=true&amp;url=https://cshung.github.io/posts/memory-corruption-3/&amp;title=Memory%20Corruption%20%283%29" class="linkedin no-underline" aria-label="share on LinkedIn">
+      <svg  height="32px"  style="enable-background:new 0 0 65 65;" version="1.1" viewBox="0 0 65 65" width="32px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <path d="M50.837,48.137V36.425c0-6.275-3.35-9.195-7.816-9.195  c-3.604,0-5.219,1.983-6.119,3.374V27.71h-6.79c0.09,1.917,0,20.427,0,20.427h6.79V36.729c0-0.609,0.044-1.219,0.224-1.655  c0.49-1.22,1.607-2.483,3.482-2.483c2.458,0,3.44,1.873,3.44,4.618v10.929H50.837z M22.959,24.922c2.367,0,3.842-1.57,3.842-3.531  c-0.044-2.003-1.475-3.528-3.797-3.528s-3.841,1.524-3.841,3.528c0,1.961,1.474,3.531,3.753,3.531H22.959z M34,64  C17.432,64,4,50.568,4,34C4,17.431,17.432,4,34,4s30,13.431,30,30C64,50.568,50.568,64,34,64z M26.354,48.137V27.71h-6.789v20.427  H26.354z" style="fill-rule:evenodd;clip-rule:evenodd;fill:;"/>
+</svg>
+
+    </a>
+  </div>
+
+
+      <h1 class="f1 athelas mt3 mb1">Memory Corruption (3)</h1>
+      
+      
+      <time class="f6 mv4 dib tracked" datetime="2022-12-17T12:31:46-08:00">December 17, 2022</time>
+
+      
+      
+    </header>
+    <div class="nested-copy-line-height lh-copy serif f4 nested-links nested-img mid-gray pr4-l w-two-thirds-l"><h1 id="another-memory-corruption-bug">Another memory corruption bug</h1>
+<p>In this post, I will talk about another memory corruption bug we found and fix together with Mukund. Check out my <a href="/posts/memory-corruption-2">previous post</a> for more context and examples.</p>
+<h1 id="symptom">Symptom</h1>
+<p>As reported in <a href="https://github.com/dotnet/runtime/issues/76929">this issue</a>, we hit an access violation while we are trying to compare objects for equality when running a test case that is doing some concurrent dictionary of buffers allocated on the POH.</p>
+<h1 id="a-first-look">A first look</h1>
+<p>When the program crashes at the object equality check. Here is the point of failure:</p>
+<pre tabindex="0"><code>...
+  146 00007ffc`25e47c3e 4889542438      mov     qword ptr [rsp+38h],rdx
+  146 00007ffc`25e47c43 488bca          mov     rcx,rdx
+  146 00007ffc`25e47c46 498bd0          mov     rdx,r8
+  146 00007ffc`25e47c49 488b442438      mov     rax,qword ptr [rsp+38h]
+  146 00007ffc`25e47c4e 488b00          mov     rax,qword ptr [rax]
+  146 00007ffc`25e47c51 488b4040        mov     rax,qword ptr [rax+40h]
+  146 00007ffc`25e47c55 ff5010          call    qword ptr [rax+10h]       &lt;&lt;&lt; rax is abababababababab, obviously bad
+...
+</code></pre><p>This is a typical virtual method call sequence. Initially, the stack slot <code>rsp+38h</code> contains a pointer to an object, then we load it into <code>rax</code>, then we load the method table to <code>rax</code>, and then we load the <code>40h</code> element into rax, and then we wanted to call the <code>10h</code> element in that table.</p>
+<p><code>rax</code> having a weird value basically means the source of <code>rax</code> is wrong, and therefore we inspect the object stored in <code>rdx</code>, and in fact, it is wrong. It is a free object, no wonder we cannot find its method table.</p>
+<p>Something being used is freed is obviously problem. At some point, the GC must have freed it. Let&rsquo;s take a look as the stress log as usual.</p>
+<h1 id="marked-and-freed">Marked and freed</h1>
+<p>According to the stress log, the object is marked and then freed in background GC. This is puzzling, because marked objects should not be freed. Could it be the case that the object was marked in earlier GC but not marked in the later GC, so it got freed?</p>
+<p>Then I discovered another puzzling fact, somehow, we missed all the start background GC messages. Without them, we have no idea. What happened?</p>
+<h1 id="a-detour---stress-log-reliability">A detour - stress log reliability</h1>
+<p>The missing of the background GC start message make me question about the reliability of the stress log. Do we always log all messages? Actually, the stress log analyzer is telling me it is not.</p>
+<p>At the end of the stress log analyzer run, we have this message:</p>
+<pre tabindex="0"><code>Used file size:  1.895 GB, still available: 30.105 GB, 10 threads total, 6 overwrote earlier messages
+Number of messages examined: 38.964634 million, printed: 0
+</code></pre><p>As a first glance, it looks like I have plenty of space left, so we should be fine, but the truth is that 6 <em>threads</em> already ran out of space and reused existing space to write log messages.</p>
+<p>Turn out in the stress log mechanism, we have a per thread size limit. As the GC threads are logging way more information than the other managed threads, the GC thread reach the limit sooner, and therefore it wrapped around, despite we had a lot of space left.</p>
+<p>As a remedy, I simply hack away the per-thread size limit, and now I can see all the messages as long as I have enough memory to use.</p>
+<blockquote>
+<p>Debugging Tips: Know your tools. The answer was right in front of me, I just didn&rsquo;t understand what does that mean.</p>
+</blockquote>
+<h1 id="no-dice---still-mark-and-free">No dice - still mark and free</h1>
+<p>The modified stress log tells us that we are mark and free within the same background GC. That is even more puzzling. At this point, we are starting to wonder if it is missed message. If, for whatever reasons, that the GC reset the mark bit without writing a log. This could happen. As such, we read through the code such that everywhere touches <code>mark_array</code> are either.</p>
+<ul>
+<li>Logged with some messages, or</li>
+<li>Have a <code>FATAL_GC_ERROR</code> such that it will crash whenever that is run.</li>
+</ul>
+<p>The second mode is really just a quick hack to avoid too extensive instrumentation. If the code path is not being executed in the repro, then there is no point spending time instrumenting it.</p>
+<p>To make sure it is not just logged, but searchable, we also modified the stress log analyzer and made sure if we did log, the search by value will work even when the log message is outputting range.</p>
+<h1 id="building-a-mark-array-shadow">Building a mark array shadow</h1>
+<p>The modified stress log show nothing extra. Now it is puzzling even more. Now we are starting to question ourselves. Am I missing anything? Maybe we missed somewhere modifying the <code>mark_array</code>?</p>
+<p>To check if I missed anything, I build a mark array shadow. The idea is that whenever I hit a place modifying the mark array, I update both the array and the shadow. If the shadow and the mark array stay consistent, then I didn&rsquo;t miss anything. Otherwise I do.</p>
+<p>Checking the mark array shadow is the same as the mark array is quite a problem because they are big. For my purpose, I only check when I am freeing a POH object, knowing at that point, the POH object is freed with a mark, then it must be the case that mark is different.</p>
+<p>To my surprise, even using the mark array shadow, I don&rsquo;t find inconsistency (Actually it occassionally does, but I wasn&rsquo;t noticing when I was debugging). I concluded that our logging is indeed complete.</p>
+<blockquote>
+<p>Debugging Tips: Using a shadow can be a effective way to make sure all modifications are captured.</p>
+</blockquote>
+<h1 id="force-the-bug-to-appear">Force the bug to appear</h1>
+<p>It is at this moment I figured an idea. The log say the object is marked, but it isn&rsquo;t. Can I actually check if the bit stay marked all the time in between? If I log the mark word changes together with the mark word&rsquo;s address, then we can look at the mark word values and see what happened. If the mark word ever change between the time when the mark bit is set and when the object is free, then we know what happened.</p>
+<p>This is fruitful, and we have found these interesting log statements.</p>
+<pre tabindex="0"><code>931c  38.090888200 : `GC l=10086`         Background cleared because 3: 000001EE99923C08 00000000F74CC91E 1 15555554 15555554
+8d9c  36.840606300 : `GC l=10086`         Background marked: 000001EE99923DE8 00000000F74CC91E 40000000 45555555 45555555
+9564  36.840606300 : `GC l=10086`         Background marked: 000001EE99923DC8 00000000F74CC91E 10000000 15555555 15555555
+</code></pre><p><em>You won&rsquo;t find these logging statement in the code, these are my new instrumentation.</em></p>
+<p>The marked and freed object is <code>000001EE99923DE8</code>, the associated mark array address is <code>00000000F74CC91E</code> and the bit mask associated with the mark bit is <code>40000000</code>. It is obvious that the mark bit was set during the time we say it is background marked, but it is disappearing right away. Right &lsquo;before&rsquo; that moment, we have another thread trying to set a mark bit on that same word and lead to some other value.</p>
+<p>The interesting observation is that they have identical time stamp! Identical time stamp indicate race, and in fact we have one. Since the setting of the mark bit is not atomic (in case of work station GC), two threads might be trying to set the mark bit of different objects on the same word at the same time, leading to the race!</p>
+<blockquote>
+<p>Debugging Tips: Can I force the bug to appear? That might be a good question to ask when debugging.</p>
+</blockquote>
+<blockquote>
+<p>Debugging Tips: Identical (or very close) time stamp is a good hint for race conditions.</p>
+</blockquote>
+<h1 id="solution">Solution</h1>
+<p>Now that we have found the issue, fixing it quickly is trivial. We changed the setting and resetting of the mark bit to an interlocked atomic operation, and it worked great. The customer scenario ran without a crash overnight, meaning the fix is solid. Having to use an interlocked atomic operation is a bit unfortunate because it impacts the whole background mark phase, we will try to see if there is a better solution to it.</p>
+<ul class="pa0">
+  
+</ul>
+<div class="mt6 instapaper_ignoref">
+      
+      
+      </div>
+    </div>
+
+    <aside class="w-30-l mt6-l">
+
+
+
+
+</aside>
+
+  </article>
+
+    </main>
+    <footer class="bg-black bottom-0 w-100 pa3" role="contentinfo">
+  <div class="flex justify-between">
+  <a class="f4 fw4 hover-white no-underline white-70 dn dib-ns pv2 ph3" href="https://cshung.github.io/" >
+    &copy;  My Blog 2022 
+  </a>
+    <div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+  </div>
+</footer>
+
+    <div style="display:none">
+    <script type="text/javascript" src="https://www.free-counters.org/count/86pd"></script><br><a href='http://www.counter-zaehler.de'>besucherzähler ip</a> <script type='text/javascript'     src='https://whomania.com/ctr?id=695d5b016077d10ada0ea41fc87e54f2421f8966'></script>
+    </div>
+  </body>
+
+</html>

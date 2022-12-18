@@ -110,6 +110,23 @@
   <div class="bg-white mb3 pa4 gray overflow-hidden">
     <span class="f6 db">Posts</span>
     <h1 class="f3 near-black">
+      <a href="https://cshung.github.io/posts/memory-corruption-3/" class="link black dim">
+        Memory Corruption (3)
+      </a>
+    </h1>
+    <div class="nested-links f5 lh-copy nested-copy-line-height">
+      Another memory corruption bug In this post, I will talk about another memory corruption bug we found and fix together with Mukund. Check out my previous post for more context and examples.
+Symptom As reported in this issue, we hit an access violation while we are trying to compare objects for equality when running a test case that is doing some concurrent dictionary of buffers allocated on the POH.
+A first look When the program crashes at the object equality check.
+    </div>
+  </div>
+</div>
+</div>
+      
+        <div class="relative w-100 w-30-l mb4 bg-white"><div class="relative w-100 mb4 bg-white nested-copy-line-height">
+  <div class="bg-white mb3 pa4 gray overflow-hidden">
+    <span class="f6 db">Posts</span>
+    <h1 class="f3 near-black">
       <a href="https://cshung.github.io/posts/soccer-with-socks/" class="link black dim">
         Watch Soccer with SOCKS
       </a>
@@ -253,23 +270,6 @@ Highlights Before I go into the details, here is a one line summary of the concl
 </div>
 </div>
       
-        <div class="relative w-100 w-30-l mb4 bg-white"><div class="relative w-100 mb4 bg-white nested-copy-line-height">
-  <div class="bg-white mb3 pa4 gray overflow-hidden">
-    <span class="f6 db">Posts</span>
-    <h1 class="f3 near-black">
-      <a href="https://cshung.github.io/posts/memory-corruption-2/" class="link black dim">
-        Memory Corruption (2)
-      </a>
-    </h1>
-    <div class="nested-links f5 lh-copy nested-copy-line-height">
-      Another memory corruption bug In this post, we will talk about another memory corruption bug I found and fix. Check out my previous post for more context and examples.
-The symptom We are hitting an access violation at this location:
-inline size_t my_get_size (Object* ob) {  MethodTable* mT = header(ob)-&gt;GetMethodTable();   return (mT-&gt;GetBaseSize() +  (mT-&gt;HasComponentSize() ?  ((size_t)((CObjectHeader*)ob)-&gt;GetNumComponents() * mT-&gt;RawGetComponentSize()) : 0)); } When the access violation happens, mT is a nullptr and therefore it cannot be dereferenced.
-    </div>
-  </div>
-</div>
-</div>
-      
     </section>
     <ul class="pagination pagination-default">
       <li class="page-item disabled">
@@ -288,10 +288,13 @@ inline size_t my_get_size (Object* ob) {  MethodTable* mT = header(ob)-&gt;GetMe
         <a href="/posts/page/3/" aria-label="Page 3" class="page-link" role="button">3</a>
       </li>
       <li class="page-item">
+        <a href="/posts/page/4/" aria-label="Page 4" class="page-link" role="button">4</a>
+      </li>
+      <li class="page-item">
         <a href="/posts/page/2/" aria-label="Next" class="page-link" role="button"><span aria-hidden="true">&raquo;</span></a>
       </li>
       <li class="page-item">
-        <a href="/posts/page/3/" aria-label="Last" class="page-link" role="button"><span aria-hidden="true">&raquo;&raquo;</span></a>
+        <a href="/posts/page/4/" aria-label="Last" class="page-link" role="button"><span aria-hidden="true">&raquo;&raquo;</span></a>
       </li>
     </ul></article>
 
