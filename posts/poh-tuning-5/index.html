@@ -1,158 +1,52 @@
 <!DOCTYPE html>
-<html lang="en-us">
-  <head>
+<html><head>
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    
-    <title>POH Tuning (Part 5 - Preliminary results) | My Blog</title>
-    <meta name="viewport" content="width=device-width,minimum-scale=1">
-    <meta name="description" content="Top level result After running, we can use the Jupyter notebook to analyze the result. The result is surprising. To make the data easy to analyze, they are available as pandas data frame. For those who are unfamiliar with pandas, a data frame is really just a table.
-To use the notebook to get to the data frame, we need to run the first cell (as it required to setup the functions), and then we can run the cell calling the get_test_metrics_numbers_for_jupyter function, there should be exactly one such cell.">
-    <meta name="generator" content="Hugo 0.96.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/style.css">
+    <link rel="stylesheet" type="text/css" href="/css/syntax.css">
     
     
-      <META NAME="ROBOTS" CONTENT="INDEX, FOLLOW">
-    
-
-    
-
-  
-  
-    <link rel="stylesheet" href="/ananke/dist/main.css_5c99d70a7725bacd4c701e995b969fea.css" >
-  
+    <title>My Blog | POH Tuning (Part 5 - Preliminary results)</title>
 
 
+</head><body class="light-theme"><div id="nav-border" class="container">
+    <nav id="nav" class="nav justify-content-center">
+        
+        <a class="nav-link" href="/">
+        
+        
+        <i data-feather="home"></i> 
+        
+        
+        Home
+        </a>
+        
+        <a class="nav-link" href="/tags/">
+        
+        
+        <i data-feather="tag"></i> 
+        
+        
+        Tags
+        </a>
+        
+        <a class="nav-link" href="#" id="toggleDarkModeButton"><i data-feather="sun"></i></a>
+        <span style="padding:5px"><input type="text" id="queryTextField"></span><a class="nav-link" href="#" id="searchButton"><i data-feather="search"></i></a>
+    </nav>
+</div><div id="content" style="margin:20px">
+<h1>POH Tuning (Part 5 - Preliminary results)</h1>
 
 
-    
-      
+<i data-feather="calendar"></i>
+<time datetime="2021-03-08">Mar 8, 2021</time>
 
-    
-
-    
-    
-    <meta property="og:title" content="POH Tuning (Part 5 - Preliminary results)" />
-<meta property="og:description" content="Top level result After running, we can use the Jupyter notebook to analyze the result. The result is surprising. To make the data easy to analyze, they are available as pandas data frame. For those who are unfamiliar with pandas, a data frame is really just a table.
-To use the notebook to get to the data frame, we need to run the first cell (as it required to setup the functions), and then we can run the cell calling the get_test_metrics_numbers_for_jupyter function, there should be exactly one such cell." />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="https://cshung.github.io/posts/poh-tuning-5/" /><meta property="article:section" content="posts" />
-<meta property="article:published_time" content="2021-03-08T10:57:05-08:00" />
-<meta property="article:modified_time" content="2021-03-08T10:57:05-08:00" />
-
-<meta itemprop="name" content="POH Tuning (Part 5 - Preliminary results)">
-<meta itemprop="description" content="Top level result After running, we can use the Jupyter notebook to analyze the result. The result is surprising. To make the data easy to analyze, they are available as pandas data frame. For those who are unfamiliar with pandas, a data frame is really just a table.
-To use the notebook to get to the data frame, we need to run the first cell (as it required to setup the functions), and then we can run the cell calling the get_test_metrics_numbers_for_jupyter function, there should be exactly one such cell."><meta itemprop="datePublished" content="2021-03-08T10:57:05-08:00" />
-<meta itemprop="dateModified" content="2021-03-08T10:57:05-08:00" />
-<meta itemprop="wordCount" content="739">
-<meta itemprop="keywords" content="" /><meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="POH Tuning (Part 5 - Preliminary results)"/>
-<meta name="twitter:description" content="Top level result After running, we can use the Jupyter notebook to analyze the result. The result is surprising. To make the data easy to analyze, they are available as pandas data frame. For those who are unfamiliar with pandas, a data frame is really just a table.
-To use the notebook to get to the data frame, we need to run the first cell (as it required to setup the functions), and then we can run the cell calling the get_test_metrics_numbers_for_jupyter function, there should be exactly one such cell."/>
-
-      
-    
-	
-  </head>
-
-  <body class="ma0 avenir bg-near-white production">
-    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
-    <script>mermaid.initialize({startOnLoad:true});</script>
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    
-   
-  
-
-  <header>
-    <div class="bg-black">
-      <nav class="pv3 ph3 ph4-ns" role="navigation">
-  <div class="flex-l justify-between items-center center">
-    <a href="/" class="f3 fw2 hover-white no-underline white-90 dib">
-      
-        My Blog
-      
-    </a>
-    <div class="flex-l items-center">
-      
-
-      
-      
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    </div>
-  </div>
-</nav>
-
-    </div>
-  </header>
-
-
-
-    <main class="pb7" role="main">
-      
-  
-  <article class="flex-l flex-wrap justify-between mw8 center ph3">
-    <header class="mt4 w-100">
-      <aside class="instapaper_ignoref b helvetica tracked">
-          
-        POSTS
-      </aside>
-      
-
-
-
-
-  <div id="sharing" class="mt3">
-
-    
-    <a href="https://www.facebook.com/sharer.php?u=https://cshung.github.io/posts/poh-tuning-5/" class="facebook no-underline" aria-label="share on Facebook">
-      <svg height="32px"  style="enable-background:new 0 0 67 67;" version="1.1" viewBox="0 0 67 67" width="32px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path d="M28.765,50.32h6.744V33.998h4.499l0.596-5.624h-5.095  l0.007-2.816c0-1.466,0.14-2.253,2.244-2.253h2.812V17.68h-4.5c-5.405,0-7.307,2.729-7.307,7.317v3.377h-3.369v5.625h3.369V50.32z   M33,64C16.432,64,3,50.569,3,34S16.432,4,33,4s30,13.431,30,30S49.568,64,33,64z" style="fill-rule:evenodd;clip-rule:evenodd;"/></svg>
-
-    </a>
-
-    
-    
-    <a href="https://twitter.com/share?url=https://cshung.github.io/posts/poh-tuning-5/&amp;text=POH%20Tuning%20%28Part%205%20-%20Preliminary%20results%29" class="twitter no-underline" aria-label="share on Twitter">
-      <svg height="32px"  style="enable-background:new 0 0 67 67;" version="1.1" viewBox="0 0 67 67" width="32px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path d="M37.167,22.283c-2.619,0.953-4.274,3.411-4.086,6.101  l0.063,1.038l-1.048-0.127c-3.813-0.487-7.145-2.139-9.974-4.915l-1.383-1.377l-0.356,1.017c-0.754,2.267-0.272,4.661,1.299,6.271  c0.838,0.89,0.649,1.017-0.796,0.487c-0.503-0.169-0.943-0.296-0.985-0.233c-0.146,0.149,0.356,2.076,0.754,2.839  c0.545,1.06,1.655,2.097,2.871,2.712l1.027,0.487l-1.215,0.021c-1.173,0-1.215,0.021-1.089,0.467  c0.419,1.377,2.074,2.839,3.918,3.475l1.299,0.444l-1.131,0.678c-1.676,0.976-3.646,1.526-5.616,1.568  C19.775,43.256,19,43.341,19,43.405c0,0.211,2.557,1.397,4.044,1.864c4.463,1.377,9.765,0.783,13.746-1.568  c2.829-1.673,5.657-5,6.978-8.221c0.713-1.716,1.425-4.851,1.425-6.354c0-0.975,0.063-1.102,1.236-2.267  c0.692-0.678,1.341-1.419,1.467-1.631c0.21-0.403,0.188-0.403-0.88-0.043c-1.781,0.636-2.033,0.551-1.152-0.402  c0.649-0.678,1.425-1.907,1.425-2.267c0-0.063-0.314,0.042-0.671,0.233c-0.377,0.212-1.215,0.53-1.844,0.72l-1.131,0.361l-1.027-0.7  c-0.566-0.381-1.361-0.805-1.781-0.932C39.766,21.902,38.131,21.944,37.167,22.283z M33,64C16.432,64,3,50.569,3,34S16.432,4,33,4  s30,13.431,30,30S49.568,64,33,64z" style="fill-rule:evenodd;clip-rule:evenodd;fill:;"/></svg>
-
-    </a>
-
-    
-    <a href="https://www.linkedin.com/shareArticle?mini=true&amp;url=https://cshung.github.io/posts/poh-tuning-5/&amp;title=POH%20Tuning%20%28Part%205%20-%20Preliminary%20results%29" class="linkedin no-underline" aria-label="share on LinkedIn">
-      <svg  height="32px"  style="enable-background:new 0 0 65 65;" version="1.1" viewBox="0 0 65 65" width="32px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-  <path d="M50.837,48.137V36.425c0-6.275-3.35-9.195-7.816-9.195  c-3.604,0-5.219,1.983-6.119,3.374V27.71h-6.79c0.09,1.917,0,20.427,0,20.427h6.79V36.729c0-0.609,0.044-1.219,0.224-1.655  c0.49-1.22,1.607-2.483,3.482-2.483c2.458,0,3.44,1.873,3.44,4.618v10.929H50.837z M22.959,24.922c2.367,0,3.842-1.57,3.842-3.531  c-0.044-2.003-1.475-3.528-3.797-3.528s-3.841,1.524-3.841,3.528c0,1.961,1.474,3.531,3.753,3.531H22.959z M34,64  C17.432,64,4,50.568,4,34C4,17.431,17.432,4,34,4s30,13.431,30,30C64,50.568,50.568,64,34,64z M26.354,48.137V27.71h-6.789v20.427  H26.354z" style="fill-rule:evenodd;clip-rule:evenodd;fill:;"/>
-</svg>
-
-    </a>
-  </div>
-
-
-      <h1 class="f1 athelas mt3 mb1">POH Tuning (Part 5 - Preliminary results)</h1>
-      
-      
-      <time class="f6 mv4 dib tracked" datetime="2021-03-08T10:57:05-08:00">March 8, 2021</time>
-
-      
-      
-    </header>
-    <div class="nested-copy-line-height lh-copy serif f4 nested-links nested-img mid-gray pr4-l w-two-thirds-l"><h1 id="top-level-result">Top level result</h1>
+<br><br>
+<h1 id="top-level-result">Top level result</h1>
 <p>After running, we can use the Jupyter notebook to analyze the result. The result is surprising. To make the data easy to analyze, they are available as <a href="https://pandas.pydata.org/">pandas</a> data frame. For those who are unfamiliar with pandas, a data frame is really just a table.</p>
 <p>To use the notebook to get to the data frame, we need to run the first cell (as it required to setup the functions), and then we can run the cell calling the <code>get_test_metrics_numbers_for_jupyter</code> function, there should be exactly one such cell. And this cell will give us the <code>run_data_frame</code> variable.</p>
 <p>With that, running this command is going to give us the key metrics.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-py" data-lang="py"><span style="display:flex;"><span>run_data_frame[[<span style="color:#e6db74">&#34;benchmark_name&#34;</span>, <span style="color:#e6db74">&#34;PctTimePausedInGC&#34;</span>, <span style="color:#e6db74">&#34;speed&#34;</span>, <span style="color:#e6db74">&#34;HeapSizeBeforeMB_Mean&#34;</span>, <span style="color:#e6db74">&#34;HeapSizeAfterMB_Mean&#34;</span>]]
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-py" data-lang="py"><span class="line"><span class="cl"><span class="n">run_data_frame</span><span class="p">[[</span><span class="s2">&#34;benchmark_name&#34;</span><span class="p">,</span> <span class="s2">&#34;PctTimePausedInGC&#34;</span><span class="p">,</span> <span class="s2">&#34;speed&#34;</span><span class="p">,</span> <span class="s2">&#34;HeapSizeBeforeMB_Mean&#34;</span><span class="p">,</span> <span class="s2">&#34;HeapSizeAfterMB_Mean&#34;</span><span class="p">]]</span>
 </span></span></code></pre></div><table>
 <thead>
 <tr>
@@ -185,7 +79,7 @@ To use the notebook to get to the data frame, we need to run the first cell (as 
 <p>Upon further investigation, I figured out that the <code>speed</code> metric reported by the infrastructure is really just the geometric mean of <code>FirstToLastGCSeconds</code> and <code>PauseDurationMSec_95P</code>. Both of them are measured in seconds, so the value is the smaller the better. So in fact, we are showing an improvement in the timing aspect as well.</p>
 <h1 id="what-caused-the-improvement">What caused the improvement?</h1>
 <p>Apparently we are spending much less time in GC. Let&rsquo;s take a look at the number of GCs first.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-py" data-lang="py"><span style="display:flex;"><span>run_data_frame[[<span style="color:#e6db74">&#34;benchmark_name&#34;</span>, <span style="color:#e6db74">&#34;TotalNumberGCs&#34;</span>, <span style="color:#e6db74">&#34;CountIsGen0&#34;</span>, <span style="color:#e6db74">&#34;CountIsGen1&#34;</span>, <span style="color:#e6db74">&#34;CountIsBackground&#34;</span>, <span style="color:#e6db74">&#34;CountIsBlockingGen2&#34;</span>]]
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-py" data-lang="py"><span class="line"><span class="cl"><span class="n">run_data_frame</span><span class="p">[[</span><span class="s2">&#34;benchmark_name&#34;</span><span class="p">,</span> <span class="s2">&#34;TotalNumberGCs&#34;</span><span class="p">,</span> <span class="s2">&#34;CountIsGen0&#34;</span><span class="p">,</span> <span class="s2">&#34;CountIsGen1&#34;</span><span class="p">,</span> <span class="s2">&#34;CountIsBackground&#34;</span><span class="p">,</span> <span class="s2">&#34;CountIsBlockingGen2&#34;</span><span class="p">]]</span>
 </span></span></code></pre></div><table>
 <thead>
 <tr>
@@ -399,62 +293,141 @@ To use the notebook to get to the data frame, we need to run the first cell (as 
 </tbody>
 </table>
 <p>In this case, the data is fairly obvious, the observation we saw is fairly stable. To make this even more concrete, we could use the <a href="https://en.wikipedia.org/wiki/Student%27s_t-test">Students&rsquo; T test</a>. Here I show that the decrease of number of gen 0 GC is statistically significant. To perform the test, we run these (it is not currently in the Jupyter notebook, but it could be)</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-py" data-lang="py"><span style="display:flex;"><span><span style="color:#f92672">from</span> scipy.stats <span style="color:#f92672">import</span> ttest_ind
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>cat1 <span style="color:#f92672">=</span> run_data_frame[run_data_frame[<span style="color:#e6db74">&#39;benchmark_name&#39;</span>]<span style="color:#f92672">==</span><span style="color:#e6db74">&#39;2gb_pinning&#39;</span>]
-</span></span><span style="display:flex;"><span>cat2 <span style="color:#f92672">=</span> run_data_frame[run_data_frame[<span style="color:#e6db74">&#39;benchmark_name&#39;</span>]<span style="color:#f92672">==</span><span style="color:#e6db74">&#39;2gb_poh&#39;</span>]
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>ttest_ind(cat1[<span style="color:#e6db74">&#39;CountIsGen0&#39;</span>], cat2[<span style="color:#e6db74">&#39;CountIsGen0&#39;</span>], equal_var<span style="color:#f92672">=</span><span style="color:#66d9ef">False</span>)
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-py" data-lang="py"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="kn">import</span> <span class="n">ttest_ind</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">cat1</span> <span class="o">=</span> <span class="n">run_data_frame</span><span class="p">[</span><span class="n">run_data_frame</span><span class="p">[</span><span class="s1">&#39;benchmark_name&#39;</span><span class="p">]</span><span class="o">==</span><span class="s1">&#39;2gb_pinning&#39;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="n">cat2</span> <span class="o">=</span> <span class="n">run_data_frame</span><span class="p">[</span><span class="n">run_data_frame</span><span class="p">[</span><span class="s1">&#39;benchmark_name&#39;</span><span class="p">]</span><span class="o">==</span><span class="s1">&#39;2gb_poh&#39;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">ttest_ind</span><span class="p">(</span><span class="n">cat1</span><span class="p">[</span><span class="s1">&#39;CountIsGen0&#39;</span><span class="p">],</span> <span class="n">cat2</span><span class="p">[</span><span class="s1">&#39;CountIsGen0&#39;</span><span class="p">],</span> <span class="n">equal_var</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </span></span></code></pre></div><p>The code produced this result:</p>
-<pre tabindex="0"><code>Ttest_indResult(statistic=16.317779324341963, pvalue=4.106432582405551e-05)
-</code></pre><p>The statistics is just a number used in the calculation. The key is a small p-value. Basically, the p-value is the probability of observing the experimental result if we assume the number of gen0 collection in both cases is equal. Since the probability is so small, we choose to believe otherwise, that the number of gen0 collections is indeed different.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="cl">Ttest_indResult(statistic=16.317779324341963, pvalue=4.106432582405551e-05)
+</span></span></code></pre></div><p>The statistics is just a number used in the calculation. The key is a small p-value. Basically, the p-value is the probability of observing the experimental result if we assume the number of gen0 collection in both cases is equal. Since the probability is so small, we choose to believe otherwise, that the number of gen0 collections is indeed different.</p>
 <p>For those who are familiar with statistics, here are some fine details for the test. We used unequal variance because we see and obvious flucation in the gen 0 counts in the pinned handle case but not in the pinned object heap case. The p-value outputted by scipy is a two-tailed p-value. Since we wanted to prove that the number of gen 0 is indeed smaller, we should have used a one-tailed p-value instead, which should be the number divided by 2, but they are small anyway.</p>
-<ul class="pa0">
-  
-</ul>
-<div class="mt6 instapaper_ignoref">
-      
-      
-      </div>
-    </div>
-
-    <aside class="w-30-l mt6-l">
 
 
+        </div><p class="footer text-center">Copyright (c) 2023 Andrew Au</p><script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true });</script>
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/prettify.js"></script>
+<script src="/js/feather.min.js"></script>
+<script src="/index.js"></script>
+<script>
 
+  function getCookie(cname) {
+    let name = cname + "=";
+    let ca = document.cookie.split(';');
+    for (let i = 0; i < ca.length; i++) {
+      let c = ca[i];
+      while (c.charAt(0) == ' ') {
+        c = c.substring(1);
+      }
+      if (c.indexOf(name) == 0) {
+        return c.substring(name.length, c.length);
+      }
+    }
+    return "";
+  }
 
-</aside>
+  function setCookie(cname, cvalue, exdays) {
+    const d = new Date();
+    d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+    let expires = "expires=" + d.toUTCString();
+    document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+  }
 
-  </article>
+  function ensureIcon() {
+    if (document.body.classList.contains("dark-theme")) {
+      toggleDarkModeButton.innerHTML = '<i data-feather="sun"></i>';
+    } else {
+      toggleDarkModeButton.innerHTML = '<i data-feather="moon"></i>';
+    }
+    feather.replace();
+  }
+  function saveCookie() {
+    if (document.body.classList.contains("dark-theme")) {
+      setCookie("darkMode", "true", 365);
+    } else {
+      setCookie("darkMode", "false", 365);
+    }
+  }
 
-    </main>
-    <footer class="bg-black bottom-0 w-100 pa3" role="contentinfo">
-  <div class="flex justify-between">
-  <a class="f4 fw4 hover-white no-underline white-70 dn dib-ns pv2 ph3" href="https://cshung.github.io/" >
-    &copy;  My Blog 2022 
-  </a>
-    <div>
+  function load(pre) {
+    link = pre.getAttribute("data-code-link");
+    const xhr = new XMLHttpRequest();
+    xhr.onload = () => {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        pre.className = "prettyprint";
+        pre.textContent = xhr.responseText;
+      }
+      prettyPrint();
+    };
+    xhr.open('GET', link);
+    xhr.send();
+  }
 
+  function onSearchButtonClicked(e) {
+    e.preventDefault();
+    var query = $("#queryTextField").val();
+    var terms = query.split(' ');
+    
+    var result = {};
+    for (var i = 0; i < terms.length; ++i) {
+      var term = terms[i].toLowerCase();
+      if (term in index.Terms)
+      {
+        for (i = 0; i < index.Terms[term].length; i += 2) {
+          var doc = index.Terms[term][i];
+          var count = index.Terms[term][i + 1];
+          if (doc in result) {
+            result[doc] += count;
+          } else {
+            result[doc] = count;
+          }
+        }
+      }
+    }
+    
+    $("#content").empty();
+    for (var key in result) {
+      $("#content").append($('<a>', {
+        href: index.Documents[key].replace("../../content","").replace(".md",""),
+        text: index.Titles[key]
+      }));
+      $("#content").append($('<br>'));
+    }
+  }
 
+  $(document).ready(function () {
+    var darkMode = getCookie("darkMode");
+    if (darkMode == "true") {
+      document.body.classList.add("dark-theme");
+      document.body.classList.remove("light-theme");
+    }
+    ensureIcon();
 
+    $("#toggleDarkModeButton").click(function (e) {
+      e.preventDefault();
+      document.body.classList.toggle("dark-theme");
+      document.body.classList.toggle("light-theme");
+      saveCookie();
+      ensureIcon();
+    });
 
+    $("#searchButton").click(onSearchButtonClicked);
 
+    var pres = document.getElementsByTagName("pre");
+    for (var i = 0; i < pres.length; ++i) {
+      var pre = pres[i];
+      if (pre.classList.contains("pretty-github-code")) {
+        load(pre);
+      }
+    }
+  });
 
-
-
-
-
-
-
-
-
-</div>
-  </div>
-</footer>
-
-    <div style="display:none">
-    <script type="text/javascript" src="https://www.free-counters.org/count/86pd"></script><br><a href='http://www.counter-zaehler.de'>besucherzähler ip</a> <script type='text/javascript'     src='https://whomania.com/ctr?id=695d5b016077d10ada0ea41fc87e54f2421f8966'></script>
-    </div>
-  </body>
-
+  $(window).on("load", function () {
+    $("body").show();
+  });
+</script></body>
 </html>

@@ -1,154 +1,48 @@
 <!DOCTYPE html>
-<html lang="en-us">
-  <head>
+<html><head>
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    
-    <title>Debugging help for CoreCLR GC - Mono | My Blog</title>
-    <meta name="viewport" content="width=device-width,minimum-scale=1">
-    <meta name="description" content="I was invited to help with debugging an issue in the CoreCLR GC - Mono project. In this blog entry, I am planning to describe the debugging process so that it can be repeated to move the project forward.
-What is CoreCLR GC - Mono? CoreCLR GC - Mono is an attempt to use CoreCLR&rsquo;s GC to replace sgen, a simple generational garbage collector for Mono. The major goal of the project is to improve performance.">
-    <meta name="generator" content="Hugo 0.96.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/style.css">
+    <link rel="stylesheet" type="text/css" href="/css/syntax.css">
     
     
-      <META NAME="ROBOTS" CONTENT="INDEX, FOLLOW">
-    
-
-    
-
-  
-  
-    <link rel="stylesheet" href="/ananke/dist/main.css_5c99d70a7725bacd4c701e995b969fea.css" >
-  
+    <title>My Blog | Debugging help for CoreCLR GC - Mono</title>
 
 
+</head><body class="light-theme"><div id="nav-border" class="container">
+    <nav id="nav" class="nav justify-content-center">
+        
+        <a class="nav-link" href="/">
+        
+        
+        <i data-feather="home"></i> 
+        
+        
+        Home
+        </a>
+        
+        <a class="nav-link" href="/tags/">
+        
+        
+        <i data-feather="tag"></i> 
+        
+        
+        Tags
+        </a>
+        
+        <a class="nav-link" href="#" id="toggleDarkModeButton"><i data-feather="sun"></i></a>
+        <span style="padding:5px"><input type="text" id="queryTextField"></span><a class="nav-link" href="#" id="searchButton"><i data-feather="search"></i></a>
+    </nav>
+</div><div id="content" style="margin:20px">
+<h1>Debugging help for CoreCLR GC - Mono</h1>
 
 
-    
-      
+<i data-feather="calendar"></i>
+<time datetime="2020-12-04">Dec 4, 2020</time>
 
-    
-
-    
-    
-    <meta property="og:title" content="Debugging help for CoreCLR GC - Mono" />
-<meta property="og:description" content="I was invited to help with debugging an issue in the CoreCLR GC - Mono project. In this blog entry, I am planning to describe the debugging process so that it can be repeated to move the project forward.
-What is CoreCLR GC - Mono? CoreCLR GC - Mono is an attempt to use CoreCLR&rsquo;s GC to replace sgen, a simple generational garbage collector for Mono. The major goal of the project is to improve performance." />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="https://cshung.github.io/posts/coreclrgc-mono/" /><meta property="article:section" content="posts" />
-<meta property="article:published_time" content="2020-12-04T11:52:15-08:00" />
-<meta property="article:modified_time" content="2020-12-04T11:52:15-08:00" />
-
-<meta itemprop="name" content="Debugging help for CoreCLR GC - Mono">
-<meta itemprop="description" content="I was invited to help with debugging an issue in the CoreCLR GC - Mono project. In this blog entry, I am planning to describe the debugging process so that it can be repeated to move the project forward.
-What is CoreCLR GC - Mono? CoreCLR GC - Mono is an attempt to use CoreCLR&rsquo;s GC to replace sgen, a simple generational garbage collector for Mono. The major goal of the project is to improve performance."><meta itemprop="datePublished" content="2020-12-04T11:52:15-08:00" />
-<meta itemprop="dateModified" content="2020-12-04T11:52:15-08:00" />
-<meta itemprop="wordCount" content="1270">
-<meta itemprop="keywords" content="" /><meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="Debugging help for CoreCLR GC - Mono"/>
-<meta name="twitter:description" content="I was invited to help with debugging an issue in the CoreCLR GC - Mono project. In this blog entry, I am planning to describe the debugging process so that it can be repeated to move the project forward.
-What is CoreCLR GC - Mono? CoreCLR GC - Mono is an attempt to use CoreCLR&rsquo;s GC to replace sgen, a simple generational garbage collector for Mono. The major goal of the project is to improve performance."/>
-
-      
-    
-	
-  </head>
-
-  <body class="ma0 avenir bg-near-white production">
-    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
-    <script>mermaid.initialize({startOnLoad:true});</script>
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    
-   
-  
-
-  <header>
-    <div class="bg-black">
-      <nav class="pv3 ph3 ph4-ns" role="navigation">
-  <div class="flex-l justify-between items-center center">
-    <a href="/" class="f3 fw2 hover-white no-underline white-90 dib">
-      
-        My Blog
-      
-    </a>
-    <div class="flex-l items-center">
-      
-
-      
-      
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    </div>
-  </div>
-</nav>
-
-    </div>
-  </header>
-
-
-
-    <main class="pb7" role="main">
-      
-  
-  <article class="flex-l flex-wrap justify-between mw8 center ph3">
-    <header class="mt4 w-100">
-      <aside class="instapaper_ignoref b helvetica tracked">
-          
-        POSTS
-      </aside>
-      
-
-
-
-
-  <div id="sharing" class="mt3">
-
-    
-    <a href="https://www.facebook.com/sharer.php?u=https://cshung.github.io/posts/coreclrgc-mono/" class="facebook no-underline" aria-label="share on Facebook">
-      <svg height="32px"  style="enable-background:new 0 0 67 67;" version="1.1" viewBox="0 0 67 67" width="32px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path d="M28.765,50.32h6.744V33.998h4.499l0.596-5.624h-5.095  l0.007-2.816c0-1.466,0.14-2.253,2.244-2.253h2.812V17.68h-4.5c-5.405,0-7.307,2.729-7.307,7.317v3.377h-3.369v5.625h3.369V50.32z   M33,64C16.432,64,3,50.569,3,34S16.432,4,33,4s30,13.431,30,30S49.568,64,33,64z" style="fill-rule:evenodd;clip-rule:evenodd;"/></svg>
-
-    </a>
-
-    
-    
-    <a href="https://twitter.com/share?url=https://cshung.github.io/posts/coreclrgc-mono/&amp;text=Debugging%20help%20for%20CoreCLR%20GC%20-%20Mono" class="twitter no-underline" aria-label="share on Twitter">
-      <svg height="32px"  style="enable-background:new 0 0 67 67;" version="1.1" viewBox="0 0 67 67" width="32px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path d="M37.167,22.283c-2.619,0.953-4.274,3.411-4.086,6.101  l0.063,1.038l-1.048-0.127c-3.813-0.487-7.145-2.139-9.974-4.915l-1.383-1.377l-0.356,1.017c-0.754,2.267-0.272,4.661,1.299,6.271  c0.838,0.89,0.649,1.017-0.796,0.487c-0.503-0.169-0.943-0.296-0.985-0.233c-0.146,0.149,0.356,2.076,0.754,2.839  c0.545,1.06,1.655,2.097,2.871,2.712l1.027,0.487l-1.215,0.021c-1.173,0-1.215,0.021-1.089,0.467  c0.419,1.377,2.074,2.839,3.918,3.475l1.299,0.444l-1.131,0.678c-1.676,0.976-3.646,1.526-5.616,1.568  C19.775,43.256,19,43.341,19,43.405c0,0.211,2.557,1.397,4.044,1.864c4.463,1.377,9.765,0.783,13.746-1.568  c2.829-1.673,5.657-5,6.978-8.221c0.713-1.716,1.425-4.851,1.425-6.354c0-0.975,0.063-1.102,1.236-2.267  c0.692-0.678,1.341-1.419,1.467-1.631c0.21-0.403,0.188-0.403-0.88-0.043c-1.781,0.636-2.033,0.551-1.152-0.402  c0.649-0.678,1.425-1.907,1.425-2.267c0-0.063-0.314,0.042-0.671,0.233c-0.377,0.212-1.215,0.53-1.844,0.72l-1.131,0.361l-1.027-0.7  c-0.566-0.381-1.361-0.805-1.781-0.932C39.766,21.902,38.131,21.944,37.167,22.283z M33,64C16.432,64,3,50.569,3,34S16.432,4,33,4  s30,13.431,30,30S49.568,64,33,64z" style="fill-rule:evenodd;clip-rule:evenodd;fill:;"/></svg>
-
-    </a>
-
-    
-    <a href="https://www.linkedin.com/shareArticle?mini=true&amp;url=https://cshung.github.io/posts/coreclrgc-mono/&amp;title=Debugging%20help%20for%20CoreCLR%20GC%20-%20Mono" class="linkedin no-underline" aria-label="share on LinkedIn">
-      <svg  height="32px"  style="enable-background:new 0 0 65 65;" version="1.1" viewBox="0 0 65 65" width="32px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-  <path d="M50.837,48.137V36.425c0-6.275-3.35-9.195-7.816-9.195  c-3.604,0-5.219,1.983-6.119,3.374V27.71h-6.79c0.09,1.917,0,20.427,0,20.427h6.79V36.729c0-0.609,0.044-1.219,0.224-1.655  c0.49-1.22,1.607-2.483,3.482-2.483c2.458,0,3.44,1.873,3.44,4.618v10.929H50.837z M22.959,24.922c2.367,0,3.842-1.57,3.842-3.531  c-0.044-2.003-1.475-3.528-3.797-3.528s-3.841,1.524-3.841,3.528c0,1.961,1.474,3.531,3.753,3.531H22.959z M34,64  C17.432,64,4,50.568,4,34C4,17.431,17.432,4,34,4s30,13.431,30,30C64,50.568,50.568,64,34,64z M26.354,48.137V27.71h-6.789v20.427  H26.354z" style="fill-rule:evenodd;clip-rule:evenodd;fill:;"/>
-</svg>
-
-    </a>
-  </div>
-
-
-      <h1 class="f1 athelas mt3 mb1">Debugging help for CoreCLR GC - Mono</h1>
-      
-      
-      <time class="f6 mv4 dib tracked" datetime="2020-12-04T11:52:15-08:00">December 4, 2020</time>
-
-      
-      
-    </header>
-    <div class="nested-copy-line-height lh-copy serif f4 nested-links nested-img mid-gray pr4-l w-two-thirds-l"><p>I was invited to help with debugging an issue in the CoreCLR GC - Mono project. In this blog entry, I am planning to describe the debugging process so that it can be repeated to move the project forward.</p>
+<br><br>
+<p>I was invited to help with debugging an issue in the CoreCLR GC - Mono project. In this blog entry, I am planning to describe the debugging process so that it can be repeated to move the project forward.</p>
 <h2 id="what-is-coreclr-gc---mono">What is CoreCLR GC - Mono?</h2>
 <p>CoreCLR GC - Mono is an attempt to use CoreCLR&rsquo;s GC to replace <code>sgen</code>, a simple generational garbage collector for Mono. The major goal of the project is to improve performance.</p>
 <h2 id="where-are-we">Where are we?</h2>
@@ -157,137 +51,216 @@ What is CoreCLR GC - Mono? CoreCLR GC - Mono is an attempt to use CoreCLR&rsquo;
 <p>The branch can be built using this command at the <code>&lt;REPO-ROOT&gt;</code>:</p>
 <p><code>./build.sh --subset mono+libs /p:MonoCoreGC=true</code></p>
 <p>Once the repo is built, we can test the Hello World scenario as follow:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>cd ./src/mono/netcore/sample/HelloWorld
-</span></span><span style="display:flex;"><span><span style="color:#75715e"># To run the project, or</span>
-</span></span><span style="display:flex;"><span>make run
-</span></span><span style="display:flex;"><span><span style="color:#75715e"># To debug the project</span>
-</span></span><span style="display:flex;"><span>make debug
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">cd</span> ./src/mono/netcore/sample/HelloWorld
+</span></span><span class="line"><span class="cl"><span class="c1"># To run the project, or</span>
+</span></span><span class="line"><span class="cl">make run
+</span></span><span class="line"><span class="cl"><span class="c1"># To debug the project</span>
+</span></span><span class="line"><span class="cl">make debug
 </span></span></code></pre></div><p>As of now, the run will crash on the induced GC due to this stack. The rest of the blog is to explain why we have a crash and suggests some fixes for it.</p>
 <h2 id="symptoms">Symptoms</h2>
 <p>Here is the stack of the crash.</p>
-<pre tabindex="0"><code>* thread #1, name = &#39;tid_307&#39;, queue = &#39;com.apple.main-thread&#39;, stop reason = signal SIGSEGV
-  * frame #0: 0x00000001031c0270 libcoreclr.dylib`MethodTable::GetBaseSize(this=0x0000000000000010) at gcenv.mono.h:73:72
-    frame #1: 0x00000001031c0125 libcoreclr.dylib`WKS::my_get_size(ob=0x000000010376f8a0) at gc.cpp:9707:26
-    frame #2: 0x00000001031de98e libcoreclr.dylib`WKS::gc_heap::find_first_object(start=&#34;p?\x01&#34;, first_object=&#34;`\x11V\x03\x01&#34;) at gc.cpp:30529:33
-    frame #3: 0x00000001031de655 libcoreclr.dylib`WKS::gc_heap::find_object(interior=&#34;p?\x01&#34;) at gc.cpp:19250:26
-    frame #4: 0x00000001031e4a19 libcoreclr.dylib`WKS::GCHeap::Promote(ppObject=0x00007ffeefbf8d08, sc=0x00007ffeefbf7a78, flags=3) at gc.cpp:37497:18
-    frame #5: 0x00000001031b456b libcoreclr.dylib`GCToEEInterface::GcScanRoots(fn=(libcoreclr.dylib`WKS::GCHeap::Promote(Object**, ScanContext*, unsigned int) at gc.cpp:37467), condemned=0, max_gen=2, sc=0x00007ffeefbf7a78)(Object**, ScanContext*, unsigned int), int, int, ScanContext*) at coregc-mono.cpp:1540:4
-    frame #6: 0x0000000103213eb9 libcoreclr.dylib`GCScan::GcScanRoots(fn=(libcoreclr.dylib`WKS::GCHeap::Promote(Object**, ScanContext*, unsigned int) at gc.cpp:37467), condemned=0, max_gen=2, sc=0x00007ffeefbf7a78)(Object**, ScanContext*, unsigned int), int, int, ScanContext*) at gcscan.cpp:154:5
-    frame #7: 0x00000001031d6b44 libcoreclr.dylib`WKS::gc_heap::mark_phase(condemned_gen_number=0, mark_only_p=NO) at gc.cpp:21592:9
-    frame #8: 0x00000001031d398a libcoreclr.dylib`WKS::gc_heap::gc1() at gc.cpp:17531:13
-    frame #9: 0x00000001031ddd57 libcoreclr.dylib`WKS::gc_heap::garbage_collect(n=0) at gc.cpp:19116:9
-    frame #10: 0x00000001031ca80d libcoreclr.dylib`WKS::GCHeap::GarbageCollectGeneration(this=0x0000000100207b70, gen=0, reason=reason_induced) at gc.cpp:38922:9
-    frame #11: 0x0000000103201595 libcoreclr.dylib`WKS::GCHeap::GarbageCollectTry(this=0x0000000100207b70, generation=0, low_memory_p=NO, mode=2) at gc.cpp:38180:12
-    frame #12: 0x0000000103201417 libcoreclr.dylib`WKS::GCHeap::GarbageCollect(this=0x0000000100207b70, generation=0, low_memory_p=false, mode=2) at gc.cpp:38114:30
-</code></pre><p>Note that on the top frame, the <code>this</code> pointer does not look like a pointer at all.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="cl">* thread #1, name = &#39;tid_307&#39;, queue = &#39;com.apple.main-thread&#39;, stop reason = signal SIGSEGV
+</span></span><span class="line"><span class="cl">  * frame #0: 0x00000001031c0270 libcoreclr.dylib`MethodTable::GetBaseSize(this=0x0000000000000010) at gcenv.mono.h:73:72
+</span></span><span class="line"><span class="cl">    frame #1: 0x00000001031c0125 libcoreclr.dylib`WKS::my_get_size(ob=0x000000010376f8a0) at gc.cpp:9707:26
+</span></span><span class="line"><span class="cl">    frame #2: 0x00000001031de98e libcoreclr.dylib`WKS::gc_heap::find_first_object(start=&#34;p?\x01&#34;, first_object=&#34;`\x11V\x03\x01&#34;) at gc.cpp:30529:33
+</span></span><span class="line"><span class="cl">    frame #3: 0x00000001031de655 libcoreclr.dylib`WKS::gc_heap::find_object(interior=&#34;p?\x01&#34;) at gc.cpp:19250:26
+</span></span><span class="line"><span class="cl">    frame #4: 0x00000001031e4a19 libcoreclr.dylib`WKS::GCHeap::Promote(ppObject=0x00007ffeefbf8d08, sc=0x00007ffeefbf7a78, flags=3) at gc.cpp:37497:18
+</span></span><span class="line"><span class="cl">    frame #5: 0x00000001031b456b libcoreclr.dylib`GCToEEInterface::GcScanRoots(fn=(libcoreclr.dylib`WKS::GCHeap::Promote(Object**, ScanContext*, unsigned int) at gc.cpp:37467), condemned=0, max_gen=2, sc=0x00007ffeefbf7a78)(Object**, ScanContext*, unsigned int), int, int, ScanContext*) at coregc-mono.cpp:1540:4
+</span></span><span class="line"><span class="cl">    frame #6: 0x0000000103213eb9 libcoreclr.dylib`GCScan::GcScanRoots(fn=(libcoreclr.dylib`WKS::GCHeap::Promote(Object**, ScanContext*, unsigned int) at gc.cpp:37467), condemned=0, max_gen=2, sc=0x00007ffeefbf7a78)(Object**, ScanContext*, unsigned int), int, int, ScanContext*) at gcscan.cpp:154:5
+</span></span><span class="line"><span class="cl">    frame #7: 0x00000001031d6b44 libcoreclr.dylib`WKS::gc_heap::mark_phase(condemned_gen_number=0, mark_only_p=NO) at gc.cpp:21592:9
+</span></span><span class="line"><span class="cl">    frame #8: 0x00000001031d398a libcoreclr.dylib`WKS::gc_heap::gc1() at gc.cpp:17531:13
+</span></span><span class="line"><span class="cl">    frame #9: 0x00000001031ddd57 libcoreclr.dylib`WKS::gc_heap::garbage_collect(n=0) at gc.cpp:19116:9
+</span></span><span class="line"><span class="cl">    frame #10: 0x00000001031ca80d libcoreclr.dylib`WKS::GCHeap::GarbageCollectGeneration(this=0x0000000100207b70, gen=0, reason=reason_induced) at gc.cpp:38922:9
+</span></span><span class="line"><span class="cl">    frame #11: 0x0000000103201595 libcoreclr.dylib`WKS::GCHeap::GarbageCollectTry(this=0x0000000100207b70, generation=0, low_memory_p=NO, mode=2) at gc.cpp:38180:12
+</span></span><span class="line"><span class="cl">    frame #12: 0x0000000103201417 libcoreclr.dylib`WKS::GCHeap::GarbageCollect(this=0x0000000100207b70, generation=0, low_memory_p=false, mode=2) at gc.cpp:38114:30
+</span></span></code></pre></div><p>Note that on the top frame, the <code>this</code> pointer does not look like a pointer at all.</p>
 <h2 id="analysis">Analysis</h2>
 <p>The <code>GetBaseSize</code> and <code>my_get_size</code> functions seems to be pretty simple. The interest question seems to be why would <code>find_first_object</code> gives a bad pointer to <code>my_get_size</code> that is not an object. To understand that, let us take a look at the code for <code>find_first_object</code>.</p>
 <p>The crashing call to <code>find_first_object</code> was made on line <code>19250</code> of <code>gc.cpp</code>. The call was given <code>interior</code> as the first parameter and <code>heap_segment_mem (seg)</code> as the second parameter. The first parameter is meant to be <code>start</code>, and the second parameter is meant to be <code>first_object</code>. What do they mean?</p>
 <p>The first parameter is meant to be a pointer pointing into the interior of an object, let&rsquo;s call that <code>X</code>. The second parameter is meant to be a pointer to a valid object on or before the pointer to <code>X</code>. The function should be able to find the pointer to the <code>X</code>.</p>
 <p>The implementation of <code>find_first_object</code> is fairly complicated related to the handling of the bricks. But since it is the first GC, the <code>gen0_bricks_cleared</code> flag was false, so before <code>find_first_object</code>, <code>find_object</code> already cleared all the bricks. So the bricks are just not there. We are falling back to the loop on line 30250-30542 as follow:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span>    <span style="color:#66d9ef">while</span> (next_o <span style="color:#f92672">&lt;=</span> start)
-</span></span><span style="display:flex;"><span>    {
-</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">do</span>
-</span></span><span style="display:flex;"><span>        {
-</span></span><span style="display:flex;"><span><span style="color:#75715e">#ifdef TRACE_GC
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            n_o<span style="color:#f92672">++</span>;
-</span></span><span style="display:flex;"><span><span style="color:#75715e">#endif </span><span style="color:#75715e">//TRACE_GC
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            o <span style="color:#f92672">=</span> next_o;
-</span></span><span style="display:flex;"><span>            assert (Align (size (o)) <span style="color:#f92672">&gt;=</span> Align (min_obj_size));
-</span></span><span style="display:flex;"><span>            next_o <span style="color:#f92672">=</span> o <span style="color:#f92672">+</span> Align (size (o));
-</span></span><span style="display:flex;"><span>            Prefetch (next_o);
-</span></span><span style="display:flex;"><span>        }<span style="color:#66d9ef">while</span> (next_o <span style="color:#f92672">&lt;</span> next_b);
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> (((size_t)next_o <span style="color:#f92672">/</span> brick_size) <span style="color:#f92672">!=</span> curr_cl)
-</span></span><span style="display:flex;"><span>        {
-</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> (curr_cl <span style="color:#f92672">&gt;=</span> min_cl)
-</span></span><span style="display:flex;"><span>            {
-</span></span><span style="display:flex;"><span>                fix_brick_to_highest (o, next_o);
-</span></span><span style="display:flex;"><span>            }
-</span></span><span style="display:flex;"><span>            curr_cl <span style="color:#f92672">=</span> (size_t) next_o <span style="color:#f92672">/</span> brick_size;
-</span></span><span style="display:flex;"><span>        }
-</span></span><span style="display:flex;"><span>        next_b <span style="color:#f92672">=</span> min (align_lower_brick (next_o) <span style="color:#f92672">+</span> brick_size, start<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>);
-</span></span><span style="display:flex;"><span>    }
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl">    <span class="k">while</span> <span class="p">(</span><span class="n">next_o</span> <span class="o">&lt;=</span> <span class="n">start</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">do</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span>
+</span></span><span class="line"><span class="cl"><span class="cp">#ifdef TRACE_GC
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>            <span class="n">n_o</span><span class="o">++</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="cp">#endif </span><span class="c1">//TRACE_GC
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>            <span class="n">o</span> <span class="o">=</span> <span class="n">next_o</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="n">assert</span> <span class="p">(</span><span class="n">Align</span> <span class="p">(</span><span class="n">size</span> <span class="p">(</span><span class="n">o</span><span class="p">))</span> <span class="o">&gt;=</span> <span class="n">Align</span> <span class="p">(</span><span class="n">min_obj_size</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">            <span class="n">next_o</span> <span class="o">=</span> <span class="n">o</span> <span class="o">+</span> <span class="n">Align</span> <span class="p">(</span><span class="n">size</span> <span class="p">(</span><span class="n">o</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">            <span class="n">Prefetch</span> <span class="p">(</span><span class="n">next_o</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span><span class="k">while</span> <span class="p">(</span><span class="n">next_o</span> <span class="o">&lt;</span> <span class="n">next_b</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(((</span><span class="n">size_t</span><span class="p">)</span><span class="n">next_o</span> <span class="o">/</span> <span class="n">brick_size</span><span class="p">)</span> <span class="o">!=</span> <span class="n">curr_cl</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="p">(</span><span class="n">curr_cl</span> <span class="o">&gt;=</span> <span class="n">min_cl</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="n">fix_brick_to_highest</span> <span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">next_o</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="cl">            <span class="n">curr_cl</span> <span class="o">=</span> <span class="p">(</span><span class="n">size_t</span><span class="p">)</span> <span class="n">next_o</span> <span class="o">/</span> <span class="n">brick_size</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="n">next_b</span> <span class="o">=</span> <span class="n">min</span> <span class="p">(</span><span class="n">align_lower_brick</span> <span class="p">(</span><span class="n">next_o</span><span class="p">)</span> <span class="o">+</span> <span class="n">brick_size</span><span class="p">,</span> <span class="n">start</span><span class="o">+</span><span class="mi">1</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
 </span></span></code></pre></div><p>Inside the inner loop, we are advancing <code>o</code> by keep moving forward by <code>Align (size (o))</code>, the idea is that the memory is packed with objects. Each object can tell its own size, with some alignment constraints, we can expect the next object is placed right at the next location.</p>
 <p>To make this happen, the caller of GC is expected, whenever some memory is allocated, it must be populated with an object that describes its size that that match the allocated size. If that&rsquo;s not the case, this code (and many others that expect the same structure) would be reading into wrong memory.</p>
 <h3 id="sizes">Sizes</h3>
 <p>There are two sources of truth about an object&rsquo;s size. On the one hand, mono is allocating through <code>GCHeap::Alloc()</code> with a <code>size</code> parameter that is computed upstream (on line <code>607</code> of <code>coregc-mono.cpp</code>), and the GC is assuming the object size to be the result of <code>my_get_size()</code>, which is computed using a simple formula <code>BaseSize + NumComponents * ComponentSize</code>. If these two doesn&rsquo;t match, then we have a problem. And indeed, they do not match.</p>
 <p>To figure out this fact, I added some debug printf to the code. They&rsquo;re at line <code>619</code> of <code>coregc-mono.cpp</code> and line <code>9711</code>-<code>9715</code> of <code>gc.cpp</code>. All of these printf are prefixed with <code>Andrew</code> so it is easy to grep for in a log.</p>
 <p>The printf can be correlated with the object address, in particular, this pair is interesting because they reported inconsistent sizes.</p>
-<pre tabindex="0"><code>
-...
-
-Andrew: (220) 0x102a79778 should have size 312
-
-...
-
-Andrew: gc said 0x102a79778 has size 296
-gcenv.mono.h: GetBaseSize (based 10): 40
-Andrew: mt-&gt;GetBaseSize() = 40
-Andrew: mt-&gt;HasComponentSize() = 1
-Andrew: ob-&gt;GetNumComponents() = 32
-Andrew: mt-&gt;RawGetComponentSize() = 8
-
-...
-</code></pre><p>That doesn&rsquo;t look good, the same object is reported with different sizes when the size is queried through different parts.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">...
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Andrew: (220) 0x102a79778 should have size 312
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">...
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Andrew: gc said 0x102a79778 has size 296
+</span></span><span class="line"><span class="cl">gcenv.mono.h: GetBaseSize (based 10): 40
+</span></span><span class="line"><span class="cl">Andrew: mt-&gt;GetBaseSize() = 40
+</span></span><span class="line"><span class="cl">Andrew: mt-&gt;HasComponentSize() = 1
+</span></span><span class="line"><span class="cl">Andrew: ob-&gt;GetNumComponents() = 32
+</span></span><span class="line"><span class="cl">Andrew: mt-&gt;RawGetComponentSize() = 8
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">...
+</span></span></code></pre></div><p>That doesn&rsquo;t look good, the same object is reported with different sizes when the size is queried through different parts.</p>
 <p>We can look deeper into the issue by setting a breakpoint on <code>andrew_debug()</code>. The method is conditioned to break on the 220th allocation (which we know from the log the size is inconsistent, here is a stack).</p>
-<pre tabindex="0"><code>  * frame #0: 0x00000001029b2ab4 libcoreclr.dylib`::andrew_debug() at coregc-mono.cpp:588:2
-    frame #1: 0x00000001029b2b81 libcoreclr.dylib`::mono_gc_alloc_obj(vtable=0x0000000100868090, size=312) at coregc-mono.cpp:617:3
-    frame #2: 0x00000001029b2c25 libcoreclr.dylib`::mono_gc_alloc_array(vtable=0x0000000100868090, size=304, max_length=32, bounds_size=16) at coregc-mono.cpp:634:32
-    frame #3: 0x00000001028fd2bf libcoreclr.dylib`mono_array_new_full_checked(domain=0x00000001003196d0, array_class=0x0000000100833bd0, lengths=0x00007ffeefbf2440, lower_bounds=0x0000000000000000, error=0x00007ffeefbf5db0) at object.c:6598:21
-    frame #4: 0x0000000102ca1440 libcoreclr.dylib`ves_array_create(domain=0x00000001003196d0, klass=0x0000000100833bd0, param_count=2, values=0x00000001237000e0, error=0x00007ffeefbf5db0) at interp.c:1076:23
-</code></pre><p>The implementation of <code>mono_array_new_full_checked</code> is in <code>object.c</code>. Line <code>6597</code>-<code>6600</code> is particularly suscipious. It looks like we have two different ways to allocating an array with and without a bound size, but we used the same <code>vtable</code>. Since we derived the <code>BaseSize</code> only through the vtable, so it is likely that if we share the same vtable for two type of objects with different <code>BaseSize</code>, then we have trouble.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="cl">  * frame #0: 0x00000001029b2ab4 libcoreclr.dylib`::andrew_debug() at coregc-mono.cpp:588:2
+</span></span><span class="line"><span class="cl">    frame #1: 0x00000001029b2b81 libcoreclr.dylib`::mono_gc_alloc_obj(vtable=0x0000000100868090, size=312) at coregc-mono.cpp:617:3
+</span></span><span class="line"><span class="cl">    frame #2: 0x00000001029b2c25 libcoreclr.dylib`::mono_gc_alloc_array(vtable=0x0000000100868090, size=304, max_length=32, bounds_size=16) at coregc-mono.cpp:634:32
+</span></span><span class="line"><span class="cl">    frame #3: 0x00000001028fd2bf libcoreclr.dylib`mono_array_new_full_checked(domain=0x00000001003196d0, array_class=0x0000000100833bd0, lengths=0x00007ffeefbf2440, lower_bounds=0x0000000000000000, error=0x00007ffeefbf5db0) at object.c:6598:21
+</span></span><span class="line"><span class="cl">    frame #4: 0x0000000102ca1440 libcoreclr.dylib`ves_array_create(domain=0x00000001003196d0, klass=0x0000000100833bd0, param_count=2, values=0x00000001237000e0, error=0x00007ffeefbf5db0) at interp.c:1076:23
+</span></span></code></pre></div><p>The implementation of <code>mono_array_new_full_checked</code> is in <code>object.c</code>. Line <code>6597</code>-<code>6600</code> is particularly suscipious. It looks like we have two different ways to allocating an array with and without a bound size, but we used the same <code>vtable</code>. Since we derived the <code>BaseSize</code> only through the vtable, so it is likely that if we share the same vtable for two type of objects with different <code>BaseSize</code>, then we have trouble.</p>
 <h1 id="final-words">Final words</h1>
 <p>The implementation of <code>my_get_size()</code> forces objects with different <code>BaseSize</code> to have a different <code>MethodTable</code>. This seems to be too much a restriction. Maybe we should allow that to be overridable, this direction seems to be consistent with <a href="https://github.com/dotnet/runtime/issues/12809">this</a> issue.</p>
 <p>In various places, I attempted to change the <code>min_object_size</code> back to 3 pointers sizes. The idea is <code>min_object_size</code> is a requirement from the CoreCLR GC that the objects must be larger than this size. If it happens that mono objects have size at least 4 pointers is irrelevant, it just satisfy the constraint, we don&rsquo;t need to make the constraint more strict.</p>
 <p>It is better to merge the code earlier than later - there are various changes to the build that is keep conflicting with this change. For example, I have a hard time to rebase these changes on top of <a href="https://github.com/dotnet/runtime/commit/188a1ee22344f181224d38df91fa8d214b76a020">this</a> commit.</p>
 <p>In order to merge the change, it is important to ensure that this change does not break other existing variants, for example, Windows build. In particular, various Mono only changes must be under <code>ifdef</code>, which is not always true.</p>
-<ul class="pa0">
-  
-</ul>
-<div class="mt6 instapaper_ignoref">
-      
-      
-      </div>
-    </div>
-
-    <aside class="w-30-l mt6-l">
 
 
+        </div><p class="footer text-center">Copyright (c) 2023 Andrew Au</p><script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true });</script>
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/prettify.js"></script>
+<script src="/js/feather.min.js"></script>
+<script src="/index.js"></script>
+<script>
 
+  function getCookie(cname) {
+    let name = cname + "=";
+    let ca = document.cookie.split(';');
+    for (let i = 0; i < ca.length; i++) {
+      let c = ca[i];
+      while (c.charAt(0) == ' ') {
+        c = c.substring(1);
+      }
+      if (c.indexOf(name) == 0) {
+        return c.substring(name.length, c.length);
+      }
+    }
+    return "";
+  }
 
-</aside>
+  function setCookie(cname, cvalue, exdays) {
+    const d = new Date();
+    d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+    let expires = "expires=" + d.toUTCString();
+    document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+  }
 
-  </article>
+  function ensureIcon() {
+    if (document.body.classList.contains("dark-theme")) {
+      toggleDarkModeButton.innerHTML = '<i data-feather="sun"></i>';
+    } else {
+      toggleDarkModeButton.innerHTML = '<i data-feather="moon"></i>';
+    }
+    feather.replace();
+  }
+  function saveCookie() {
+    if (document.body.classList.contains("dark-theme")) {
+      setCookie("darkMode", "true", 365);
+    } else {
+      setCookie("darkMode", "false", 365);
+    }
+  }
 
-    </main>
-    <footer class="bg-black bottom-0 w-100 pa3" role="contentinfo">
-  <div class="flex justify-between">
-  <a class="f4 fw4 hover-white no-underline white-70 dn dib-ns pv2 ph3" href="https://cshung.github.io/" >
-    &copy;  My Blog 2022 
-  </a>
-    <div>
+  function load(pre) {
+    link = pre.getAttribute("data-code-link");
+    const xhr = new XMLHttpRequest();
+    xhr.onload = () => {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        pre.className = "prettyprint";
+        pre.textContent = xhr.responseText;
+      }
+      prettyPrint();
+    };
+    xhr.open('GET', link);
+    xhr.send();
+  }
 
+  function onSearchButtonClicked(e) {
+    e.preventDefault();
+    var query = $("#queryTextField").val();
+    var terms = query.split(' ');
+    
+    var result = {};
+    for (var i = 0; i < terms.length; ++i) {
+      var term = terms[i].toLowerCase();
+      if (term in index.Terms)
+      {
+        for (i = 0; i < index.Terms[term].length; i += 2) {
+          var doc = index.Terms[term][i];
+          var count = index.Terms[term][i + 1];
+          if (doc in result) {
+            result[doc] += count;
+          } else {
+            result[doc] = count;
+          }
+        }
+      }
+    }
+    
+    $("#content").empty();
+    for (var key in result) {
+      $("#content").append($('<a>', {
+        href: index.Documents[key].replace("../../content","").replace(".md",""),
+        text: index.Titles[key]
+      }));
+      $("#content").append($('<br>'));
+    }
+  }
 
+  $(document).ready(function () {
+    var darkMode = getCookie("darkMode");
+    if (darkMode == "true") {
+      document.body.classList.add("dark-theme");
+      document.body.classList.remove("light-theme");
+    }
+    ensureIcon();
 
+    $("#toggleDarkModeButton").click(function (e) {
+      e.preventDefault();
+      document.body.classList.toggle("dark-theme");
+      document.body.classList.toggle("light-theme");
+      saveCookie();
+      ensureIcon();
+    });
 
+    $("#searchButton").click(onSearchButtonClicked);
 
+    var pres = document.getElementsByTagName("pre");
+    for (var i = 0; i < pres.length; ++i) {
+      var pre = pres[i];
+      if (pre.classList.contains("pretty-github-code")) {
+        load(pre);
+      }
+    }
+  });
 
-
-
-
-
-
-
-
-
-</div>
-  </div>
-</footer>
-
-    <div style="display:none">
-    <script type="text/javascript" src="https://www.free-counters.org/count/86pd"></script><br><a href='http://www.counter-zaehler.de'>besucherzähler ip</a> <script type='text/javascript'     src='https://whomania.com/ctr?id=695d5b016077d10ada0ea41fc87e54f2421f8966'></script>
-    </div>
-  </body>
-
+  $(window).on("load", function () {
+    $("body").show();
+  });
+</script></body>
 </html>

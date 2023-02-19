@@ -1,0 +1,647 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>rosalind on My Blog</title>
+    <link>https://cshung.github.io/tags/rosalind/</link>
+    <description>Recent content in rosalind on My Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sun, 14 Feb 2021 15:55:00 -0800</lastBuildDate><atom:link href="https://cshung.github.io/tags/rosalind/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Rosalind - Ordering Strings of Varying Length Lexicographically</title>
+      <link>https://cshung.github.io/posts/rosalind-ordering-strings-of-varying-length-lexicographically/</link>
+      <pubDate>Sun, 14 Feb 2021 15:55:00 -0800</pubDate>
+      
+      <guid>https://cshung.github.io/posts/rosalind-ordering-strings-of-varying-length-lexicographically/</guid>
+      <description>Problem:
+Please find the problem here. Solution:
+I wanted to implement a solution that is analogous to an odometer. The key thing that we wanted to understand is how we can advance from the current word to the next one. Suppose we have the next function, then we can just repeatedly use that function to produce the next one. The next function would probably not work on the last element, so that will naturally provide us with a stopping condition as well.</description>
+    </item>
+    
+    <item>
+      <title>Rosalind - k-Mer Composition</title>
+      <link>https://cshung.github.io/posts/rosalind-k-mer-composition/</link>
+      <pubDate>Sat, 30 Jan 2021 15:16:00 -0800</pubDate>
+      
+      <guid>https://cshung.github.io/posts/rosalind-k-mer-composition/</guid>
+      <description>Problem:
+Please find the problem here. Solution:
+To produce the array, slide a window of width 4 from the leftmost to the rightmost of the string. When processing a window, we quickly compute the k-mer index as a base 4 number. Code:
+ </description>
+    </item>
+    
+    <item>
+      <title>Rosalind - Maximum Matchings and RNA Secondary Structures</title>
+      <link>https://cshung.github.io/posts/rosalind-maximum-matchings-and-rna-secondary-structures/</link>
+      <pubDate>Wed, 16 Dec 2020 10:27:00 -0800</pubDate>
+      
+      <guid>https://cshung.github.io/posts/rosalind-maximum-matchings-and-rna-secondary-structures/</guid>
+      <description>Problem:
+Please find the problem here. Solution:
+Suppose we have 3 A and 2 U, the first U can choose from 3 A, the second choose from 2 A, therefore, the number of matches for these 3 A and 2 U is 3 x 2 = 6. In general, the answer is the falling factorial. Code:
+ </description>
+    </item>
+    
+    <item>
+      <title>Rosalind - Counting Phylogenetic Ancestors</title>
+      <link>https://cshung.github.io/posts/rosalind-counting-phylogenetic-ancestors/</link>
+      <pubDate>Fri, 27 Nov 2020 12:10:00 -0800</pubDate>
+      
+      <guid>https://cshung.github.io/posts/rosalind-counting-phylogenetic-ancestors/</guid>
+      <description>Problem:
+Please find the problem here. http://rosalind.info/problems/inod/
+Solution:
+We knew that a rooted binary tree with n leaves has \( n - 1 \) internal nodes. An unrooted binary tree is simply a rooted binary tree with an extra leaf attached to the root. Therefore, the number of leaves increased by \( 1 \) but the number of internal nodes left unchanged. So an unrooted binary tree with \( n + 1 \) leaves has \( n - 1 \) internal nodes.</description>
+    </item>
+    
+    <item>
+      <title>Rosalind - Sorting by Reversals</title>
+      <link>https://cshung.github.io/posts/rosalind-sorting-by-reversals/</link>
+      <pubDate>Sat, 26 Sep 2020 16:58:00 -0700</pubDate>
+      
+      <guid>https://cshung.github.io/posts/rosalind-sorting-by-reversals/</guid>
+      <description>Problem:
+Please find the problem here.
+Solution:
+As we have already pre-computed the shortest path in the previous problem, all we have to present the shortest path.
+Code:
+ </description>
+    </item>
+    
+    <item>
+      <title>Rosalind - Reversal Distance</title>
+      <link>https://cshung.github.io/posts/rosalind-reversal-distance/</link>
+      <pubDate>Sat, 26 Sep 2020 16:23:00 -0700</pubDate>
+      
+      <guid>https://cshung.github.io/posts/rosalind-reversal-distance/</guid>
+      <description>Problem:
+Please find the problem here.
+Solution:
+This is a tough problem, I handled it using a few techniques.
+The problem hinted on brute force, in order to make sure it runs within the allocated time, it is easy to just pre-compute the solutions.
+The set of all solutions is daunting (10!) squared. I make one observation to make it simple - the symbol themselves does not matter, we could rename all the symbols consistently and we will get exactly the same reversal distance.</description>
+    </item>
+    
+    <item>
+      <title>Rosalind - Creating a Distance Matrix</title>
+      <link>https://cshung.github.io/posts/rosalind-creating-a-distance-matrix/</link>
+      <pubDate>Sat, 26 Sep 2020 15:43:00 -0700</pubDate>
+      
+      <guid>https://cshung.github.io/posts/rosalind-creating-a-distance-matrix/</guid>
+      <description>Problem:
+Please find the problem here.
+Solution:
+This is just calculating the pairwise hamming distance as required.
+Code:
+ </description>
+    </item>
+    
+    <item>
+      <title>Rosalind - Speeding Up Motif Finding</title>
+      <link>https://cshung.github.io/posts/rosalind-speeding-up-motif-finding/</link>
+      <pubDate>Fri, 18 Sep 2020 19:36:00 -0700</pubDate>
+      
+      <guid>https://cshung.github.io/posts/rosalind-speeding-up-motif-finding/</guid>
+      <description>Problem:
+Please find the problem here.
+Solution:
+The z array generated in the advanced version of KMP can be used to recover the standard failure array.
+This analysis look a bit weird because this description is written way after the code is written. I have a significant debt of documenting my code.
+Recall that the z array tell us the length of the z-box at the beginning of the z-box, but the failure array, wants us to report the length of a matching string at the end, therefore, we can use a simple walk to solve this problem.</description>
+    </item>
+    
+    <item>
+      <title>Rosalind - Perfect Matchings and RNA Secondary Structures</title>
+      <link>https://cshung.github.io/posts/rosalind-perfect-matchings-and-rna-secondary-structures/</link>
+      <pubDate>Sun, 30 Aug 2020 14:10:00 -0700</pubDate>
+      
+      <guid>https://cshung.github.io/posts/rosalind-perfect-matchings-and-rna-secondary-structures/</guid>
+      <description>Problem:
+Please find the problem here.
+Solution:
+Denote the number of &amp;lsquo;A&amp;rsquo; to be x. Fixing a U, there are x choices. Once an A is used, it cannot be used anymore. Therefore, there are x! way to bond the A and U pairs. Similarly, we have y! way to bond the C and G pairs (where y is the number of &amp;lsquo;C&amp;rsquo;). Therefore the total number of ways to bond these pairs is x!</description>
+    </item>
+    
+    <item>
+      <title>Rosalind - Open Reading Frames</title>
+      <link>https://cshung.github.io/posts/rosalind-open-reading-frames/</link>
+      <pubDate>Thu, 20 Aug 2020 13:20:00 -0700</pubDate>
+      
+      <guid>https://cshung.github.io/posts/rosalind-open-reading-frames/</guid>
+      <description>Problem:
+Please find the problem here.
+Solution:
+There are two parts to this problem. We need to find all the start and stop codons, and we need to pair them up so that we know where to start and stop decoding.
+The former is performed using the Aho Corasick algorithm, by using a trie, we can match all codons in a single pass.
+Imagine we are walking from left to right, whenever we see a stop codon, we want all the start codon before it that is after the last stop codon.</description>
+    </item>
+    
+    <item>
+      <title>Rosalind - Transitions and Transversions</title>
+      <link>https://cshung.github.io/posts/rosalind-transitions-and-transversions/</link>
+      <pubDate>Mon, 03 Aug 2020 10:48:00 -0700</pubDate>
+      
+      <guid>https://cshung.github.io/posts/rosalind-transitions-and-transversions/</guid>
+      <description>Problem:
+Please find the problem here.
+Solution:
+This is just a counting exercise
+Code:
+ </description>
+    </item>
+    
+    <item>
+      <title>Rosalind - Enumerating Oriented Gene Orderings</title>
+      <link>https://cshung.github.io/posts/rosalind-enumerating-oriented-gene-orderings/</link>
+      <pubDate>Fri, 24 Jul 2020 12:41:00 -0700</pubDate>
+      
+      <guid>https://cshung.github.io/posts/rosalind-enumerating-oriented-gene-orderings/</guid>
+      <description>Problem:
+Please find the problem here.
+Solution:
+Like the previous problem, we use a recursive routine to generate all permutations. For each permutation, we will use another recursion to give each element a sign.
+Code:
+ </description>
+    </item>
+    
+    <item>
+      <title>Rosalind - Interleaving Two Motifs</title>
+      <link>https://cshung.github.io/posts/rosalind-interleaving-two-motifs/</link>
+      <pubDate>Sat, 11 Jul 2020 12:09:00 -0700</pubDate>
+      
+      <guid>https://cshung.github.io/posts/rosalind-interleaving-two-motifs/</guid>
+      <description>Problem:
+Please find the problem here.
+Solution:
+Again, using the matrix generated by the Levenshtein&amp;rsquo;s edit distance algorithm, we can compute the shortest common super sequence.
+Code:
+ </description>
+    </item>
+    
+    <item>
+      <title>Rosalind - Edit Distance Alignment</title>
+      <link>https://cshung.github.io/posts/rosalind-edit-distance-alignment/</link>
+      <pubDate>Sat, 27 Jun 2020 10:01:00 -0700</pubDate>
+      
+      <guid>https://cshung.github.io/posts/rosalind-edit-distance-alignment/</guid>
+      <description>Problem:
+Please find the problem here.
+Solution:
+Again, using the matrix generated by the Levenshtein&amp;rsquo;s edit distance algorithm, we can compute the alignment.
+Code:
+ </description>
+    </item>
+    
+    <item>
+      <title>Rosalind - Edit Distance</title>
+      <link>https://cshung.github.io/posts/rosalind-edit-distance/</link>
+      <pubDate>Sun, 08 Sep 2019 14:01:00 -0700</pubDate>
+      
+      <guid>https://cshung.github.io/posts/rosalind-edit-distance/</guid>
+      <description>Problem:
+Please find the problem here.
+Solution:
+After implementing the Levenshtein&amp;rsquo;s edit distance algorithm, it is time to use it :)
+Code:
+ </description>
+    </item>
+    
+    <item>
+      <title>Rosalind - Finding a Shared Spliced Motif</title>
+      <link>https://cshung.github.io/posts/rosalind-finding-a-shared-spliced-motif/</link>
+      <pubDate>Sun, 08 Sep 2019 13:59:00 -0700</pubDate>
+      
+      <guid>https://cshung.github.io/posts/rosalind-finding-a-shared-spliced-motif/</guid>
+      <description>Problem:
+Please find the problem here.
+Solution:
+This is the classic longest common subsequence problem, it can be solved using the Levenshtein edit distance algorithm.
+If we disallow replacing characters, then the edit can be visualized as an alignment of two strings as follow:
+                  A  A C C T  T G G    A C A C  T G T G  A    When the first string has a gap, this is an insertion operation.</description>
+    </item>
+    
+    <item>
+      <title>Rosalind - Introduction to Set Operations</title>
+      <link>https://cshung.github.io/posts/rosalind-introduction-to-set-operations/</link>
+      <pubDate>Sun, 08 Sep 2019 13:45:00 -0700</pubDate>
+      
+      <guid>https://cshung.github.io/posts/rosalind-introduction-to-set-operations/</guid>
+      <description>Problem:
+Please find the problem here.
+Solution:
+This is rather straightforward. By making the input sets hash tables, we can do these set operations fast.
+Code:
+ </description>
+    </item>
+    
+    <item>
+      <title>Rosalind - Finding a Spliced Motif</title>
+      <link>https://cshung.github.io/posts/rosalind-finding-a-spliced-motif/</link>
+      <pubDate>Sun, 08 Sep 2019 13:42:00 -0700</pubDate>
+      
+      <guid>https://cshung.github.io/posts/rosalind-finding-a-spliced-motif/</guid>
+      <description>Problem:
+Please find the problem here.
+Solution:
+To find the corresponding indexes, we initialize two pointers to the beginning of both strings. Walk the sequence pointer one by one, and walk the subsequence pointer only when there is a match. This way we will find all the indexes.
+Code:
+ </description>
+    </item>
+    
+    <item>
+      <title>Rosalind - Counting Subsets</title>
+      <link>https://cshung.github.io/posts/rosalind-counting-subsets/</link>
+      <pubDate>Sun, 08 Sep 2019 13:39:00 -0700</pubDate>
+      
+      <guid>https://cshung.github.io/posts/rosalind-counting-subsets/</guid>
+      <description>Problem:
+Please find the problem here.
+Solution:
+The number of subsets of a set of size \( n \) is \( 2^n \). The following code implements the repeated squaring algorithm. The numbers are computed modulo \( 1000000 \) as soon as we are done with multiplying. This is done to keep the number small, and so that the multiplications are quick.
+Code:
+ </description>
+    </item>
+    
+    <item>
+      <title>Rosalind - Introduction to Random Strings</title>
+      <link>https://cshung.github.io/posts/rosalind-introduction-to-random-strings/</link>
+      <pubDate>Sun, 08 Sep 2019 13:28:00 -0700</pubDate>
+      
+      <guid>https://cshung.github.io/posts/rosalind-introduction-to-random-strings/</guid>
+      <description>Problem:
+Please find the problem here.
+Solution:
+As we were told in the description, the probability of getting &amp;lsquo;A&amp;rsquo; or &amp;lsquo;T&amp;rsquo; is \( \frac{1-x}{2} \) and the probability of getting &amp;lsquo;G&amp;rsquo; or &amp;lsquo;C&amp;rsquo; is \( \frac{x}{2} \). Assuming independence (sadly the problem does not mention that), the probability of the whole string is the product of these probabilities.
+To make it numerically stable, instead of computing the product and then compute the logarithm, it is better to compute the logarithm and sum them up.</description>
+    </item>
+    
+    <item>
+      <title>Rosalind - Genome Assembly as Shortest Superstring</title>
+      <link>https://cshung.github.io/posts/rosalind-genome-assembly-as-shortest-superstring/</link>
+      <pubDate>Thu, 05 Sep 2019 23:12:00 -0700</pubDate>
+      
+      <guid>https://cshung.github.io/posts/rosalind-genome-assembly-as-shortest-superstring/</guid>
+      <description>Problem:
+Please find the problem here.
+Solution:
+The condition that there exists a unique path in the overlap graph is super important. Once we have the overlap graph, the topological sort would be the right answer, because the path would guarantee there is a single answer.
+Unlike the earlier problem Overlap Graphs, we do not know how long is the overlap. Therefore we need to be smart. We could try the overlap value, but that would lead to a quadratic algorithm.</description>
+    </item>
+    
+    <item>
+      <title>Rosalind - Completing a Tree</title>
+      <link>https://cshung.github.io/posts/rosalind-completing-a-tree/</link>
+      <pubDate>Sun, 01 Sep 2019 16:37:00 -0700</pubDate>
+      
+      <guid>https://cshung.github.io/posts/rosalind-completing-a-tree/</guid>
+      <description>Problem:
+Please find the problem here.
+Solution:
+By iteratively eliminating leaves, it is easy to see that a tree of \( n \) nodes has \( n - 1 \) edges. Therefore the solution is simply computing \( (n - 1) \) - number of edges, which is also equal to \( n \) - number of lines. Remember the first line is the number of nodes :)
+Code:
+ </description>
+    </item>
+    
+    <item>
+      <title>Rosalind - Partial Permutations</title>
+      <link>https://cshung.github.io/posts/rosalind-partial-permutations/</link>
+      <pubDate>Sun, 01 Sep 2019 16:33:00 -0700</pubDate>
+      
+      <guid>https://cshung.github.io/posts/rosalind-partial-permutations/</guid>
+      <description>Problem:
+Please find the problem here.
+Solution:
+This is simply the permutation coefficient. All we need to do is to compute it.
+Code:
+ </description>
+    </item>
+    
+    <item>
+      <title>Rosalind - Longest Increasing Subsequence</title>
+      <link>https://cshung.github.io/posts/rosalind-longest-increasing-subsequence/</link>
+      <pubDate>Sun, 01 Sep 2019 16:28:00 -0700</pubDate>
+      
+      <guid>https://cshung.github.io/posts/rosalind-longest-increasing-subsequence/</guid>
+      <description>Problem:
+Please find the problem here.
+Solution:
+This solution is based on dynamic programming, in particular, patience sorting. The code should explain in details how its work.
+Code:
+ </description>
+    </item>
+    
+    <item>
+      <title>Rosalind - Enumerating k-mers Lexicographically</title>
+      <link>https://cshung.github.io/posts/rosalind-enumerating-k-mers-lexicographically/</link>
+      <pubDate>Sun, 01 Sep 2019 16:26:00 -0700</pubDate>
+      
+      <guid>https://cshung.github.io/posts/rosalind-enumerating-k-mers-lexicographically/</guid>
+      <description>Problem:
+Please find the problem here.
+Solution:
+The key to do this problem is to interpret these k-mers as an integer with the number of alphabets as a base. That way enumerating them lexicographically is simply looping.
+Code:
+ </description>
+    </item>
+    
+    <item>
+      <title>Rosalind - RNA Splicing</title>
+      <link>https://cshung.github.io/posts/rosalind-rna-splicing/</link>
+      <pubDate>Sun, 01 Sep 2019 16:19:00 -0700</pubDate>
+      
+      <guid>https://cshung.github.io/posts/rosalind-rna-splicing/</guid>
+      <description>Problem:
+Please find the problem here.
+Solution:
+I am lazy with this one. I could try my hands on the rope data structure, but I didn&amp;rsquo;t. I simply reconstructed the string again and again on the splicing.
+To implement this properly with the rope data structure is going to be challenging. In particular, I need to implement my own version of fast substring search on the rope data structure.
+Code:</description>
+    </item>
+    
+    <item>
+      <title>Rosalind - Locating Restriction Sites</title>
+      <link>https://cshung.github.io/posts/rosalind-locating-restriction-sites/</link>
+      <pubDate>Sun, 01 Sep 2019 16:15:00 -0700</pubDate>
+      
+      <guid>https://cshung.github.io/posts/rosalind-locating-restriction-sites/</guid>
+      <description>Problem:
+Please find the problem here.
+Solution:
+A restriction site is basically a palindrome (with the complement twist). I modified the Manacher&amp;rsquo;s algorithm to solve this problem.
+First, when trying to expand to find palindrome half-length, I apply the complement rule.
+Second, I skipped the &amp;lsquo;#&amp;rsquo; sign thing because we knew all palindromes will be of even length.
+Code:
+ </description>
+    </item>
+    
+    <item>
+      <title>Rosalind - Calculating Protein Mass</title>
+      <link>https://cshung.github.io/posts/rosalind-calculating-protein-mass/</link>
+      <pubDate>Sun, 01 Sep 2019 16:08:00 -0700</pubDate>
+      
+      <guid>https://cshung.github.io/posts/rosalind-calculating-protein-mass/</guid>
+      <description>Problem:
+Please find the problem here.
+Solution:
+This is simply mapping from protein to their mass and then sum it up
+Code:
+ </description>
+    </item>
+    
+    <item>
+      <title>Rosalind - Finding a Protein Motif</title>
+      <link>https://cshung.github.io/posts/rosalind-finding-a-protein-motif/</link>
+      <pubDate>Sun, 11 Aug 2019 10:18:00 -0700</pubDate>
+      
+      <guid>https://cshung.github.io/posts/rosalind-finding-a-protein-motif/</guid>
+      <description>Problem:
+Please find the problem here.
+Solution:
+I attempted to create a solution that processes each character exactly once, and I succeed, here is the state machine that works.
+The diagram should be self-evident - the code is a just a faithful implementation of the diagram.
+Code:
+ </description>
+    </item>
+    
+    <item>
+      <title>Rosalind - Enumerating Gene Orders</title>
+      <link>https://cshung.github.io/posts/rosalind-enumerating-gene-orders/</link>
+      <pubDate>Sat, 10 Aug 2019 14:28:00 -0700</pubDate>
+      
+      <guid>https://cshung.github.io/posts/rosalind-enumerating-gene-orders/</guid>
+      <description>Problem:
+Please find the problem here.
+Solution:
+A simple recursive solution is to pick one out of the list, and compute the permutation of the rest. The problem is, how do we represent &amp;rsquo;the rest&amp;rsquo;? My approach is that we make sure the suffix of the list is &amp;rsquo;the rest&amp;rsquo;, and therefore we can simply use an integer to represent the rest.
+Code:
+ </description>
+    </item>
+    
+    <item>
+      <title>Rosalind - Inferring mRNA from Protein</title>
+      <link>https://cshung.github.io/posts/rosalind-inferring-mrna-from-protein/</link>
+      <pubDate>Sat, 10 Aug 2019 14:24:00 -0700</pubDate>
+      
+      <guid>https://cshung.github.io/posts/rosalind-inferring-mrna-from-protein/</guid>
+      <description>Problem:
+Please find the problem here.
+Solution:
+To figure out how many RNA is possible, we simply multiply all possibilities. Note that we also make sure the protein ends with a stop codon.
+Code:
+ </description>
+    </item>
+    
+    <item>
+      <title>Rosalind - Independent Alleles</title>
+      <link>https://cshung.github.io/posts/rosalind-independent-alleles/</link>
+      <pubDate>Sat, 10 Aug 2019 13:05:00 -0700</pubDate>
+      
+      <guid>https://cshung.github.io/posts/rosalind-independent-alleles/</guid>
+      <description>Problem:
+Please find the problem here.
+Analysis:
+The code is deceptively simple. Let&amp;rsquo;s not read the code and understand the problem first. Because A and B are independent, we can consider them separately.
+Tom&amp;rsquo;s offspring has the following distribution:
+AA - 0.25 Aa - 0.5 aa - 0.25 To consider the next generation, let&amp;rsquo;s generalize and consider the next generation of an arbitrary distribution. Let&amp;rsquo;s say the current distribution is</description>
+    </item>
+    
+    <item>
+      <title>Rosalind - Calculating Expected Offspring</title>
+      <link>https://cshung.github.io/posts/rosalind-calculating-expected-offspring/</link>
+      <pubDate>Sat, 10 Aug 2019 11:29:00 -0700</pubDate>
+      
+      <guid>https://cshung.github.io/posts/rosalind-calculating-expected-offspring/</guid>
+      <description>Problem:
+Please find the problem here.
+Solution:
+The probability for AA-AA to produce an offspring with a dominant phenotype offspring is 1.
+The probability for AA-Aa to produce an offspring with a dominant phenotype offspring is 1.
+The probability for AA-aa to produce an offspring with a dominant phenotype offspring is 1.
+The probability for Aa-Aa to produce an offspring with a dominant phenotype offspring is 0.75.
+The probability for Aa-aa to produce an offspring with a dominant phenotype offspring is 0.</description>
+    </item>
+    
+    <item>
+      <title>Rosalind - Overlap Graphs</title>
+      <link>https://cshung.github.io/posts/rosalind-overlap-graphs/</link>
+      <pubDate>Sat, 10 Aug 2019 11:11:00 -0700</pubDate>
+      
+      <guid>https://cshung.github.io/posts/rosalind-overlap-graphs/</guid>
+      <description>Problem:
+Please find the problem here.
+Solution:
+To construct the graph, we go through every pair, excluding self-loops, and output an edge when the suffix matches the prefix. Care is taken to make sure the string actually has at least 3 characters.
+Code:
+ </description>
+    </item>
+    
+    <item>
+      <title>Rosalind - Finding a Shared Motif</title>
+      <link>https://cshung.github.io/posts/rosalind-finding-a-shared-motif/</link>
+      <pubDate>Mon, 05 Aug 2019 23:00:00 -0700</pubDate>
+      
+      <guid>https://cshung.github.io/posts/rosalind-finding-a-shared-motif/</guid>
+      <description>Problem:
+Please find the problem here.
+Solution:
+This is a complicated solution. I spent almost a week on it. It is based on a suffix tree. Suffix tree itself is a complicated beast. I described it earlier in this series of posts, please check it out if you have no idea what is a suffix tree.
+In the sequel, I assumed the suffix tree is built on a string built on the DNAs concatenated and separated by unique characters.</description>
+    </item>
+    
+    <item>
+      <title>Rosalind - Mortal Fibonacci Rabbits</title>
+      <link>https://cshung.github.io/posts/rosalind-mortal-fibonacci-rabbits/</link>
+      <pubDate>Mon, 05 Aug 2019 22:45:00 -0700</pubDate>
+      
+      <guid>https://cshung.github.io/posts/rosalind-mortal-fibonacci-rabbits/</guid>
+      <description>Problem:
+Please find the problem here.
+Solution:
+The matrix solution I used in my previous solution is still applicable, but it is cumbersome to implement. It is time to actually use dynamic programming.
+Conceptually, it is easy. We know rabbits can have life from \( 0 \) to \( m - 1 \) month, so we keep an array to see how many pairs of rabbits are there at that age.</description>
+    </item>
+    
+    <item>
+      <title>Rosalind - Consensus and Profile</title>
+      <link>https://cshung.github.io/posts/rosalind-consensus-and-profile/</link>
+      <pubDate>Mon, 05 Aug 2019 18:47:00 -0700</pubDate>
+      
+      <guid>https://cshung.github.io/posts/rosalind-consensus-and-profile/</guid>
+      <description>Problem:
+Please find the problem here.
+Solution:
+Because we need to output the whole matrix, we just simply have to compute it.
+Code:
+ </description>
+    </item>
+    
+    <item>
+      <title>Rosalind - Finding a Motif in DNA</title>
+      <link>https://cshung.github.io/posts/rosalind-finding-a-motif-in-dna/</link>
+      <pubDate>Sat, 03 Aug 2019 21:01:00 -0700</pubDate>
+      
+      <guid>https://cshung.github.io/posts/rosalind-finding-a-motif-in-dna/</guid>
+      <description>Problem:
+Please find the problem here.
+Solution:
+This feels like cheating. The problem is obviously asking for implementing a substring search, and I am using the Python builtin.
+I have implemented Boyer Moore in C#, so I don&amp;rsquo;t feel bad. In fact, I validated my implementation using the Rosalind test cases, and it passed there as well.
+Code:
+ </description>
+    </item>
+    
+    <item>
+      <title>Rosalind - Translating RNA into Protein</title>
+      <link>https://cshung.github.io/posts/rosalind-translating-rna-into-protein/</link>
+      <pubDate>Sat, 03 Aug 2019 20:55:00 -0700</pubDate>
+      
+      <guid>https://cshung.github.io/posts/rosalind-translating-rna-into-protein/</guid>
+      <description>Problem:
+Please find the problem here.
+Solution:
+To perform the translation, we used a lookup table.
+Code:
+ </description>
+    </item>
+    
+    <item>
+      <title>Rosalind - Mendel&#39;s First Law</title>
+      <link>https://cshung.github.io/posts/rosalind-mendels-first-law/</link>
+      <pubDate>Sat, 03 Aug 2019 20:47:00 -0700</pubDate>
+      
+      <guid>https://cshung.github.io/posts/rosalind-mendels-first-law/</guid>
+      <description>Problem:
+Please find the problem here.
+Solution:
+When two heterozygous organisms mate, the offspring have \( \frac{1}{4} \) chance to be homozygous recessive.
+When a heterozygous organism and a homozygous organism mate, the offspring have \( \frac{1}{2} \) chance to be homozygous recessive.
+When two homozygous recessive organisms mate, their offspring must be homozygous recessive.
+There are no other ways to produce a homozygous recessive offspring.
+The probability of getting a homozygous recessive is therefore:</description>
+    </item>
+    
+    <item>
+      <title>Rosalind - Counting Point Mutations</title>
+      <link>https://cshung.github.io/posts/rosalind-counting-point-mutations/</link>
+      <pubDate>Sat, 03 Aug 2019 17:19:00 -0700</pubDate>
+      
+      <guid>https://cshung.github.io/posts/rosalind-counting-point-mutations/</guid>
+      <description>Problem:
+Please find the problem here.
+Solution:
+To compute the Hamming distance, we walk the strings together and count the number of differences.
+Code:
+ </description>
+    </item>
+    
+    <item>
+      <title>Rosalind - Computing GC Content</title>
+      <link>https://cshung.github.io/posts/rosalind-computing-gc-content/</link>
+      <pubDate>Sun, 28 Jul 2019 20:28:00 -0700</pubDate>
+      
+      <guid>https://cshung.github.io/posts/rosalind-computing-gc-content/</guid>
+      <description>Problem:
+Please find the problem here.
+Solution:
+The only challenge for this problem is to parse the FASTA format. To make life easy, I added a &amp;lsquo;&amp;gt;&amp;rsquo; sign at the end of all the inputs - now every DNA is simply a &amp;lsquo;&amp;gt;&amp;rsquo; terminating string. Therefore a simple scan of the file parses all the input correctly.
+Code:
+ </description>
+    </item>
+    
+    <item>
+      <title>Rosalind - Rabbits and Recurrence Relations</title>
+      <link>https://cshung.github.io/posts/rosalind-rabbits-and-recurrence-relations/</link>
+      <pubDate>Sun, 28 Jul 2019 15:25:00 -0700</pubDate>
+      
+      <guid>https://cshung.github.io/posts/rosalind-rabbits-and-recurrence-relations/</guid>
+      <description>Problem:
+Please find the problem here.
+Analysis:
+It is long known to me that the Fibonacci numbers are the solution to the rabbit&amp;rsquo;s problem. I never really bothered to understand why that is the case. It feels natural to me. In order to solve this problem, I need to understand it in more depth.
+Here is the problem description in its own words:
+The population begins in the first month with a pair of newborn rabbits.</description>
+    </item>
+    
+    <item>
+      <title>Rosalind - Complementing a Strand of DNA</title>
+      <link>https://cshung.github.io/posts/rosalind-complementing-a-strand-of-dna/</link>
+      <pubDate>Sun, 28 Jul 2019 14:53:00 -0700</pubDate>
+      
+      <guid>https://cshung.github.io/posts/rosalind-complementing-a-strand-of-dna/</guid>
+      <description>Problem:
+Please find the problem here.
+Solution:
+This problem has an in-place solution. We can walk the string from two ways and swap and map at the same time. However, Python strings are immutable. We have to create new strings.
+To build a string, I was thinking about something like a StringBuilder, but there is no such thing in Python. It is reported that doing repeated string concatenation is the fastest way.</description>
+    </item>
+    
+    <item>
+      <title>Rosalind - Transcribing DNA into RNA</title>
+      <link>https://cshung.github.io/posts/rosalind-transcribing-dna-into-rna/</link>
+      <pubDate>Sun, 21 Jul 2019 19:24:00 -0700</pubDate>
+      
+      <guid>https://cshung.github.io/posts/rosalind-transcribing-dna-into-rna/</guid>
+      <description>Problem:
+Please find the problem here.
+Solution:
+This one is even simpler than the one before, this is just replacing a single character.
+Code:
+ </description>
+    </item>
+    
+    <item>
+      <title>Rosalind - Counting DNA Nucleotides</title>
+      <link>https://cshung.github.io/posts/rosalind-counting-dna-nucleotides/</link>
+      <pubDate>Sun, 21 Jul 2019 19:10:00 -0700</pubDate>
+      
+      <guid>https://cshung.github.io/posts/rosalind-counting-dna-nucleotides/</guid>
+      <description>Problem:
+Please find the problem here.
+Solution:
+The problem is very simple, just counting the number of alphabets.
+Code:
+ </description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,182 +1,80 @@
 <!DOCTYPE html>
-<html lang="en-us">
-  <head>
+<html><head>
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    
-    <title>PS/2 and A20 | My Blog</title>
-    <meta name="viewport" content="width=device-width,minimum-scale=1">
-    <meta name="description" content="PS/2 and A20 If the title of the post doesn&rsquo;t make any sense for you, you are just too young. Well, just kidding. These are really old technologies but still impacting our journey to host Xv6 on v86. In our last post, we were able to run a scenario, but it isn&rsquo;t perfect, it looks like all keyboard inputs are ignored and one must input the command through the UART port.">
-    <meta name="generator" content="Hugo 0.96.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/style.css">
+    <link rel="stylesheet" type="text/css" href="/css/syntax.css">
     
     
-      <META NAME="ROBOTS" CONTENT="INDEX, FOLLOW">
-    
-
-    
-
-  
-  
-    <link rel="stylesheet" href="/ananke/dist/main.css_5c99d70a7725bacd4c701e995b969fea.css" >
-  
+    <title>My Blog | PS/2 and A20</title>
 
 
+</head><body class="light-theme"><div id="nav-border" class="container">
+    <nav id="nav" class="nav justify-content-center">
+        
+        <a class="nav-link" href="/">
+        
+        
+        <i data-feather="home"></i> 
+        
+        
+        Home
+        </a>
+        
+        <a class="nav-link" href="/tags/">
+        
+        
+        <i data-feather="tag"></i> 
+        
+        
+        Tags
+        </a>
+        
+        <a class="nav-link" href="#" id="toggleDarkModeButton"><i data-feather="sun"></i></a>
+        <span style="padding:5px"><input type="text" id="queryTextField"></span><a class="nav-link" href="#" id="searchButton"><i data-feather="search"></i></a>
+    </nav>
+</div><div id="content" style="margin:20px">
+<h1>PS/2 and A20</h1>
 
 
-    
-      
+<i data-feather="calendar"></i>
+<time datetime="2021-10-22">Oct 22, 2021</time>
 
-    
-
-    
-    
-    <meta property="og:title" content="PS/2 and A20" />
-<meta property="og:description" content="PS/2 and A20 If the title of the post doesn&rsquo;t make any sense for you, you are just too young. Well, just kidding. These are really old technologies but still impacting our journey to host Xv6 on v86. In our last post, we were able to run a scenario, but it isn&rsquo;t perfect, it looks like all keyboard inputs are ignored and one must input the command through the UART port." />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="https://cshung.github.io/posts/ps2-and-a20/" /><meta property="article:section" content="posts" />
-<meta property="article:published_time" content="2021-10-22T20:15:34-07:00" />
-<meta property="article:modified_time" content="2021-10-22T20:15:34-07:00" />
-
-<meta itemprop="name" content="PS/2 and A20">
-<meta itemprop="description" content="PS/2 and A20 If the title of the post doesn&rsquo;t make any sense for you, you are just too young. Well, just kidding. These are really old technologies but still impacting our journey to host Xv6 on v86. In our last post, we were able to run a scenario, but it isn&rsquo;t perfect, it looks like all keyboard inputs are ignored and one must input the command through the UART port."><meta itemprop="datePublished" content="2021-10-22T20:15:34-07:00" />
-<meta itemprop="dateModified" content="2021-10-22T20:15:34-07:00" />
-<meta itemprop="wordCount" content="1100">
-<meta itemprop="keywords" content="" /><meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="PS/2 and A20"/>
-<meta name="twitter:description" content="PS/2 and A20 If the title of the post doesn&rsquo;t make any sense for you, you are just too young. Well, just kidding. These are really old technologies but still impacting our journey to host Xv6 on v86. In our last post, we were able to run a scenario, but it isn&rsquo;t perfect, it looks like all keyboard inputs are ignored and one must input the command through the UART port."/>
-
-      
-    
-	
-  </head>
-
-  <body class="ma0 avenir bg-near-white production">
-    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
-    <script>mermaid.initialize({startOnLoad:true});</script>
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    
-   
-  
-
-  <header>
-    <div class="bg-black">
-      <nav class="pv3 ph3 ph4-ns" role="navigation">
-  <div class="flex-l justify-between items-center center">
-    <a href="/" class="f3 fw2 hover-white no-underline white-90 dib">
-      
-        My Blog
-      
-    </a>
-    <div class="flex-l items-center">
-      
-
-      
-      
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    </div>
-  </div>
-</nav>
-
-    </div>
-  </header>
-
-
-
-    <main class="pb7" role="main">
-      
-  
-  <article class="flex-l flex-wrap justify-between mw8 center ph3">
-    <header class="mt4 w-100">
-      <aside class="instapaper_ignoref b helvetica tracked">
-          
-        POSTS
-      </aside>
-      
-
-
-
-
-  <div id="sharing" class="mt3">
-
-    
-    <a href="https://www.facebook.com/sharer.php?u=https://cshung.github.io/posts/ps2-and-a20/" class="facebook no-underline" aria-label="share on Facebook">
-      <svg height="32px"  style="enable-background:new 0 0 67 67;" version="1.1" viewBox="0 0 67 67" width="32px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path d="M28.765,50.32h6.744V33.998h4.499l0.596-5.624h-5.095  l0.007-2.816c0-1.466,0.14-2.253,2.244-2.253h2.812V17.68h-4.5c-5.405,0-7.307,2.729-7.307,7.317v3.377h-3.369v5.625h3.369V50.32z   M33,64C16.432,64,3,50.569,3,34S16.432,4,33,4s30,13.431,30,30S49.568,64,33,64z" style="fill-rule:evenodd;clip-rule:evenodd;"/></svg>
-
-    </a>
-
-    
-    
-    <a href="https://twitter.com/share?url=https://cshung.github.io/posts/ps2-and-a20/&amp;text=PS/2%20and%20A20" class="twitter no-underline" aria-label="share on Twitter">
-      <svg height="32px"  style="enable-background:new 0 0 67 67;" version="1.1" viewBox="0 0 67 67" width="32px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path d="M37.167,22.283c-2.619,0.953-4.274,3.411-4.086,6.101  l0.063,1.038l-1.048-0.127c-3.813-0.487-7.145-2.139-9.974-4.915l-1.383-1.377l-0.356,1.017c-0.754,2.267-0.272,4.661,1.299,6.271  c0.838,0.89,0.649,1.017-0.796,0.487c-0.503-0.169-0.943-0.296-0.985-0.233c-0.146,0.149,0.356,2.076,0.754,2.839  c0.545,1.06,1.655,2.097,2.871,2.712l1.027,0.487l-1.215,0.021c-1.173,0-1.215,0.021-1.089,0.467  c0.419,1.377,2.074,2.839,3.918,3.475l1.299,0.444l-1.131,0.678c-1.676,0.976-3.646,1.526-5.616,1.568  C19.775,43.256,19,43.341,19,43.405c0,0.211,2.557,1.397,4.044,1.864c4.463,1.377,9.765,0.783,13.746-1.568  c2.829-1.673,5.657-5,6.978-8.221c0.713-1.716,1.425-4.851,1.425-6.354c0-0.975,0.063-1.102,1.236-2.267  c0.692-0.678,1.341-1.419,1.467-1.631c0.21-0.403,0.188-0.403-0.88-0.043c-1.781,0.636-2.033,0.551-1.152-0.402  c0.649-0.678,1.425-1.907,1.425-2.267c0-0.063-0.314,0.042-0.671,0.233c-0.377,0.212-1.215,0.53-1.844,0.72l-1.131,0.361l-1.027-0.7  c-0.566-0.381-1.361-0.805-1.781-0.932C39.766,21.902,38.131,21.944,37.167,22.283z M33,64C16.432,64,3,50.569,3,34S16.432,4,33,4  s30,13.431,30,30S49.568,64,33,64z" style="fill-rule:evenodd;clip-rule:evenodd;fill:;"/></svg>
-
-    </a>
-
-    
-    <a href="https://www.linkedin.com/shareArticle?mini=true&amp;url=https://cshung.github.io/posts/ps2-and-a20/&amp;title=PS/2%20and%20A20" class="linkedin no-underline" aria-label="share on LinkedIn">
-      <svg  height="32px"  style="enable-background:new 0 0 65 65;" version="1.1" viewBox="0 0 65 65" width="32px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-  <path d="M50.837,48.137V36.425c0-6.275-3.35-9.195-7.816-9.195  c-3.604,0-5.219,1.983-6.119,3.374V27.71h-6.79c0.09,1.917,0,20.427,0,20.427h6.79V36.729c0-0.609,0.044-1.219,0.224-1.655  c0.49-1.22,1.607-2.483,3.482-2.483c2.458,0,3.44,1.873,3.44,4.618v10.929H50.837z M22.959,24.922c2.367,0,3.842-1.57,3.842-3.531  c-0.044-2.003-1.475-3.528-3.797-3.528s-3.841,1.524-3.841,3.528c0,1.961,1.474,3.531,3.753,3.531H22.959z M34,64  C17.432,64,4,50.568,4,34C4,17.431,17.432,4,34,4s30,13.431,30,30C64,50.568,50.568,64,34,64z M26.354,48.137V27.71h-6.789v20.427  H26.354z" style="fill-rule:evenodd;clip-rule:evenodd;fill:;"/>
-</svg>
-
-    </a>
-  </div>
-
-
-      <h1 class="f1 athelas mt3 mb1">PS/2 and A20</h1>
-      
-      
-      <time class="f6 mv4 dib tracked" datetime="2021-10-22T20:15:34-07:00">October 22, 2021</time>
-
-      
-      
-    </header>
-    <div class="nested-copy-line-height lh-copy serif f4 nested-links nested-img mid-gray pr4-l w-two-thirds-l"><h1 id="ps2-and-a20">PS/2 and A20</h1>
+<br><br>
+<h1 id="ps2-and-a20">PS/2 and A20</h1>
 <p>If the title of the post doesn&rsquo;t make any sense for you, you are just too young. Well, just kidding. These are really old technologies but still impacting our journey to host Xv6 on v86. In our <a href="/posts/xv6-on-v86/">last post</a>, we were able to run a scenario, but it isn&rsquo;t perfect, it looks like all keyboard inputs are ignored and one must input the command through the UART port. I fixed it, and I will share in this post how I fixed it.</p>
 <p>Looking backward, again, the fact that it doesn&rsquo;t work was an opportunity. I get to understand how interrupts actually works.</p>
 <h1 id="where-is-my-interrupt">Where is my interrupt?</h1>
 <p>We know I/O in x86 system is interrupt-driven. Therefore, we expect when we hit the keyboard, the virtual machine should send an interrupt to the operating system, and the operating system will process it. Now the key question to answer is whether or not the virtual machine raised an interrupt or not?</p>
 <p>To confirm that, ideally, one would like to set a breakpoint on the <code>kbdintr</code> function. To do so, we look up the assembly and figured out the function has virtual address <code>801027c0</code>. Therefore, we can capture the event in the <code>cycle_internal</code> function as follow:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-js" data-lang="js"><span style="display:flex;"><span><span style="color:#a6e22e">CPU</span>.<span style="color:#a6e22e">prototype</span>.<span style="color:#a6e22e">cycle_internal</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">function</span>()
-</span></span><span style="display:flex;"><span>{
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">previous_ip</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">instruction_pointer</span>;
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (<span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">previous_ip</span> <span style="color:#f92672">==</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">2146424896</span>) <span style="color:#75715e">// -2146424896 = 0x801027c0
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    {
-</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">debugger</span>;
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>    ...
-</span></span><span style="display:flex;"><span>}
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="nx">CPU</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">cycle_internal</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">this</span><span class="p">.</span><span class="nx">previous_ip</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">instruction_pointer</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">previous_ip</span> <span class="o">==</span> <span class="o">-</span><span class="mi">2146424896</span><span class="p">)</span> <span class="c1">// -2146424896 = 0x801027c0
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kr">debugger</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">...</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span></code></pre></div><p>We noticed the <code>debugger</code> statement is never hit, so we conclude the virtual machine is not raising the interrupt, why?</p>
 <h1 id="how-interrupt-works">How interrupt works</h1>
 <p>To figure out how interrupt works in v86, we set a breakpoint earlier in the <code>trap</code> function at <code>80105850</code>, which is called for any interrupt. It does, but the stack reveals nothing interesting. Similarly, for the even earlier entry point <code>alltraps</code> at <code>80105772</code>. We have a good reason to believe that the interrupt is processed by not leaving a frame on the stack. So we turn our attention to the log.</p>
 <p>By turning on <code>CPU_LOG_VERBOSE</code> at the very beginning of the <code>cpu.js</code>, I see this log statement.</p>
-<pre tabindex="0"><code>22:54:03+720 [CPU ] mode=prot/32 paging=1 iopl=0 cpl=0 if=0 cs:eip=0x0008:0x80105D8A cs_off=0x00000000 flgs=0x000092 (  a s    ) ss:esp=0x0010:0x8010B548 ssize=1 in int end
-</code></pre><p>The <code>int end</code> caught my attention. Does it mean interrupt processing ends? Searching in the code show me that is exactly the case, the code emitting the log is right at the end of <code>call_interrupt_vector</code> method. Setting a breakpoint on this function reveals how interrupt is processed. The stack gives one example on how an interrupt is processed.</p>
-<pre tabindex="0"><code>CPU.call_interrupt_vector (cpu.js:1801)
-CPU.pic_call_irq (cpu.js:3701)
-PIC.acknowledge_irq (pic.js:157)
-CPU.handle_irqs (cpu.js:3719)
-t.&lt;computed&gt; (instructions.js:1403)
-CPU.cycle_internal (cpu.js:1200)
-CPU.do_many_cycles_unsafe (cpu.js:1143)
-CPU.do_many_cycles (cpu.js:1129)
-CPU.do_run (cpu.js:1115)
-...
-</code></pre><p>The <code>t.&lt;computed&gt;</code> frame is evaluating the <code>sti</code> instruction.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="cl">22:54:03+720 [CPU ] mode=prot/32 paging=1 iopl=0 cpl=0 if=0 cs:eip=0x0008:0x80105D8A cs_off=0x00000000 flgs=0x000092 (  a s    ) ss:esp=0x0010:0x8010B548 ssize=1 in int end
+</span></span></code></pre></div><p>The <code>int end</code> caught my attention. Does it mean interrupt processing ends? Searching in the code show me that is exactly the case, the code emitting the log is right at the end of <code>call_interrupt_vector</code> method. Setting a breakpoint on this function reveals how interrupt is processed. The stack gives one example on how an interrupt is processed.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="cl">CPU.call_interrupt_vector (cpu.js:1801)
+</span></span><span class="line"><span class="cl">CPU.pic_call_irq (cpu.js:3701)
+</span></span><span class="line"><span class="cl">PIC.acknowledge_irq (pic.js:157)
+</span></span><span class="line"><span class="cl">CPU.handle_irqs (cpu.js:3719)
+</span></span><span class="line"><span class="cl">t.&lt;computed&gt; (instructions.js:1403)
+</span></span><span class="line"><span class="cl">CPU.cycle_internal (cpu.js:1200)
+</span></span><span class="line"><span class="cl">CPU.do_many_cycles_unsafe (cpu.js:1143)
+</span></span><span class="line"><span class="cl">CPU.do_many_cycles (cpu.js:1129)
+</span></span><span class="line"><span class="cl">CPU.do_run (cpu.js:1115)
+</span></span><span class="line"><span class="cl">...
+</span></span></code></pre></div><p>The <code>t.&lt;computed&gt;</code> frame is evaluating the <code>sti</code> instruction.</p>
 <p>So the flow is as follow:</p>
 <ol>
 <li>The CPU executed a <code>cli</code> instruction earlier, causing the interrupt to be masked.</li>
@@ -189,84 +87,163 @@ CPU.do_run (cpu.js:1115)
 <p>With a bit of code reading, we notice <code>acknowledge_irq</code> checks if <code>this.requested_irq</code> is -1. If that&rsquo;s the case, that means there is no interrupt requested and therefore will not lead to the <code>pic_call_irq</code> code path. Therefore we would like to know how <code>this.requested_irq</code> changes.</p>
 <h1 id="programmable-interrupt-controller">Programmable Interrupt Controller</h1>
 <p>It isn&rsquo;t hard to figure out the <code>check_irq</code> function set the <code>this.requested_irq</code> value. Setting a breakpoint on that line yield a very common stack.</p>
-<pre tabindex="0"><code>PIC.check_irqs (pic.js:117)
-PIC.set_irq (pic.js:305)
-CPU.device_raise_irq (cpu.js:3734)
-PIT.timer (pit.js:116)
-CPU.run_hardware_timers (cpu.js:1270)
-CPU.do_run (cpu.js:1112)
-...
-</code></pre><p>So finally we are reaching the devices! The devices can raise an interrupt request, the CPU will delegate to the <code>PIC</code> to set the <code>this.request_irq</code> value. This mirrors how the computer actually works. The PIC is the programmable interrupt controller, it takes in interrupt requests from the devices, prioritize them, and eventually interrupt the processor. The processor, on interrupt requests, will run the interrupt service routines.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="cl">PIC.check_irqs (pic.js:117)
+</span></span><span class="line"><span class="cl">PIC.set_irq (pic.js:305)
+</span></span><span class="line"><span class="cl">CPU.device_raise_irq (cpu.js:3734)
+</span></span><span class="line"><span class="cl">PIT.timer (pit.js:116)
+</span></span><span class="line"><span class="cl">CPU.run_hardware_timers (cpu.js:1270)
+</span></span><span class="line"><span class="cl">CPU.do_run (cpu.js:1112)
+</span></span><span class="line"><span class="cl">...
+</span></span></code></pre></div><p>So finally we are reaching the devices! The devices can raise an interrupt request, the CPU will delegate to the <code>PIC</code> to set the <code>this.request_irq</code> value. This mirrors how the computer actually works. The PIC is the programmable interrupt controller, it takes in interrupt requests from the devices, prioritize them, and eventually interrupt the processor. The processor, on interrupt requests, will run the interrupt service routines.</p>
 <p>Notice that <code>do_run</code> call <code>run_hardware_timer</code>. Interrupts in v86 are always raised synchronously with respect to instruction execution.</p>
 <h1 id="ps2">PS/2</h1>
 <p>By searching <code>device_raise_irq</code> over the code base, it is not hard to figure out the keyboard irq is raised by the <code>ps2.js</code>. PS/2 was a keyboard and mouse port designed in 1987, a very old technologies, but it is still supported in major OS. I set a breakpoint at <code>kbd_irq</code>, I notice the method is called a few times, but no longer get called even I type on the keyboard, so something interesting is going on.</p>
 <p>It looks like the upstream function, <code>raise_irq</code> is called whenever the keyboard is pressed. The issue is that we have a check for <code>next_byte_is_ready</code> and it got filtered away there. So why <code>next_byte_is_ready</code>?</p>
 <p>Ideally, we would like to know when is the last time <code>next_byte_is_ready</code> is set. By setting a breakpoint on all places where <code>next_byte_is_ready</code> is set. We got around 10 hits during the boot process, and the last hit was raised by this stack:</p>
-<pre tabindex="0"><code>PS2.kbd_irq (ps2.js:225)
-PS2.port60_write (ps2.js:637)
-IO.port_write8 (io.js:343)
-t.&lt;computed&gt; (instructions.js:1120)
-CPU.cycle_internal (cpu.js:1200)
-CPU.do_many_cycles_unsafe (cpu.js:1143)
-CPU.do_many_cycles (cpu.js:1129)
-CPU.do_run (cpu.js:1115)
-...
-</code></pre><p>And the <code>this.previous_ip</code> is <code>31771</code>, which correspond to this line in the boot loader.</p>
-<pre tabindex="0"><code>  # Physical address line A20 is tied to zero so that the first PCs 
-  # with 2 MB would run software that assumed 1 MB.  Undo that.
-  ...
-  movb    $0xdf,%al               # 0xdf -&gt; port 0x60
-  outb    %al,$0x60
-</code></pre><h1 id="a20">A20</h1>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="cl">PS2.kbd_irq (ps2.js:225)
+</span></span><span class="line"><span class="cl">PS2.port60_write (ps2.js:637)
+</span></span><span class="line"><span class="cl">IO.port_write8 (io.js:343)
+</span></span><span class="line"><span class="cl">t.&lt;computed&gt; (instructions.js:1120)
+</span></span><span class="line"><span class="cl">CPU.cycle_internal (cpu.js:1200)
+</span></span><span class="line"><span class="cl">CPU.do_many_cycles_unsafe (cpu.js:1143)
+</span></span><span class="line"><span class="cl">CPU.do_many_cycles (cpu.js:1129)
+</span></span><span class="line"><span class="cl">CPU.do_run (cpu.js:1115)
+</span></span><span class="line"><span class="cl">...
+</span></span></code></pre></div><p>And the <code>this.previous_ip</code> is <code>31771</code>, which correspond to this line in the boot loader.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="cl">  # Physical address line A20 is tied to zero so that the first PCs 
+</span></span><span class="line"><span class="cl">  # with 2 MB would run software that assumed 1 MB.  Undo that.
+</span></span><span class="line"><span class="cl">  ...
+</span></span><span class="line"><span class="cl">  movb    $0xdf,%al               # 0xdf -&gt; port 0x60
+</span></span><span class="line"><span class="cl">  outb    %al,$0x60
+</span></span></code></pre></div><h1 id="a20">A20</h1>
 <p>Finally we see <a href="https://wiki.osdev.org/A20_Line">A20</a>. A20 is really old (It is meant for catering 8086, designed back in 1978). When the processor is boot, it is suppose to be capable to run 8086 applications. In 8086 days, we only have 20 bit of address bus, addressing up to 1MB of memory, therefore the processor simply ignored any bits outside of the least significant 20 bits when it boots up. Apparently, nobody do that anymore, but we are still required to turn that off. Again, for legacy reasons, the turning of that address bit involve talking to the PS2 controller.</p>
 <p>It turns out that the PS2 emulation software in v86 does not understand this command and just fall through a switch case, this is leading to the controller to believe there is a byte in the command buffer that the operating system is not accepting yet, leading to swallowing all the key stroke and never raise an interrupt request.</p>
 <p>Finally, <a href="https://github.com/copy/v86/pull/540">here</a> is a fix for it. With this fix, Xv6 on v86 can handle the keyboard inputs now!</p>
-<ul class="pa0">
-  
-</ul>
-<div class="mt6 instapaper_ignoref">
-      
-      
-      </div>
-    </div>
-
-    <aside class="w-30-l mt6-l">
 
 
+        </div><p class="footer text-center">Copyright (c) 2023 Andrew Au</p><script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true });</script>
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/prettify.js"></script>
+<script src="/js/feather.min.js"></script>
+<script src="/index.js"></script>
+<script>
 
+  function getCookie(cname) {
+    let name = cname + "=";
+    let ca = document.cookie.split(';');
+    for (let i = 0; i < ca.length; i++) {
+      let c = ca[i];
+      while (c.charAt(0) == ' ') {
+        c = c.substring(1);
+      }
+      if (c.indexOf(name) == 0) {
+        return c.substring(name.length, c.length);
+      }
+    }
+    return "";
+  }
 
-</aside>
+  function setCookie(cname, cvalue, exdays) {
+    const d = new Date();
+    d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+    let expires = "expires=" + d.toUTCString();
+    document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+  }
 
-  </article>
+  function ensureIcon() {
+    if (document.body.classList.contains("dark-theme")) {
+      toggleDarkModeButton.innerHTML = '<i data-feather="sun"></i>';
+    } else {
+      toggleDarkModeButton.innerHTML = '<i data-feather="moon"></i>';
+    }
+    feather.replace();
+  }
+  function saveCookie() {
+    if (document.body.classList.contains("dark-theme")) {
+      setCookie("darkMode", "true", 365);
+    } else {
+      setCookie("darkMode", "false", 365);
+    }
+  }
 
-    </main>
-    <footer class="bg-black bottom-0 w-100 pa3" role="contentinfo">
-  <div class="flex justify-between">
-  <a class="f4 fw4 hover-white no-underline white-70 dn dib-ns pv2 ph3" href="https://cshung.github.io/" >
-    &copy;  My Blog 2022 
-  </a>
-    <div>
+  function load(pre) {
+    link = pre.getAttribute("data-code-link");
+    const xhr = new XMLHttpRequest();
+    xhr.onload = () => {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        pre.className = "prettyprint";
+        pre.textContent = xhr.responseText;
+      }
+      prettyPrint();
+    };
+    xhr.open('GET', link);
+    xhr.send();
+  }
 
+  function onSearchButtonClicked(e) {
+    e.preventDefault();
+    var query = $("#queryTextField").val();
+    var terms = query.split(' ');
+    
+    var result = {};
+    for (var i = 0; i < terms.length; ++i) {
+      var term = terms[i].toLowerCase();
+      if (term in index.Terms)
+      {
+        for (i = 0; i < index.Terms[term].length; i += 2) {
+          var doc = index.Terms[term][i];
+          var count = index.Terms[term][i + 1];
+          if (doc in result) {
+            result[doc] += count;
+          } else {
+            result[doc] = count;
+          }
+        }
+      }
+    }
+    
+    $("#content").empty();
+    for (var key in result) {
+      $("#content").append($('<a>', {
+        href: index.Documents[key].replace("../../content","").replace(".md",""),
+        text: index.Titles[key]
+      }));
+      $("#content").append($('<br>'));
+    }
+  }
 
+  $(document).ready(function () {
+    var darkMode = getCookie("darkMode");
+    if (darkMode == "true") {
+      document.body.classList.add("dark-theme");
+      document.body.classList.remove("light-theme");
+    }
+    ensureIcon();
 
+    $("#toggleDarkModeButton").click(function (e) {
+      e.preventDefault();
+      document.body.classList.toggle("dark-theme");
+      document.body.classList.toggle("light-theme");
+      saveCookie();
+      ensureIcon();
+    });
 
+    $("#searchButton").click(onSearchButtonClicked);
 
+    var pres = document.getElementsByTagName("pre");
+    for (var i = 0; i < pres.length; ++i) {
+      var pre = pres[i];
+      if (pre.classList.contains("pretty-github-code")) {
+        load(pre);
+      }
+    }
+  });
 
-
-
-
-
-
-
-
-
-</div>
-  </div>
-</footer>
-
-    <div style="display:none">
-    <script type="text/javascript" src="https://www.free-counters.org/count/86pd"></script><br><a href='http://www.counter-zaehler.de'>besucherzähler ip</a> <script type='text/javascript'     src='https://whomania.com/ctr?id=695d5b016077d10ada0ea41fc87e54f2421f8966'></script>
-    </div>
-  </body>
-
+  $(window).on("load", function () {
+    $("body").show();
+  });
+</script></body>
 </html>

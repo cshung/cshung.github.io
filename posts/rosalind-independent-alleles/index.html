@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/style.css">
+    <link rel="stylesheet" type="text/css" href="/css/syntax.css">
+    
+    
+    <title>My Blog | Rosalind - Independent Alleles</title>
+
+
+</head><body class="light-theme"><div id="nav-border" class="container">
+    <nav id="nav" class="nav justify-content-center">
+        
+        <a class="nav-link" href="/">
+        
+        
+        <i data-feather="home"></i> 
+        
+        
+        Home
+        </a>
+        
+        <a class="nav-link" href="/tags/">
+        
+        
+        <i data-feather="tag"></i> 
+        
+        
+        Tags
+        </a>
+        
+        <a class="nav-link" href="#" id="toggleDarkModeButton"><i data-feather="sun"></i></a>
+        <span style="padding:5px"><input type="text" id="queryTextField"></span><a class="nav-link" href="#" id="searchButton"><i data-feather="search"></i></a>
+    </nav>
+</div><div id="content" style="margin:20px">
+<h1>Rosalind - Independent Alleles</h1>
+
+
+<i data-feather="calendar"></i>
+<time datetime="2019-08-10">Aug 10, 2019</time>
+
+<i data-feather="tag"></i>
+
+
+<a class="btn btn-sm btn-outline-dark tag-btn" href="https://cshung.github.io/tags/rosalind">rosalind</a>
+
+
+<br><br>
+<p><strong>Problem:</strong></p>
+<p>Please find the problem <a href="http://rosalind.info/problems/lia/">here</a>.</p>
+<p><strong>Analysis:</strong></p>
+<p>The code is deceptively simple. Let&rsquo;s not read the code and understand the problem first. Because A and B are independent, we can consider them separately.</p>
+<p>Tom&rsquo;s offspring has the following distribution:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">AA - 0.25
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Aa - 0.5
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">aa - 0.25
+</span></span></code></pre></div><p>To consider the next generation, let&rsquo;s generalize and consider the next generation of an arbitrary distribution. Let&rsquo;s say the current distribution is</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">AA - a
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Aa - b
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">aa - c
+</span></span></code></pre></div><p>The next generation would be</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">AA - 0.5  a + 0.25 b
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Aa - 0.5  a + 0.5  b + 0.5 c
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">aa -          0.25 b + 0.5 c
+</span></span></code></pre></div><p>It can be written in a matrix form:</p>
+<p>\( \begin{eqnarray*}   \left(\begin{array}{c}a&rsquo;\\b&rsquo;\\c&rsquo;\end{array}\right) = \left(\begin{array}{ccc}0.5 &amp; 0.25 &amp; 0 \\ 0.5 &amp; 0.5 &amp; 0.5 \\ 0 &amp; 0.25 &amp; 0.5\end{array}\right)\left(\begin{array}{c}a\\b\\c\end{array}\right)  \end{eqnarray*} \)</p>
+<p>Calculating the distribution for the second generation, we have an interesting finding!</p>
+<p>\( \begin{eqnarray*}   \left(\begin{array}{c}0.25\\0.5\\0.25\end{array}\right) = \left(\begin{array}{ccc}0.5 &amp; 0.25 &amp; 0 \\ 0.5 &amp; 0.5 &amp; 0.5 \\ 0 &amp; 0.25 &amp; 0.5\end{array}\right)\left(\begin{array}{c}0.25\\0.5\\0.25\end{array}\right)  \end{eqnarray*} \)</p>
+<p>So we accidentally found \( \left(\begin{array}{c}0.25\\0.5\\0.25\end{array}\right) \) is an eigenvector with eigenvalue 1. In other words, the probability of Aa will always be 0.5, regardless of generation.</p>
+<p>Because A and B are independent, now we can use independence to conclude the probability of an offspring to be AaBb is 0.25. To calculate what is the probability of at least N offsprings are AaBb. We calculate the probability that at most N - 1 offsprings are not AaBb. This is simply the binomial distribution, and we are asking for the cumulative distribution function of it.</p>
+<p><strong>Solution:</strong></p>
+<p>The rest is simply a smart loop for computing the cumulative distribution function of the binomial distribution. The binomial coefficient can be expressed as</p>
+<p>\( \begin{eqnarray*}   \left(\begin{array}{c}n\\r\end{array}\right) = \frac{n!}{r!(n - r)!} = \frac{n \times (n - 1) \times \cdots \times (r + 1)}{(n - r)!} \end{eqnarray*} \)</p>
+<p>Therefore the loop is simply computing the quantity. Note that the division is integer division, and it is okay because whenever the division by \( k \) happens, the numerator has accumulated \( k \) consecutive value, meaning it must be a multiple of \( k \).</p>
+<p><strong>Code:</strong></p>
+<pre class="pretty-github-code" data-code-link="https://raw.githubusercontent.com/cshung/Competition/main/rosalind/lia.py"></pre>
+
+
+
+        </div><p class="footer text-center">Copyright (c) 2023 Andrew Au</p><script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true });</script>
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/prettify.js"></script>
+<script src="/js/feather.min.js"></script>
+<script src="/index.js"></script>
+<script>
+
+  function getCookie(cname) {
+    let name = cname + "=";
+    let ca = document.cookie.split(';');
+    for (let i = 0; i < ca.length; i++) {
+      let c = ca[i];
+      while (c.charAt(0) == ' ') {
+        c = c.substring(1);
+      }
+      if (c.indexOf(name) == 0) {
+        return c.substring(name.length, c.length);
+      }
+    }
+    return "";
+  }
+
+  function setCookie(cname, cvalue, exdays) {
+    const d = new Date();
+    d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+    let expires = "expires=" + d.toUTCString();
+    document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+  }
+
+  function ensureIcon() {
+    if (document.body.classList.contains("dark-theme")) {
+      toggleDarkModeButton.innerHTML = '<i data-feather="sun"></i>';
+    } else {
+      toggleDarkModeButton.innerHTML = '<i data-feather="moon"></i>';
+    }
+    feather.replace();
+  }
+  function saveCookie() {
+    if (document.body.classList.contains("dark-theme")) {
+      setCookie("darkMode", "true", 365);
+    } else {
+      setCookie("darkMode", "false", 365);
+    }
+  }
+
+  function load(pre) {
+    link = pre.getAttribute("data-code-link");
+    const xhr = new XMLHttpRequest();
+    xhr.onload = () => {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        pre.className = "prettyprint";
+        pre.textContent = xhr.responseText;
+      }
+      prettyPrint();
+    };
+    xhr.open('GET', link);
+    xhr.send();
+  }
+
+  function onSearchButtonClicked(e) {
+    e.preventDefault();
+    var query = $("#queryTextField").val();
+    var terms = query.split(' ');
+    
+    var result = {};
+    for (var i = 0; i < terms.length; ++i) {
+      var term = terms[i].toLowerCase();
+      if (term in index.Terms)
+      {
+        for (i = 0; i < index.Terms[term].length; i += 2) {
+          var doc = index.Terms[term][i];
+          var count = index.Terms[term][i + 1];
+          if (doc in result) {
+            result[doc] += count;
+          } else {
+            result[doc] = count;
+          }
+        }
+      }
+    }
+    
+    $("#content").empty();
+    for (var key in result) {
+      $("#content").append($('<a>', {
+        href: index.Documents[key].replace("../../content","").replace(".md",""),
+        text: index.Titles[key]
+      }));
+      $("#content").append($('<br>'));
+    }
+  }
+
+  $(document).ready(function () {
+    var darkMode = getCookie("darkMode");
+    if (darkMode == "true") {
+      document.body.classList.add("dark-theme");
+      document.body.classList.remove("light-theme");
+    }
+    ensureIcon();
+
+    $("#toggleDarkModeButton").click(function (e) {
+      e.preventDefault();
+      document.body.classList.toggle("dark-theme");
+      document.body.classList.toggle("light-theme");
+      saveCookie();
+      ensureIcon();
+    });
+
+    $("#searchButton").click(onSearchButtonClicked);
+
+    var pres = document.getElementsByTagName("pre");
+    for (var i = 0; i < pres.length; ++i) {
+      var pre = pres[i];
+      if (pre.classList.contains("pretty-github-code")) {
+        load(pre);
+      }
+    }
+  });
+
+  $(window).on("load", function () {
+    $("body").show();
+  });
+</script></body>
+</html>

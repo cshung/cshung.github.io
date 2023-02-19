@@ -1,274 +1,174 @@
 <!DOCTYPE html>
-<html lang="en-us">
-  <head>
+<html><head>
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    
-    <title>My Blog</title>
-    <meta name="viewport" content="width=device-width,minimum-scale=1">
-    <meta name="description" content="">
-    <meta name="generator" content="Hugo 0.96.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/style.css">
+    <link rel="stylesheet" type="text/css" href="/css/syntax.css">
     
     
-      <META NAME="ROBOTS" CONTENT="INDEX, FOLLOW">
-    
-
-    
-
-  
-  
-    <link rel="stylesheet" href="/ananke/dist/main.css_5c99d70a7725bacd4c701e995b969fea.css" >
-  
+    <title>My Blog | Posts</title>
 
 
-
-
-    
-      
-
-    
-
-    
-    
-      <link href="/posts/index.xml" rel="alternate" type="application/rss+xml" title="My Blog" />
-      <link href="/posts/index.xml" rel="feed" type="application/rss+xml" title="My Blog" />
-      
-    
-    
-    <meta property="og:title" content="Posts" />
-<meta property="og:description" content="" />
-<meta property="og:type" content="website" />
-<meta property="og:url" content="https://cshung.github.io/posts/" />
-
-<meta itemprop="name" content="Posts">
-<meta itemprop="description" content=""><meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="Posts"/>
-<meta name="twitter:description" content=""/>
-
-      
-    
-	
-  </head>
-
-  <body class="ma0 avenir bg-near-white production">
-    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
-    <script>mermaid.initialize({startOnLoad:true});</script>
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    
-
-  <header>
-    <div class="pb3-m pb6-l bg-black">
-      <nav class="pv3 ph3 ph4-ns" role="navigation">
-  <div class="flex-l justify-between items-center center">
-    <a href="/" class="f3 fw2 hover-white no-underline white-90 dib">
-      
-        My Blog
-      
-    </a>
-    <div class="flex-l items-center">
-      
-
-      
-      
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    </div>
-  </div>
-</nav>
-
-      <div class="tc-l pv3 ph3 ph4-ns">
-        <h1 class="f2 f-subheadline-l fw2 light-silver mb0 lh-title">
-          Posts
-        </h1>
+</head><body class="light-theme"><div id="nav-border" class="container">
+    <nav id="nav" class="nav justify-content-center">
         
-      </div>
-    </div>
-  </header>
+        <a class="nav-link" href="/">
+        
+        
+        <i data-feather="home"></i> 
+        
+        
+        Home
+        </a>
+        
+        <a class="nav-link" href="/tags/">
+        
+        
+        <i data-feather="tag"></i> 
+        
+        
+        Tags
+        </a>
+        
+        <a class="nav-link" href="#" id="toggleDarkModeButton"><i data-feather="sun"></i></a>
+        <span style="padding:5px"><input type="text" id="queryTextField"></span><a class="nav-link" href="#" id="searchButton"><i data-feather="search"></i></a>
+    </nav>
+</div><div id="content" style="margin:20px">
+<h1>Posts</h1>
 
+<p>
+    <h3><a class="title" href="/posts/memory-corruption-2/">Memory Corruption (2)</a></h3>
+    
 
-    <main class="pb7" role="main">
-      
-  <article class="pa3 pa4-ns nested-copy-line-height nested-img">
-    <section class="cf ph3 ph5-l pv3 pv4-l f4 tc-l center measure-wide lh-copy mid-gray"></section>
-    <section class="flex-ns flex-wrap justify-around mt5">
-      
-        <div class="relative w-100 w-30-l mb4 bg-white"><div class="relative w-100 mb4 bg-white nested-copy-line-height">
-  <div class="bg-white mb3 pa4 gray overflow-hidden">
-    <span class="f6 db">Posts</span>
-    <h1 class="f3 near-black">
-      <a href="https://cshung.github.io/posts/memory-corruption-2/" class="link black dim">
-        Memory Corruption (2)
-      </a>
-    </h1>
-    <div class="nested-links f5 lh-copy nested-copy-line-height">
-      Another memory corruption bug In this post, we will talk about another memory corruption bug I found and fix. Check out my previous post for more context and examples.
+<i data-feather="calendar"></i>
+<time datetime="2021-07-02">Jul 2, 2021</time>
+
+    <a class="summary" href="/posts/memory-corruption-2/">
+        <p>Another memory corruption bug In this post, we will talk about another memory corruption bug I found and fix. Check out my previous post for more context and examples.
 The symptom We are hitting an access violation at this location:
-inline size_t my_get_size (Object* ob) {  MethodTable* mT = header(ob)-&gt;GetMethodTable();   return (mT-&gt;GetBaseSize() +  (mT-&gt;HasComponentSize() ?  ((size_t)((CObjectHeader*)ob)-&gt;GetNumComponents() * mT-&gt;RawGetComponentSize()) : 0)); } When the access violation happens, mT is a nullptr and therefore it cannot be dereferenced.
-    </div>
-  </div>
-</div>
-</div>
-      
-        <div class="relative w-100 w-30-l mb4 bg-white"><div class="relative w-100 mb4 bg-white nested-copy-line-height">
-  <div class="bg-white mb3 pa4 gray overflow-hidden">
-    <span class="f6 db">Posts</span>
-    <h1 class="f3 near-black">
-      <a href="https://cshung.github.io/posts/memory-corruption-1/" class="link black dim">
-        Memory Corruption (1)
-      </a>
-    </h1>
-    <div class="nested-links f5 lh-copy nested-copy-line-height">
-      Debugging a memory corruption problem A memory corruption issue refers to a problem that is caused by the fact that the memory content is wrong. For example, the code is having an access violation because it tried to dereference a pointer that is not valid. Debugging a memory corruption issue is hard because we don&rsquo;t know how the process get into a corrupted state to begin with. In this post, I am going to share my experience debugging a memory issue caused by the GC.
-    </div>
-  </div>
-</div>
-</div>
-      
-        <div class="relative w-100 w-30-l mb4 bg-white"><div class="relative w-100 mb4 bg-white nested-copy-line-height">
-  <div class="bg-white mb3 pa4 gray overflow-hidden">
-    <span class="f6 db">Posts</span>
-    <h1 class="f3 near-black">
-      <a href="https://cshung.github.io/posts/git-merge-squash/" class="link black dim">
-        Git Merge Squash
-      </a>
-    </h1>
-    <div class="nested-links f5 lh-copy nested-copy-line-height">
-      Git Merge Squash This is a short article documenting my process of reusing someone else&rsquo;s change. It is not particularly easy and therefore I would like a document to remember how I did it.
-The problem? Imagine my partner and I were working on the same repository. I am working on a feature and he is working on a fix that I need. However, for whatever reasons, my partner couldn&rsquo;t merge the fix in, but I would really like to apply his change in my code base so that my scenario work (at least locally), how should I do it?
-    </div>
-  </div>
-</div>
-</div>
-      
-        <div class="relative w-100 w-30-l mb4 bg-white"><div class="relative w-100 mb4 bg-white nested-copy-line-height">
-  <div class="bg-white mb3 pa4 gray overflow-hidden">
-    <span class="f6 db">Posts</span>
-    <h1 class="f3 near-black">
-      <a href="https://cshung.github.io/posts/brick/" class="link black dim">
-        Understanding the brick table
-      </a>
-    </h1>
-    <div class="nested-links f5 lh-copy nested-copy-line-height">
-      Understanding the brick table A brick table is a data structure that helps finding an object in the heap. To begin with the discussion, it makes sense to clarify what does finding an object mean.
-What is the find object problem? There are various situation that we are given a random pointer inside the heap, and we wanted to find the pointer to the object that is using the address.
-    </div>
-  </div>
-</div>
-</div>
-      
-        <div class="relative w-100 w-30-l mb4 bg-white"><div class="relative w-100 mb4 bg-white nested-copy-line-height">
-  <div class="bg-white mb3 pa4 gray overflow-hidden">
-    <span class="f6 db">Posts</span>
-    <h1 class="f3 near-black">
-      <a href="https://cshung.github.io/posts/card/" class="link black dim">
-        Understanding the card table
-      </a>
-    </h1>
-    <div class="nested-links f5 lh-copy nested-copy-line-height">
-      Understanding the card table A card table is used in a generational GC to discover cross-generational pointers. Let&rsquo;s get started with the generation GC problem first.
-Generational GC It is observed allocations typically divides into two classes. Either they are short-lived or they are long lived. To efficiently use the memory, we would like to be able to reclaim the space of the short lived object relatively fast without having to worry about the long lived ones.
-    </div>
-  </div>
-</div>
-</div>
-      
-        <div class="relative w-100 w-30-l mb4 bg-white"><div class="relative w-100 mb4 bg-white nested-copy-line-height">
-  <div class="bg-white mb3 pa4 gray overflow-hidden">
-    <span class="f6 db">Posts</span>
-    <h1 class="f3 near-black">
-      <a href="https://cshung.github.io/posts/poh-tuning-5/" class="link black dim">
-        POH Tuning (Part 5 - Preliminary results)
-      </a>
-    </h1>
-    <div class="nested-links f5 lh-copy nested-copy-line-height">
-      Top level result After running, we can use the Jupyter notebook to analyze the result. The result is surprising. To make the data easy to analyze, they are available as pandas data frame. For those who are unfamiliar with pandas, a data frame is really just a table.
-To use the notebook to get to the data frame, we need to run the first cell (as it required to setup the functions), and then we can run the cell calling the get_test_metrics_numbers_for_jupyter function, there should be exactly one such cell.
-    </div>
-  </div>
-</div>
-</div>
-      
-        <div class="relative w-100 w-30-l mb4 bg-white"><div class="relative w-100 mb4 bg-white nested-copy-line-height">
-  <div class="bg-white mb3 pa4 gray overflow-hidden">
-    <span class="f6 db">Posts</span>
-    <h1 class="f3 near-black">
-      <a href="https://cshung.github.io/posts/poh-tuning-6/" class="link black dim">
-        POH Tuning (Part 6 - Varying the benchmark)
-      </a>
-    </h1>
-    <div class="nested-links f5 lh-copy nested-copy-line-height">
-      Varying the benchmark In the last post, we showed that in a particular scenario, allocating pinned objects on pinned object heap is a better choice from both the speed perspective and the heap size perspective. How about other scenarios?
+inline size_t my_get_size (Object* ob) { MethodTable* mT = header(ob)-&gt;GetMethodTable(); return (mT-&gt;GetBaseSize() + (mT-&gt;HasComponentSize() ? ((size_t)((CObjectHeader*)ob)-&gt;GetNumComponents() * mT-&gt;RawGetComponentSize()) : 0)); } When the access violation happens, mT is a nullptr and therefore it cannot be dereferenced.</p>
+    </a>
+</p>
+
+<p>
+    <h3><a class="title" href="/posts/memory-corruption-1/">Memory Corruption (1)</a></h3>
+    
+
+<i data-feather="calendar"></i>
+<time datetime="2021-05-29">May 29, 2021</time>
+
+    <a class="summary" href="/posts/memory-corruption-1/">
+        <p>Debugging a memory corruption problem A memory corruption issue refers to a problem that is caused by the fact that the memory content is wrong. For example, the code is having an access violation because it tried to dereference a pointer that is not valid. Debugging a memory corruption issue is hard because we don&rsquo;t know how the process get into a corrupted state to begin with. In this post, I am going to share my experience debugging a memory issue caused by the GC.</p>
+    </a>
+</p>
+
+<p>
+    <h3><a class="title" href="/posts/git-merge-squash/">Git Merge Squash</a></h3>
+    
+
+<i data-feather="calendar"></i>
+<time datetime="2021-04-21">Apr 21, 2021</time>
+
+    <a class="summary" href="/posts/git-merge-squash/">
+        <p>Git Merge Squash This is a short article documenting my process of reusing someone else&rsquo;s change. It is not particularly easy and therefore I would like a document to remember how I did it.
+The problem? Imagine my partner and I were working on the same repository. I am working on a feature and he is working on a fix that I need. However, for whatever reasons, my partner couldn&rsquo;t merge the fix in, but I would really like to apply his change in my code base so that my scenario work (at least locally), how should I do it?</p>
+    </a>
+</p>
+
+<p>
+    <h3><a class="title" href="/posts/card/">Understanding the card table</a></h3>
+    
+
+<i data-feather="calendar"></i>
+<time datetime="2021-04-17">Apr 17, 2021</time>
+
+    <a class="summary" href="/posts/card/">
+        <p>Understanding the card table A card table is used in a generational GC to discover cross-generational pointers. Let&rsquo;s get started with the generation GC problem first.
+Generational GC It is observed allocations typically divides into two classes. Either they are short-lived or they are long lived. To efficiently use the memory, we would like to be able to reclaim the space of the short lived object relatively fast without having to worry about the long lived ones.</p>
+    </a>
+</p>
+
+<p>
+    <h3><a class="title" href="/posts/brick/">Understanding the brick table</a></h3>
+    
+
+<i data-feather="calendar"></i>
+<time datetime="2021-04-17">Apr 17, 2021</time>
+
+    <a class="summary" href="/posts/brick/">
+        <p>Understanding the brick table A brick table is a data structure that helps finding an object in the heap. To begin with the discussion, it makes sense to clarify what does finding an object mean.
+What is the find object problem? There are various situation that we are given a random pointer inside the heap, and we wanted to find the pointer to the object that is using the address.</p>
+    </a>
+</p>
+
+<p>
+    <h3><a class="title" href="/posts/poh-tuning-6/">POH Tuning (Part 6 - Varying the benchmark)</a></h3>
+    
+
+<i data-feather="calendar"></i>
+<time datetime="2021-03-08">Mar 8, 2021</time>
+
+    <a class="summary" href="/posts/poh-tuning-6/">
+        <p>Varying the benchmark In the last post, we showed that in a particular scenario, allocating pinned objects on pinned object heap is a better choice from both the speed perspective and the heap size perspective. How about other scenarios?
 In part 4, we already discussed the criterion what is feasible to test under GCPerfSim, so we will simply generate all the possibilities here with this simple Python script
-for a in range(1, 100):  if 1000 % a == 0:  for b in range(1, a):  if a % b == 0:  if ((1000 - b) % (a - b) == 0):  pin_sohsi = 1000 // a  pin_sohpi = a // b  poh_sohsi = (1000 - b) // (a - b)  poh_pohar = b  print(&#34; 2gb_pin_%s_%s:&#34; % (a, b));  print(&#34; arguments:&#34;);  print(&#34; tc: 6&#34;);  print(&#34; tagb: 100&#34;);  print(&#34; tlgb: 2&#34;);  print(&#34; lohar: 0&#34;);  print(&#34; pohar: 0&#34;);  print(&#34; sohsr: 100-4000&#34;);  print(&#34; pohsr: 100-4000&#34;);  print(&#34; sohsi: %s&#34; % pin_sohsi);  print(&#34; lohsi: 0&#34;);  print(&#34; pohsi: 0&#34;);  print(&#34; sohpi: %s&#34; % pin_sohpi);  print(&#34; lohpi: 0&#34;);  print(&#34; sohfi: 0&#34;);  print(&#34; lohfi: 0&#34;);  print(&#34; pohfi: 0&#34;);  print(&#34; allocType: reference&#34;);  print(&#34; testKind: time&#34;);  print(&#34; 2gb_poh_%s_%s:&#34; % (a, b));  print(&#34; arguments:&#34;);  print(&#34; tc: 6&#34;);  print(&#34; tagb: 100&#34;);  print(&#34; tlgb: 2&#34;);  print(&#34; lohar: 0&#34;);  print(&#34; pohar: %s&#34; % poh_pohar);  print(&#34; sohsr: 100-4000&#34;);  print(&#34; pohsr: 100-4000&#34;);  print(&#34; sohsi: %s&#34; % poh_sohsi);  print(&#34; lohsi: 0&#34;);  print(&#34; pohsi: 1&#34;);  print(&#34; sohpi: 0&#34;);  print(&#34; lohpi: 0&#34;);  print(&#34; sohfi: 0&#34;);  print(&#34; lohfi: 0&#34;);  print(&#34; pohfi: 0&#34;);  print(&#34; allocType: reference&#34;);  print(&#34; testKind: time&#34;); Preprocessing the result As usual, we can create a pandas data frame for all the runs.
-    </div>
-  </div>
-</div>
-</div>
-      
-        <div class="relative w-100 w-30-l mb4 bg-white"><div class="relative w-100 mb4 bg-white nested-copy-line-height">
-  <div class="bg-white mb3 pa4 gray overflow-hidden">
-    <span class="f6 db">Posts</span>
-    <h1 class="f3 near-black">
-      <a href="https://cshung.github.io/posts/poh-tuning-4/" class="link black dim">
-        POH Tuning (Part 4 - Benchmark design and the performance infrastructure)
-      </a>
-    </h1>
-    <div class="nested-links f5 lh-copy nested-copy-line-height">
-      Benchmark design Armed with the knowledge about how the allocation ratios works in the previous post. Now we can design our benchmarks. My goal is to produce a pair of benchmarks so that I can compare pinning objects by using the old pinned handle, or by the new pinned object heap.
+for a in range(1, 100): if 1000 % a == 0: for b in range(1, a): if a % b == 0: if ((1000 - b) % (a - b) == 0): pin_sohsi = 1000 // a pin_sohpi = a // b poh_sohsi = (1000 - b) // (a - b) poh_pohar = b print(&#34; 2gb_pin_%s_%s:&#34; % (a, b)); print(&#34; arguments:&#34;); print(&#34; tc: 6&#34;); print(&#34; tagb: 100&#34;); print(&#34; tlgb: 2&#34;); print(&#34; lohar: 0&#34;); print(&#34; pohar: 0&#34;); print(&#34; sohsr: 100-4000&#34;); print(&#34; pohsr: 100-4000&#34;); print(&#34; sohsi: %s&#34; % pin_sohsi); print(&#34; lohsi: 0&#34;); print(&#34; pohsi: 0&#34;); print(&#34; sohpi: %s&#34; % pin_sohpi); print(&#34; lohpi: 0&#34;); print(&#34; sohfi: 0&#34;); print(&#34; lohfi: 0&#34;); print(&#34; pohfi: 0&#34;); print(&#34; allocType: reference&#34;); print(&#34; testKind: time&#34;); print(&#34; 2gb_poh_%s_%s:&#34; % (a, b)); print(&#34; arguments:&#34;); print(&#34; tc: 6&#34;); print(&#34; tagb: 100&#34;); print(&#34; tlgb: 2&#34;); print(&#34; lohar: 0&#34;); print(&#34; pohar: %s&#34; % poh_pohar); print(&#34; sohsr: 100-4000&#34;); print(&#34; pohsr: 100-4000&#34;); print(&#34; sohsi: %s&#34; % poh_sohsi); print(&#34; lohsi: 0&#34;); print(&#34; pohsi: 1&#34;); print(&#34; sohpi: 0&#34;); print(&#34; lohpi: 0&#34;); print(&#34; sohfi: 0&#34;); print(&#34; lohfi: 0&#34;); print(&#34; pohfi: 0&#34;); print(&#34; allocType: reference&#34;); print(&#34; testKind: time&#34;); Preprocessing the result As usual, we can create a pandas data frame for all the runs.</p>
+    </a>
+</p>
+
+<p>
+    <h3><a class="title" href="/posts/poh-tuning-5/">POH Tuning (Part 5 - Preliminary results)</a></h3>
+    
+
+<i data-feather="calendar"></i>
+<time datetime="2021-03-08">Mar 8, 2021</time>
+
+    <a class="summary" href="/posts/poh-tuning-5/">
+        <p>Top level result After running, we can use the Jupyter notebook to analyze the result. The result is surprising. To make the data easy to analyze, they are available as pandas data frame. For those who are unfamiliar with pandas, a data frame is really just a table.
+To use the notebook to get to the data frame, we need to run the first cell (as it required to setup the functions), and then we can run the cell calling the get_test_metrics_numbers_for_jupyter function, there should be exactly one such cell.</p>
+    </a>
+</p>
+
+<p>
+    <h3><a class="title" href="/posts/poh-tuning-4/">POH Tuning (Part 4 - Benchmark design and the performance infrastructure)</a></h3>
+    
+
+<i data-feather="calendar"></i>
+<time datetime="2021-03-05">Mar 5, 2021</time>
+
+    <a class="summary" href="/posts/poh-tuning-4/">
+        <p>Benchmark design Armed with the knowledge about how the allocation ratios works in the previous post. Now we can design our benchmarks. My goal is to produce a pair of benchmarks so that I can compare pinning objects by using the old pinned handle, or by the new pinned object heap.
 In the pinned handle case, we can have a general design like this:
-Out of 1,000 objects in the SOH, \( a \) of them survives and \( b \) of them are pinned.
-    </div>
-  </div>
-</div>
-</div>
-      
-        <div class="relative w-100 w-30-l mb4 bg-white"><div class="relative w-100 mb4 bg-white nested-copy-line-height">
-  <div class="bg-white mb3 pa4 gray overflow-hidden">
-    <span class="f6 db">Posts</span>
-    <h1 class="f3 near-black">
-      <a href="https://cshung.github.io/posts/poh-tuning-3/" class="link black dim">
-        POH Tuning (Part 3 - Other statistical properties)
-      </a>
-    </h1>
-    <div class="nested-links f5 lh-copy nested-copy-line-height">
-      In the last post, we discussed what the benchmark does and how the weights are computed. In this post, we will talk about some other interesting statistical properties. The lesson learned here is that we know how objects behave in the benchmark, and we can use this to judge whether or not the benchmark actually matches with real-life use cases.
-Object lifetime In this previous post, we know about an object&rsquo;s life cycle.
-    </div>
-  </div>
-</div>
-</div>
-      
-        <div class="relative w-100 w-30-l mb4 bg-white"><div class="relative w-100 mb4 bg-white nested-copy-line-height">
-  <div class="bg-white mb3 pa4 gray overflow-hidden">
-    <span class="f6 db">Posts</span>
-    <h1 class="f3 near-black">
-      <a href="https://cshung.github.io/posts/poh-tuning-2/" class="link black dim">
-        POH Tuning (Part 2 - What am I running?)
-      </a>
-    </h1>
-    <div class="nested-links f5 lh-copy nested-copy-line-height">
-      In the last post, we talk about the event tracing infrastructure, it allows us to measure the metrics we wanted to study when we run the program. But what program do we want to run? The program that we will run is called a benchmark. In this post, I will look into the details of the benchmark program.
-Overview The program that we will run is called GCPerfSim. As its name suggests, it simulates workload for the GC to understand its performance.
-    </div>
-  </div>
-</div>
-</div>
-      
-    </section>
+Out of 1,000 objects in the SOH, \( a \) of them survives and \( b \) of them are pinned.</p>
+    </a>
+</p>
+
+<p>
+    <h3><a class="title" href="/posts/poh-tuning-3/">POH Tuning (Part 3 - Other statistical properties)</a></h3>
+    
+
+<i data-feather="calendar"></i>
+<time datetime="2021-03-01">Mar 1, 2021</time>
+
+    <a class="summary" href="/posts/poh-tuning-3/">
+        <p>In the last post, we discussed what the benchmark does and how the weights are computed. In this post, we will talk about some other interesting statistical properties. The lesson learned here is that we know how objects behave in the benchmark, and we can use this to judge whether or not the benchmark actually matches with real-life use cases.
+Object lifetime In this previous post, we know about an object&rsquo;s life cycle.</p>
+    </a>
+</p>
+
+<p>
+    <h3><a class="title" href="/posts/poh-tuning-2/">POH Tuning (Part 2 - What am I running?)</a></h3>
+    
+
+<i data-feather="calendar"></i>
+<time datetime="2021-03-01">Mar 1, 2021</time>
+
+    <a class="summary" href="/posts/poh-tuning-2/">
+        <p>In the last post, we talk about the event tracing infrastructure, it allows us to measure the metrics we wanted to study when we run the program. But what program do we want to run? The program that we will run is called a benchmark. In this post, I will look into the details of the benchmark program.
+Overview The program that we will run is called GCPerfSim. As its name suggests, it simulates workload for the GC to understand its performance.</p>
+    </a>
+</p>
+
     <ul class="pagination pagination-default">
       <li class="page-item">
         <a href="/posts/" aria-label="First" class="page-link" role="button"><span aria-hidden="true">&laquo;&laquo;</span></a>
@@ -289,41 +189,138 @@ Overview The program that we will run is called GCPerfSim. As its name suggests,
         <a href="/posts/page/4/" aria-label="Page 4" class="page-link" role="button">4</a>
       </li>
       <li class="page-item">
+        <a href="/posts/page/5/" aria-label="Page 5" class="page-link" role="button">5</a>
+      </li>
+      <li class="page-item">
         <a href="/posts/page/3/" aria-label="Next" class="page-link" role="button"><span aria-hidden="true">&raquo;</span></a>
       </li>
       <li class="page-item">
-        <a href="/posts/page/4/" aria-label="Last" class="page-link" role="button"><span aria-hidden="true">&raquo;&raquo;</span></a>
+        <a href="/posts/page/8/" aria-label="Last" class="page-link" role="button"><span aria-hidden="true">&raquo;&raquo;</span></a>
       </li>
-    </ul></article>
+    </ul>
+        </div><p class="footer text-center">Copyright (c) 2023 Andrew Au</p><script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true });</script>
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/prettify.js"></script>
+<script src="/js/feather.min.js"></script>
+<script src="/index.js"></script>
+<script>
 
-    </main>
-    <footer class="bg-black bottom-0 w-100 pa3" role="contentinfo">
-  <div class="flex justify-between">
-  <a class="f4 fw4 hover-white no-underline white-70 dn dib-ns pv2 ph3" href="https://cshung.github.io/" >
-    &copy;  My Blog 2022 
-  </a>
-    <div>
+  function getCookie(cname) {
+    let name = cname + "=";
+    let ca = document.cookie.split(';');
+    for (let i = 0; i < ca.length; i++) {
+      let c = ca[i];
+      while (c.charAt(0) == ' ') {
+        c = c.substring(1);
+      }
+      if (c.indexOf(name) == 0) {
+        return c.substring(name.length, c.length);
+      }
+    }
+    return "";
+  }
 
+  function setCookie(cname, cvalue, exdays) {
+    const d = new Date();
+    d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+    let expires = "expires=" + d.toUTCString();
+    document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+  }
 
+  function ensureIcon() {
+    if (document.body.classList.contains("dark-theme")) {
+      toggleDarkModeButton.innerHTML = '<i data-feather="sun"></i>';
+    } else {
+      toggleDarkModeButton.innerHTML = '<i data-feather="moon"></i>';
+    }
+    feather.replace();
+  }
+  function saveCookie() {
+    if (document.body.classList.contains("dark-theme")) {
+      setCookie("darkMode", "true", 365);
+    } else {
+      setCookie("darkMode", "false", 365);
+    }
+  }
 
+  function load(pre) {
+    link = pre.getAttribute("data-code-link");
+    const xhr = new XMLHttpRequest();
+    xhr.onload = () => {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        pre.className = "prettyprint";
+        pre.textContent = xhr.responseText;
+      }
+      prettyPrint();
+    };
+    xhr.open('GET', link);
+    xhr.send();
+  }
 
+  function onSearchButtonClicked(e) {
+    e.preventDefault();
+    var query = $("#queryTextField").val();
+    var terms = query.split(' ');
+    
+    var result = {};
+    for (var i = 0; i < terms.length; ++i) {
+      var term = terms[i].toLowerCase();
+      if (term in index.Terms)
+      {
+        for (i = 0; i < index.Terms[term].length; i += 2) {
+          var doc = index.Terms[term][i];
+          var count = index.Terms[term][i + 1];
+          if (doc in result) {
+            result[doc] += count;
+          } else {
+            result[doc] = count;
+          }
+        }
+      }
+    }
+    
+    $("#content").empty();
+    for (var key in result) {
+      $("#content").append($('<a>', {
+        href: index.Documents[key].replace("../../content","").replace(".md",""),
+        text: index.Titles[key]
+      }));
+      $("#content").append($('<br>'));
+    }
+  }
 
+  $(document).ready(function () {
+    var darkMode = getCookie("darkMode");
+    if (darkMode == "true") {
+      document.body.classList.add("dark-theme");
+      document.body.classList.remove("light-theme");
+    }
+    ensureIcon();
 
+    $("#toggleDarkModeButton").click(function (e) {
+      e.preventDefault();
+      document.body.classList.toggle("dark-theme");
+      document.body.classList.toggle("light-theme");
+      saveCookie();
+      ensureIcon();
+    });
 
+    $("#searchButton").click(onSearchButtonClicked);
 
+    var pres = document.getElementsByTagName("pre");
+    for (var i = 0; i < pres.length; ++i) {
+      var pre = pres[i];
+      if (pre.classList.contains("pretty-github-code")) {
+        load(pre);
+      }
+    }
+  });
 
-
-
-
-
-
-</div>
-  </div>
-</footer>
-
-    <div style="display:none">
-    <script type="text/javascript" src="https://www.free-counters.org/count/86pd"></script><br><a href='http://www.counter-zaehler.de'>besucherzähler ip</a> <script type='text/javascript'     src='https://whomania.com/ctr?id=695d5b016077d10ada0ea41fc87e54f2421f8966'></script>
-    </div>
-  </body>
-
+  $(window).on("load", function () {
+    $("body").show();
+  });
+</script></body>
 </html>

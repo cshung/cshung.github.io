@@ -68,6 +68,18 @@
     <loc>https://cshung.github.io/posts/poh-tuning-2/</loc>
     <lastmod>2021-03-01T19:55:26-08:00</lastmod>
   </url><url>
+    <loc>https://cshung.github.io/tags/rosalind/</loc>
+    <lastmod>2021-02-14T15:55:00-08:00</lastmod>
+  </url><url>
+    <loc>https://cshung.github.io/posts/rosalind-ordering-strings-of-varying-length-lexicographically/</loc>
+    <lastmod>2021-02-14T15:55:00-08:00</lastmod>
+  </url><url>
+    <loc>https://cshung.github.io/tags/</loc>
+    <lastmod>2021-02-14T15:55:00-08:00</lastmod>
+  </url><url>
+    <loc>https://cshung.github.io/posts/rosalind-k-mer-composition/</loc>
+    <lastmod>2021-01-30T15:16:00-08:00</lastmod>
+  </url><url>
     <loc>https://cshung.github.io/posts/debug-info-debugging/</loc>
     <lastmod>2021-01-18T13:25:05-08:00</lastmod>
   </url><url>
@@ -83,26 +95,159 @@
     <loc>https://cshung.github.io/posts/gc-objects-1/</loc>
     <lastmod>2021-01-04T12:11:37-08:00</lastmod>
   </url><url>
+    <loc>https://cshung.github.io/posts/rosalind-maximum-matchings-and-rna-secondary-structures/</loc>
+    <lastmod>2020-12-16T10:27:00-08:00</lastmod>
+  </url><url>
     <loc>https://cshung.github.io/posts/hello-reflection/</loc>
     <lastmod>2020-12-05T14:53:55-08:00</lastmod>
   </url><url>
     <loc>https://cshung.github.io/posts/coreclrgc-mono/</loc>
     <lastmod>2020-12-04T11:52:15-08:00</lastmod>
   </url><url>
+    <loc>https://cshung.github.io/posts/rosalind-counting-phylogenetic-ancestors/</loc>
+    <lastmod>2020-11-27T12:10:00-08:00</lastmod>
+  </url><url>
+    <loc>https://cshung.github.io/posts/rosalind-catalan-numbers-and-rna-secondary-structures/</loc>
+    <lastmod>2020-11-14T14:49:00-08:00</lastmod>
+  </url><url>
+    <loc>https://cshung.github.io/posts/rosalind-sorting-by-reversals/</loc>
+    <lastmod>2020-09-26T16:58:00-07:00</lastmod>
+  </url><url>
+    <loc>https://cshung.github.io/posts/rosalind-reversal-distance/</loc>
+    <lastmod>2020-09-26T16:23:00-07:00</lastmod>
+  </url><url>
+    <loc>https://cshung.github.io/posts/rosalind-creating-a-distance-matrix/</loc>
+    <lastmod>2020-09-26T15:43:00-07:00</lastmod>
+  </url><url>
+    <loc>https://cshung.github.io/posts/rosalind-speeding-up-motif-finding/</loc>
+    <lastmod>2020-09-18T19:36:00-07:00</lastmod>
+  </url><url>
     <loc>https://cshung.github.io/posts/automate-windbg/</loc>
     <lastmod>2020-08-31T17:01:33-07:00</lastmod>
+  </url><url>
+    <loc>https://cshung.github.io/posts/rosalind-perfect-matchings-and-rna-secondary-structures/</loc>
+    <lastmod>2020-08-30T14:10:00-07:00</lastmod>
+  </url><url>
+    <loc>https://cshung.github.io/posts/rosalind-open-reading-frames/</loc>
+    <lastmod>2020-08-20T13:20:00-07:00</lastmod>
+  </url><url>
+    <loc>https://cshung.github.io/posts/rosalind-transitions-and-transversions/</loc>
+    <lastmod>2020-08-03T10:48:00-07:00</lastmod>
   </url><url>
     <loc>https://cshung.github.io/posts/ilspy-readytorun/</loc>
     <lastmod>2020-07-25T19:50:22-07:00</lastmod>
   </url><url>
+    <loc>https://cshung.github.io/posts/rosalind-enumerating-oriented-gene-orderings/</loc>
+    <lastmod>2020-07-24T12:41:00-07:00</lastmod>
+  </url><url>
+    <loc>https://cshung.github.io/posts/rosalind-interleaving-two-motifs/</loc>
+    <lastmod>2020-07-11T12:09:00-07:00</lastmod>
+  </url><url>
     <loc>https://cshung.github.io/posts/xv6-on-v86/</loc>
     <lastmod>2020-06-28T09:27:30-07:00</lastmod>
+  </url><url>
+    <loc>https://cshung.github.io/posts/rosalind-edit-distance-alignment/</loc>
+    <lastmod>2020-06-27T10:01:00-07:00</lastmod>
   </url><url>
     <loc>https://cshung.github.io/posts/introduction-to-ilcompiler-reflection-readytorun/</loc>
     <lastmod>2020-06-25T08:08:17-07:00</lastmod>
   </url><url>
-    <loc>https://cshung.github.io/categories/</loc>
+    <loc>https://cshung.github.io/posts/rosalind-edit-distance/</loc>
+    <lastmod>2019-09-08T14:01:00-07:00</lastmod>
   </url><url>
-    <loc>https://cshung.github.io/tags/</loc>
+    <loc>https://cshung.github.io/posts/rosalind-finding-a-shared-spliced-motif/</loc>
+    <lastmod>2019-09-08T13:59:00-07:00</lastmod>
+  </url><url>
+    <loc>https://cshung.github.io/posts/rosalind-introduction-to-set-operations/</loc>
+    <lastmod>2019-09-08T13:45:00-07:00</lastmod>
+  </url><url>
+    <loc>https://cshung.github.io/posts/rosalind-finding-a-spliced-motif/</loc>
+    <lastmod>2019-09-08T13:42:00-07:00</lastmod>
+  </url><url>
+    <loc>https://cshung.github.io/posts/rosalind-counting-subsets/</loc>
+    <lastmod>2019-09-08T13:39:00-07:00</lastmod>
+  </url><url>
+    <loc>https://cshung.github.io/posts/rosalind-introduction-to-random-strings/</loc>
+    <lastmod>2019-09-08T13:28:00-07:00</lastmod>
+  </url><url>
+    <loc>https://cshung.github.io/posts/rosalind-genome-assembly-as-shortest-superstring/</loc>
+    <lastmod>2019-09-05T23:12:00-07:00</lastmod>
+  </url><url>
+    <loc>https://cshung.github.io/posts/rosalind-completing-a-tree/</loc>
+    <lastmod>2019-09-01T16:37:00-07:00</lastmod>
+  </url><url>
+    <loc>https://cshung.github.io/posts/rosalind-partial-permutations/</loc>
+    <lastmod>2019-09-01T16:33:00-07:00</lastmod>
+  </url><url>
+    <loc>https://cshung.github.io/posts/rosalind-longest-increasing-subsequence/</loc>
+    <lastmod>2019-09-01T16:28:00-07:00</lastmod>
+  </url><url>
+    <loc>https://cshung.github.io/posts/rosalind-enumerating-k-mers-lexicographically/</loc>
+    <lastmod>2019-09-01T16:26:00-07:00</lastmod>
+  </url><url>
+    <loc>https://cshung.github.io/posts/rosalind-rna-splicing/</loc>
+    <lastmod>2019-09-01T16:19:00-07:00</lastmod>
+  </url><url>
+    <loc>https://cshung.github.io/posts/rosalind-locating-restriction-sites/</loc>
+    <lastmod>2019-09-01T16:15:00-07:00</lastmod>
+  </url><url>
+    <loc>https://cshung.github.io/posts/rosalind-calculating-protein-mass/</loc>
+    <lastmod>2019-09-01T16:08:00-07:00</lastmod>
+  </url><url>
+    <loc>https://cshung.github.io/posts/rosalind-finding-a-protein-motif/</loc>
+    <lastmod>2019-08-11T10:18:00-07:00</lastmod>
+  </url><url>
+    <loc>https://cshung.github.io/posts/rosalind-enumerating-gene-orders/</loc>
+    <lastmod>2019-08-10T14:28:00-07:00</lastmod>
+  </url><url>
+    <loc>https://cshung.github.io/posts/rosalind-inferring-mrna-from-protein/</loc>
+    <lastmod>2019-08-10T14:24:00-07:00</lastmod>
+  </url><url>
+    <loc>https://cshung.github.io/posts/rosalind-independent-alleles/</loc>
+    <lastmod>2019-08-10T13:05:00-07:00</lastmod>
+  </url><url>
+    <loc>https://cshung.github.io/posts/rosalind-calculating-expected-offspring/</loc>
+    <lastmod>2019-08-10T11:29:00-07:00</lastmod>
+  </url><url>
+    <loc>https://cshung.github.io/posts/rosalind-overlap-graphs/</loc>
+    <lastmod>2019-08-10T11:11:00-07:00</lastmod>
+  </url><url>
+    <loc>https://cshung.github.io/posts/rosalind-finding-a-shared-motif/</loc>
+    <lastmod>2019-08-05T23:00:00-07:00</lastmod>
+  </url><url>
+    <loc>https://cshung.github.io/posts/rosalind-mortal-fibonacci-rabbits/</loc>
+    <lastmod>2019-08-05T22:45:00-07:00</lastmod>
+  </url><url>
+    <loc>https://cshung.github.io/posts/rosalind-consensus-and-profile/</loc>
+    <lastmod>2019-08-05T18:47:00-07:00</lastmod>
+  </url><url>
+    <loc>https://cshung.github.io/posts/rosalind-finding-a-motif-in-dna/</loc>
+    <lastmod>2019-08-03T21:01:00-07:00</lastmod>
+  </url><url>
+    <loc>https://cshung.github.io/posts/rosalind-translating-rna-into-protein/</loc>
+    <lastmod>2019-08-03T20:55:00-07:00</lastmod>
+  </url><url>
+    <loc>https://cshung.github.io/posts/rosalind-mendels-first-law/</loc>
+    <lastmod>2019-08-03T20:47:00-07:00</lastmod>
+  </url><url>
+    <loc>https://cshung.github.io/posts/rosalind-counting-point-mutations/</loc>
+    <lastmod>2019-08-03T17:19:00-07:00</lastmod>
+  </url><url>
+    <loc>https://cshung.github.io/posts/rosalind-computing-gc-content/</loc>
+    <lastmod>2019-07-28T20:28:00-07:00</lastmod>
+  </url><url>
+    <loc>https://cshung.github.io/posts/rosalind-rabbits-and-recurrence-relations/</loc>
+    <lastmod>2019-07-28T15:25:00-07:00</lastmod>
+  </url><url>
+    <loc>https://cshung.github.io/posts/rosalind-complementing-a-strand-of-dna/</loc>
+    <lastmod>2019-07-28T14:53:00-07:00</lastmod>
+  </url><url>
+    <loc>https://cshung.github.io/posts/rosalind-transcribing-dna-into-rna/</loc>
+    <lastmod>2019-07-21T19:24:00-07:00</lastmod>
+  </url><url>
+    <loc>https://cshung.github.io/posts/rosalind-counting-dna-nucleotides/</loc>
+    <lastmod>2019-07-21T19:10:00-07:00</lastmod>
+  </url><url>
+    <loc>https://cshung.github.io/categories/</loc>
   </url>
 </urlset>

@@ -1,214 +1,112 @@
 <!DOCTYPE html>
-<html lang="en-us">
-  <head>
+<html><head>
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    
-    <title>Generation Aware Analysis | My Blog</title>
-    <meta name="viewport" content="width=device-width,minimum-scale=1">
-    <meta name="description" content="The problem? The .NET GC is generational, it makes the assumption that allocations are broadly divided into two classes, either they are short-lived (e.g. temporary objects) or they are long-lived (e.g. constants, caches for repeated uses). This assumption is often true, but once in a while, that&rsquo;s not true, often due to programmer mistakes. If a pile of objects meant for short-term usage is leaked into gen2, that can cost a short-term spike in ephemeral GC latency, and a long-term memory cost for storing them.">
-    <meta name="generator" content="Hugo 0.96.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/style.css">
+    <link rel="stylesheet" type="text/css" href="/css/syntax.css">
     
     
-      <META NAME="ROBOTS" CONTENT="INDEX, FOLLOW">
-    
-
-    
-
-  
-  
-    <link rel="stylesheet" href="/ananke/dist/main.css_5c99d70a7725bacd4c701e995b969fea.css" >
-  
+    <title>My Blog | Generation Aware Analysis</title>
 
 
+</head><body class="light-theme"><div id="nav-border" class="container">
+    <nav id="nav" class="nav justify-content-center">
+        
+        <a class="nav-link" href="/">
+        
+        
+        <i data-feather="home"></i> 
+        
+        
+        Home
+        </a>
+        
+        <a class="nav-link" href="/tags/">
+        
+        
+        <i data-feather="tag"></i> 
+        
+        
+        Tags
+        </a>
+        
+        <a class="nav-link" href="#" id="toggleDarkModeButton"><i data-feather="sun"></i></a>
+        <span style="padding:5px"><input type="text" id="queryTextField"></span><a class="nav-link" href="#" id="searchButton"><i data-feather="search"></i></a>
+    </nav>
+</div><div id="content" style="margin:20px">
+<h1>Generation Aware Analysis</h1>
 
 
-    
-      
+<i data-feather="calendar"></i>
+<time datetime="2021-01-05">Jan 5, 2021</time>
 
-    
-
-    
-    
-    <meta property="og:title" content="Generation Aware Analysis" />
-<meta property="og:description" content="The problem? The .NET GC is generational, it makes the assumption that allocations are broadly divided into two classes, either they are short-lived (e.g. temporary objects) or they are long-lived (e.g. constants, caches for repeated uses). This assumption is often true, but once in a while, that&rsquo;s not true, often due to programmer mistakes. If a pile of objects meant for short-term usage is leaked into gen2, that can cost a short-term spike in ephemeral GC latency, and a long-term memory cost for storing them." />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="https://cshung.github.io/posts/generation-aware-analysis/" /><meta property="article:section" content="posts" />
-<meta property="article:published_time" content="2021-01-05T14:47:10-08:00" />
-<meta property="article:modified_time" content="2021-01-05T14:47:10-08:00" />
-
-<meta itemprop="name" content="Generation Aware Analysis">
-<meta itemprop="description" content="The problem? The .NET GC is generational, it makes the assumption that allocations are broadly divided into two classes, either they are short-lived (e.g. temporary objects) or they are long-lived (e.g. constants, caches for repeated uses). This assumption is often true, but once in a while, that&rsquo;s not true, often due to programmer mistakes. If a pile of objects meant for short-term usage is leaked into gen2, that can cost a short-term spike in ephemeral GC latency, and a long-term memory cost for storing them."><meta itemprop="datePublished" content="2021-01-05T14:47:10-08:00" />
-<meta itemprop="dateModified" content="2021-01-05T14:47:10-08:00" />
-<meta itemprop="wordCount" content="1335">
-<meta itemprop="keywords" content="" /><meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="Generation Aware Analysis"/>
-<meta name="twitter:description" content="The problem? The .NET GC is generational, it makes the assumption that allocations are broadly divided into two classes, either they are short-lived (e.g. temporary objects) or they are long-lived (e.g. constants, caches for repeated uses). This assumption is often true, but once in a while, that&rsquo;s not true, often due to programmer mistakes. If a pile of objects meant for short-term usage is leaked into gen2, that can cost a short-term spike in ephemeral GC latency, and a long-term memory cost for storing them."/>
-
-      
-    
-	
-  </head>
-
-  <body class="ma0 avenir bg-near-white production">
-    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
-    <script>mermaid.initialize({startOnLoad:true});</script>
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    
-   
-  
-
-  <header>
-    <div class="bg-black">
-      <nav class="pv3 ph3 ph4-ns" role="navigation">
-  <div class="flex-l justify-between items-center center">
-    <a href="/" class="f3 fw2 hover-white no-underline white-90 dib">
-      
-        My Blog
-      
-    </a>
-    <div class="flex-l items-center">
-      
-
-      
-      
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    </div>
-  </div>
-</nav>
-
-    </div>
-  </header>
-
-
-
-    <main class="pb7" role="main">
-      
-  
-  <article class="flex-l flex-wrap justify-between mw8 center ph3">
-    <header class="mt4 w-100">
-      <aside class="instapaper_ignoref b helvetica tracked">
-          
-        POSTS
-      </aside>
-      
-
-
-
-
-  <div id="sharing" class="mt3">
-
-    
-    <a href="https://www.facebook.com/sharer.php?u=https://cshung.github.io/posts/generation-aware-analysis/" class="facebook no-underline" aria-label="share on Facebook">
-      <svg height="32px"  style="enable-background:new 0 0 67 67;" version="1.1" viewBox="0 0 67 67" width="32px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path d="M28.765,50.32h6.744V33.998h4.499l0.596-5.624h-5.095  l0.007-2.816c0-1.466,0.14-2.253,2.244-2.253h2.812V17.68h-4.5c-5.405,0-7.307,2.729-7.307,7.317v3.377h-3.369v5.625h3.369V50.32z   M33,64C16.432,64,3,50.569,3,34S16.432,4,33,4s30,13.431,30,30S49.568,64,33,64z" style="fill-rule:evenodd;clip-rule:evenodd;"/></svg>
-
-    </a>
-
-    
-    
-    <a href="https://twitter.com/share?url=https://cshung.github.io/posts/generation-aware-analysis/&amp;text=Generation%20Aware%20Analysis" class="twitter no-underline" aria-label="share on Twitter">
-      <svg height="32px"  style="enable-background:new 0 0 67 67;" version="1.1" viewBox="0 0 67 67" width="32px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path d="M37.167,22.283c-2.619,0.953-4.274,3.411-4.086,6.101  l0.063,1.038l-1.048-0.127c-3.813-0.487-7.145-2.139-9.974-4.915l-1.383-1.377l-0.356,1.017c-0.754,2.267-0.272,4.661,1.299,6.271  c0.838,0.89,0.649,1.017-0.796,0.487c-0.503-0.169-0.943-0.296-0.985-0.233c-0.146,0.149,0.356,2.076,0.754,2.839  c0.545,1.06,1.655,2.097,2.871,2.712l1.027,0.487l-1.215,0.021c-1.173,0-1.215,0.021-1.089,0.467  c0.419,1.377,2.074,2.839,3.918,3.475l1.299,0.444l-1.131,0.678c-1.676,0.976-3.646,1.526-5.616,1.568  C19.775,43.256,19,43.341,19,43.405c0,0.211,2.557,1.397,4.044,1.864c4.463,1.377,9.765,0.783,13.746-1.568  c2.829-1.673,5.657-5,6.978-8.221c0.713-1.716,1.425-4.851,1.425-6.354c0-0.975,0.063-1.102,1.236-2.267  c0.692-0.678,1.341-1.419,1.467-1.631c0.21-0.403,0.188-0.403-0.88-0.043c-1.781,0.636-2.033,0.551-1.152-0.402  c0.649-0.678,1.425-1.907,1.425-2.267c0-0.063-0.314,0.042-0.671,0.233c-0.377,0.212-1.215,0.53-1.844,0.72l-1.131,0.361l-1.027-0.7  c-0.566-0.381-1.361-0.805-1.781-0.932C39.766,21.902,38.131,21.944,37.167,22.283z M33,64C16.432,64,3,50.569,3,34S16.432,4,33,4  s30,13.431,30,30S49.568,64,33,64z" style="fill-rule:evenodd;clip-rule:evenodd;fill:;"/></svg>
-
-    </a>
-
-    
-    <a href="https://www.linkedin.com/shareArticle?mini=true&amp;url=https://cshung.github.io/posts/generation-aware-analysis/&amp;title=Generation%20Aware%20Analysis" class="linkedin no-underline" aria-label="share on LinkedIn">
-      <svg  height="32px"  style="enable-background:new 0 0 65 65;" version="1.1" viewBox="0 0 65 65" width="32px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-  <path d="M50.837,48.137V36.425c0-6.275-3.35-9.195-7.816-9.195  c-3.604,0-5.219,1.983-6.119,3.374V27.71h-6.79c0.09,1.917,0,20.427,0,20.427h6.79V36.729c0-0.609,0.044-1.219,0.224-1.655  c0.49-1.22,1.607-2.483,3.482-2.483c2.458,0,3.44,1.873,3.44,4.618v10.929H50.837z M22.959,24.922c2.367,0,3.842-1.57,3.842-3.531  c-0.044-2.003-1.475-3.528-3.797-3.528s-3.841,1.524-3.841,3.528c0,1.961,1.474,3.531,3.753,3.531H22.959z M34,64  C17.432,64,4,50.568,4,34C4,17.431,17.432,4,34,4s30,13.431,30,30C64,50.568,50.568,64,34,64z M26.354,48.137V27.71h-6.789v20.427  H26.354z" style="fill-rule:evenodd;clip-rule:evenodd;fill:;"/>
-</svg>
-
-    </a>
-  </div>
-
-
-      <h1 class="f1 athelas mt3 mb1">Generation Aware Analysis</h1>
-      
-      
-      <time class="f6 mv4 dib tracked" datetime="2021-01-05T14:47:10-08:00">January 5, 2021</time>
-
-      
-      
-    </header>
-    <div class="nested-copy-line-height lh-copy serif f4 nested-links nested-img mid-gray pr4-l w-two-thirds-l"><h1 id="the-problem">The problem?</h1>
+<br><br>
+<h1 id="the-problem">The problem?</h1>
 <p>The .NET GC is generational, it makes the assumption that allocations are broadly divided into two classes, either they are short-lived (e.g. temporary objects) or they are long-lived (e.g. constants, caches for repeated uses). This assumption is often true, but once in a while, that&rsquo;s not true, often due to programmer mistakes. If a pile of objects meant for short-term usage is leaked into gen2, that can cost a short-term spike in ephemeral GC latency, and a long-term memory cost for storing them. We would like to be able to detect it and analyze what happened.</p>
 <h1 id="scenario">Scenario</h1>
 <p>Here is a sample program that demonstrates such a leak. This is the whole program, a copy with the project files can be found <a href="https://github.com/cshung/blog-samples/blob/main/GenAwareDemo">here</a>.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c#" data-lang="c#"><span style="display:flex;"><span><span style="color:#66d9ef">namespace</span> GenAwareDemo
-</span></span><span style="display:flex;"><span>{
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">using</span> System;
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">using</span> System.Diagnostics;
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">LongTermObject</span>
-</span></span><span style="display:flex;"><span>    {
-</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">public</span> ShortTermObject leak;
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">ShortTermObject</span>
-</span></span><span style="display:flex;"><span>    {
-</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">public</span> ShortTermObject prev;
-</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">byte</span>[] weight;
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Program</span>
-</span></span><span style="display:flex;"><span>    {
-</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> Main(<span style="color:#66d9ef">string</span>[] args)
-</span></span><span style="display:flex;"><span>        {
-</span></span><span style="display:flex;"><span>            Console.WriteLine(<span style="color:#e6db74">&#34;My process id is &#34;</span> + Process.GetCurrentProcess().Id);
-</span></span><span style="display:flex;"><span>            Console.ReadLine();
-</span></span><span style="display:flex;"><span>            LongTermObject LongTermObject = <span style="color:#66d9ef">new</span> LongTermObject();
-</span></span><span style="display:flex;"><span>            GC.Collect();
-</span></span><span style="display:flex;"><span>            GC.Collect();
-</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> phase = <span style="color:#ae81ff">0</span>; phase &lt; <span style="color:#ae81ff">2</span>; phase++)
-</span></span><span style="display:flex;"><span>            {
-</span></span><span style="display:flex;"><span>                <span style="color:#75715e">// The 0th phase is an emulated startup phase and should be ignored.</span>
-</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">int</span> counter = <span style="color:#ae81ff">0</span>;
-</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> iteration = <span style="color:#ae81ff">0</span>; iteration &lt; <span style="color:#ae81ff">10000</span>; iteration++)
-</span></span><span style="display:flex;"><span>                {
-</span></span><span style="display:flex;"><span>                    ShortTermObject head = <span style="color:#66d9ef">new</span> ShortTermObject();
-</span></span><span style="display:flex;"><span>                    <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> i = <span style="color:#ae81ff">0</span>; i &lt; <span style="color:#ae81ff">1000</span>; i++)
-</span></span><span style="display:flex;"><span>                    {
-</span></span><span style="display:flex;"><span>                        ShortTermObject next = <span style="color:#66d9ef">new</span> ShortTermObject();
-</span></span><span style="display:flex;"><span>                        next.weight = <span style="color:#66d9ef">new</span> <span style="color:#66d9ef">byte</span>[<span style="color:#ae81ff">1000</span>];
-</span></span><span style="display:flex;"><span>                        next.prev = head;
-</span></span><span style="display:flex;"><span>                        head = next;
-</span></span><span style="display:flex;"><span>                    }
-</span></span><span style="display:flex;"><span>                    counter++;
-</span></span><span style="display:flex;"><span>                    <span style="color:#75715e">// Emulate a leak of a ephemeral object to LongTermObject.</span>
-</span></span><span style="display:flex;"><span>                    <span style="color:#66d9ef">if</span> (counter % <span style="color:#ae81ff">1000</span> == <span style="color:#ae81ff">0</span>)
-</span></span><span style="display:flex;"><span>                    {
-</span></span><span style="display:flex;"><span>                        Console.WriteLine(<span style="color:#e6db74">&#34;Leaked&#34;</span>);
-</span></span><span style="display:flex;"><span>                        LongTermObject.leak = head;
-</span></span><span style="display:flex;"><span>                    }
-</span></span><span style="display:flex;"><span>                }
-</span></span><span style="display:flex;"><span>            }
-</span></span><span style="display:flex;"><span>        }
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>}
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c#" data-lang="c#"><span class="line"><span class="cl"><span class="k">namespace</span> <span class="nn">GenAwareDemo</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">using</span> <span class="nn">System</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">using</span> <span class="nn">System.Diagnostics</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">class</span> <span class="nc">LongTermObject</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">public</span> <span class="n">ShortTermObject</span> <span class="n">leak</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">class</span> <span class="nc">ShortTermObject</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">public</span> <span class="n">ShortTermObject</span> <span class="n">prev</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">public</span> <span class="kt">byte</span><span class="p">[]</span> <span class="n">weight</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">class</span> <span class="nc">Program</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">static</span> <span class="k">void</span> <span class="n">Main</span><span class="p">(</span><span class="kt">string</span><span class="p">[]</span> <span class="n">args</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">Console</span><span class="p">.</span><span class="n">WriteLine</span><span class="p">(</span><span class="s">&#34;My process id is &#34;</span> <span class="p">+</span> <span class="n">Process</span><span class="p">.</span><span class="n">GetCurrentProcess</span><span class="p">().</span><span class="n">Id</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">            <span class="n">Console</span><span class="p">.</span><span class="n">ReadLine</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">            <span class="n">LongTermObject</span> <span class="n">LongTermObject</span> <span class="p">=</span> <span class="k">new</span> <span class="n">LongTermObject</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">            <span class="n">GC</span><span class="p">.</span><span class="n">Collect</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">            <span class="n">GC</span><span class="p">.</span><span class="n">Collect</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">            <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">phase</span> <span class="p">=</span> <span class="m">0</span><span class="p">;</span> <span class="n">phase</span> <span class="p">&lt;</span> <span class="m">2</span><span class="p">;</span> <span class="n">phase</span><span class="p">++)</span>
+</span></span><span class="line"><span class="cl">            <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="c1">// The 0th phase is an emulated startup phase and should be ignored.</span>
+</span></span><span class="line"><span class="cl">                <span class="kt">int</span> <span class="n">counter</span> <span class="p">=</span> <span class="m">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">iteration</span> <span class="p">=</span> <span class="m">0</span><span class="p">;</span> <span class="n">iteration</span> <span class="p">&lt;</span> <span class="m">10000</span><span class="p">;</span> <span class="n">iteration</span><span class="p">++)</span>
+</span></span><span class="line"><span class="cl">                <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">ShortTermObject</span> <span class="n">head</span> <span class="p">=</span> <span class="k">new</span> <span class="n">ShortTermObject</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">                    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="p">=</span> <span class="m">0</span><span class="p">;</span> <span class="n">i</span> <span class="p">&lt;</span> <span class="m">1000</span><span class="p">;</span> <span class="n">i</span><span class="p">++)</span>
+</span></span><span class="line"><span class="cl">                    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                        <span class="n">ShortTermObject</span> <span class="n">next</span> <span class="p">=</span> <span class="k">new</span> <span class="n">ShortTermObject</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">                        <span class="n">next</span><span class="p">.</span><span class="n">weight</span> <span class="p">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="p">[</span><span class="m">1000</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">                        <span class="n">next</span><span class="p">.</span><span class="n">prev</span> <span class="p">=</span> <span class="n">head</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                        <span class="n">head</span> <span class="p">=</span> <span class="n">next</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">counter</span><span class="p">++;</span>
+</span></span><span class="line"><span class="cl">                    <span class="c1">// Emulate a leak of a ephemeral object to LongTermObject.</span>
+</span></span><span class="line"><span class="cl">                    <span class="k">if</span> <span class="p">(</span><span class="n">counter</span> <span class="p">%</span> <span class="m">1000</span> <span class="p">==</span> <span class="m">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                        <span class="n">Console</span><span class="p">.</span><span class="n">WriteLine</span><span class="p">(</span><span class="s">&#34;Leaked&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">                        <span class="n">LongTermObject</span><span class="p">.</span><span class="n">leak</span> <span class="p">=</span> <span class="n">head</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">                <span class="p">}</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span></code></pre></div><p>Roughly speaking, every <code>ShortTermObject</code> has a weight of 1000 bytes. In each iteration, we create 1000 of them, arranged in a linked list, and then it will be discarded. Once in a while (i.e. when <code>counter % 1000 == 0</code>), the linked list is leaked into the <code>LongTermObject</code>.</p>
 <p>To make this post easier for first time readers, let&rsquo;s assume we already observed that the promoted bytes are usually 1MB, but once in a while the promoted bytes spikes up to 2MB. To understand what happened, we would like to capture that moment.</p>
 <p>For the curious, at the <a href="#diagnosing-a-promoted-byte-spike" title="About Us">end</a> of this post, we will discuss how we can use the performance infrastructure to discover this information.</p>
 <h1 id="capturing">Capturing</h1>
 <p>Starting from .NET 5.0, we can use the generational aware analysis tool I introduced in this <a href="https://github.com/dotnet/runtime/pull/40332">PR</a> to capture the moment when the promotion happens.</p>
 <p>To use the feature, set the following environment variables before launching the process.</p>
-<pre tabindex="0"><code>set COMPlus_GCGenAnalysisGen=1
-set COMPlus_GCGenAnalysisBytes=16E360
-set COMPlus_GCGenAnalysisIndex=3E8
-</code></pre><p>We would like to command the runtime to perform a generational aware analysis and capture the moment when a gen 1 GC promoted more than 1.5 MB (<code>16E360</code> is <code>1,500,000</code> in decimal). To avoid capturing the promoted bytes corresponding to the startup phase, we ignore the first 1,000 GCs (<code>3E8</code> is 1,000 in decimal).</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="cl">set COMPlus_GCGenAnalysisGen=1
+</span></span><span class="line"><span class="cl">set COMPlus_GCGenAnalysisBytes=16E360
+</span></span><span class="line"><span class="cl">set COMPlus_GCGenAnalysisIndex=3E8
+</span></span></code></pre></div><p>We would like to command the runtime to perform a generational aware analysis and capture the moment when a gen 1 GC promoted more than 1.5 MB (<code>16E360</code> is <code>1,500,000</code> in decimal). To avoid capturing the promoted bytes corresponding to the startup phase, we ignore the first 1,000 GCs (<code>3E8</code> is 1,000 in decimal).</p>
 <p>After the process is launched, it will create two files in the current directory:</p>
 <ul>
 <li><code>gcgenaware.nettrace</code></li>
@@ -226,90 +124,169 @@ set COMPlus_GCGenAnalysisIndex=3E8
 <h1 id="collecting-a-dump">Collecting a dump</h1>
 <p>In some scenario, it would be beneficial to collect a dump. For example, if the leaking is caused by setting a static field, it will be shown in PerfView as being held by a pinned object array, but you will not know which field it is. Another common case is the leak is caused by a delegate, in this case, it will be shown as an <code>Action&lt;T&gt;</code>, in which you will not know which method is causing the leak. Either case, we can figure that out in the debugger if we have a memory dump.</p>
 <p>To collect a dump, we can use the new environment variable introduced in .NET 6</p>
-<pre tabindex="0"><code>set COMPlus_GCGenAnalysisDump=1
-</code></pre><p>This will collect a dump in addition to the trace we already collected. If a dump is sufficient and you would like to avoid collecting a trace as well, we can disable the tracing by setting this new environment variable:</p>
-<pre tabindex="0"><code>set COMPlus_GCGenAnalysisTrace=0
-</code></pre><p>The generated dump is called <code>gcgenaware.dmp</code> and it can be analyzed with a debugger.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="cl">set COMPlus_GCGenAnalysisDump=1
+</span></span></code></pre></div><p>This will collect a dump in addition to the trace we already collected. If a dump is sufficient and you would like to avoid collecting a trace as well, we can disable the tracing by setting this new environment variable:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="cl">set COMPlus_GCGenAnalysisTrace=0
+</span></span></code></pre></div><p>The generated dump is called <code>gcgenaware.dmp</code> and it can be analyzed with a debugger.</p>
 <h1 id="diagnosing-a-promoted-byte-spike">Diagnosing a promoted byte spike</h1>
 <p>In this following, I will describe what we missed earlier. How do we know there is a promoted byte spiking problem to begin with?</p>
 <h1 id="collecting-a-trace">Collecting a trace</h1>
 <p>To detect the fact that there is a leak of a pile of ephemeral objects into the next generation, we leverage the fact that the ephemeral generation GC will have a spike in the promoted bytes.</p>
 <p>I ran PerfView with <code>GCCollectOnly</code> and collected a trace. In and administrative prompt, we can run</p>
-<pre tabindex="0"><code>perfview /GCCollectOnly /nogui collect
-</code></pre><p>and press &lsquo;S&rsquo; when this is done. This will create a zip file containing the trace in the current directory.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="cl">perfview /GCCollectOnly /nogui collect
+</span></span></code></pre></div><p>and press &lsquo;S&rsquo; when this is done. This will create a zip file containing the trace in the current directory.</p>
 <h1 id="analyze-the-trace">Analyze the trace</h1>
 <p>The GC performance infrastructure is available as a subdirectory in the <a href="https://github.com/dotnet/performance/tree/main/src/benchmarks/gc">dotnet/performance</a> repo. The README is generally up-to-date. Just clone the repo and follow the instruction you will have a basic setup. Note that you do <strong>NOT</strong> need to run a benchmark, in this post, we will use it only to analyze a collected trace. Make sure we also set up the prerequisites for using the Jupyter notebook.</p>
 <h2 id="preparing-for-analysis">Preparing for analysis</h2>
 <p>To get started, unzip the collected trace and rename the <code>etl</code> file to <code>GenAware.etl</code>. I placed the file under <code>C:/GenAware</code> folder. To help the infrastructure, we create a <a href="https://github.com/dotnet/performance/blob/main/src/benchmarks/gc/docs/test_status_files.md"><code>test_status_file</code></a>. the daunting appearance of the file is only apparent, we can get by with a tiny file with just these 3 lines.</p>
-<pre tabindex="0"><code>success: true
-trace_file_name: GenAware.etl
-process_id: 1348
-</code></pre><p>Of course, the process_id needs to match file the program&rsquo;s output.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="cl">success: true
+</span></span><span class="line"><span class="cl">trace_file_name: GenAware.etl
+</span></span><span class="line"><span class="cl">process_id: 1348
+</span></span></code></pre></div><p>Of course, the process_id needs to match file the program&rsquo;s output.</p>
 <h2 id="create-a-plot">Create a plot</h2>
 <p>Open <code>jupyter_notebook.py</code> in Visual Studio Code. Again, the daunting pile of code in the notebook is only apparent. All we needed is the first cell. All the code in the other cells is meant to be examples. We can just ignore them.</p>
 <p>The notebook loads the trace and makes it available as a Python object, we can create a plot out of it. Here is what I did to gather all the gen 0 GC promoted bytes and make a plot.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-py" data-lang="py"><span style="display:flex;"><span><span style="color:#75715e">#%% </span>
-</span></span><span style="display:flex;"><span>_TRACE <span style="color:#f92672">=</span> get_trace_with_everything(Path(<span style="color:#e6db74">&#34;C:/GenAware/GenAware.yaml&#34;</span>))
-</span></span><span style="display:flex;"><span>metrics_dict <span style="color:#f92672">=</span> {}
-</span></span><span style="display:flex;"><span>metrics_dict[<span style="color:#e6db74">&#34;promoted_bytes&#34;</span>] <span style="color:#f92672">=</span> []
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">for</span> gc <span style="color:#f92672">in</span> _TRACE<span style="color:#f92672">.</span>gcs:
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> gc<span style="color:#f92672">.</span>Generation <span style="color:#f92672">==</span> Gens<span style="color:#f92672">.</span>Gen0:
-</span></span><span style="display:flex;"><span>        metrics_dict[<span style="color:#e6db74">&#34;promoted_bytes&#34;</span>]<span style="color:#f92672">.</span>append(gc<span style="color:#f92672">.</span>unwrap_metric_from_name(<span style="color:#e6db74">&#34;PromotedMB&#34;</span>))
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">else</span>:
-</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># Just to make sure the x-axis corresponds to the GC index for filtering.</span>
-</span></span><span style="display:flex;"><span>        metrics_dict[<span style="color:#e6db74">&#34;promoted_bytes&#34;</span>]<span style="color:#f92672">.</span>append(<span style="color:#ae81ff">0</span>)
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>metrics_frame <span style="color:#f92672">=</span> pandas<span style="color:#f92672">.</span>DataFrame<span style="color:#f92672">.</span>from_dict(metrics_dict)
-</span></span><span style="display:flex;"><span>metrics_frame<span style="color:#f92672">.</span>plot()
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-py" data-lang="py"><span class="line"><span class="cl"><span class="c1">#%% </span>
+</span></span><span class="line"><span class="cl"><span class="n">_TRACE</span> <span class="o">=</span> <span class="n">get_trace_with_everything</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="s2">&#34;C:/GenAware/GenAware.yaml&#34;</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl"><span class="n">metrics_dict</span> <span class="o">=</span> <span class="p">{}</span>
+</span></span><span class="line"><span class="cl"><span class="n">metrics_dict</span><span class="p">[</span><span class="s2">&#34;promoted_bytes&#34;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+</span></span><span class="line"><span class="cl"><span class="k">for</span> <span class="n">gc</span> <span class="ow">in</span> <span class="n">_TRACE</span><span class="o">.</span><span class="n">gcs</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">gc</span><span class="o">.</span><span class="n">Generation</span> <span class="o">==</span> <span class="n">Gens</span><span class="o">.</span><span class="n">Gen0</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">metrics_dict</span><span class="p">[</span><span class="s2">&#34;promoted_bytes&#34;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">gc</span><span class="o">.</span><span class="n">unwrap_metric_from_name</span><span class="p">(</span><span class="s2">&#34;PromotedMB&#34;</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">    <span class="k">else</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="c1"># Just to make sure the x-axis corresponds to the GC index for filtering.</span>
+</span></span><span class="line"><span class="cl">        <span class="n">metrics_dict</span><span class="p">[</span><span class="s2">&#34;promoted_bytes&#34;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">metrics_frame</span> <span class="o">=</span> <span class="n">pandas</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">metrics_dict</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">metrics_frame</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 </span></span></code></pre></div><p>The first line <code>#%%</code> indicates that this is a new Jupyter notebook cell that can be run independently. The rest is mostly just copied and pasted from the templates and makes a plot. Here is how the plot looks like:</p>
 <p><img src="/generation-aware-analysis/generation-aware-analysis-01.png" alt="generation-aware-analysis-01.png" title="generation-aware-analysis-01.png"></p>
 <p>So we confirm there is indeed a spike in the promoted bytes. Not just that, the &rsquo;normal&rsquo; promoted bytes never exceed 1.0, which is measured in MB. Earlier we said the lists have 1000 elements of size 1000 bytes, that is why we normally promote at most that much (the worst case happen when the list is about to be discarded but just not quite because the next iteration haven&rsquo;t started to overwrite that variable yet)</p>
-<ul class="pa0">
-  
-</ul>
-<div class="mt6 instapaper_ignoref">
-      
-      
-      </div>
-    </div>
-
-    <aside class="w-30-l mt6-l">
 
 
+        </div><p class="footer text-center">Copyright (c) 2023 Andrew Au</p><script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true });</script>
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/prettify.js"></script>
+<script src="/js/feather.min.js"></script>
+<script src="/index.js"></script>
+<script>
 
+  function getCookie(cname) {
+    let name = cname + "=";
+    let ca = document.cookie.split(';');
+    for (let i = 0; i < ca.length; i++) {
+      let c = ca[i];
+      while (c.charAt(0) == ' ') {
+        c = c.substring(1);
+      }
+      if (c.indexOf(name) == 0) {
+        return c.substring(name.length, c.length);
+      }
+    }
+    return "";
+  }
 
-</aside>
+  function setCookie(cname, cvalue, exdays) {
+    const d = new Date();
+    d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+    let expires = "expires=" + d.toUTCString();
+    document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+  }
 
-  </article>
+  function ensureIcon() {
+    if (document.body.classList.contains("dark-theme")) {
+      toggleDarkModeButton.innerHTML = '<i data-feather="sun"></i>';
+    } else {
+      toggleDarkModeButton.innerHTML = '<i data-feather="moon"></i>';
+    }
+    feather.replace();
+  }
+  function saveCookie() {
+    if (document.body.classList.contains("dark-theme")) {
+      setCookie("darkMode", "true", 365);
+    } else {
+      setCookie("darkMode", "false", 365);
+    }
+  }
 
-    </main>
-    <footer class="bg-black bottom-0 w-100 pa3" role="contentinfo">
-  <div class="flex justify-between">
-  <a class="f4 fw4 hover-white no-underline white-70 dn dib-ns pv2 ph3" href="https://cshung.github.io/" >
-    &copy;  My Blog 2022 
-  </a>
-    <div>
+  function load(pre) {
+    link = pre.getAttribute("data-code-link");
+    const xhr = new XMLHttpRequest();
+    xhr.onload = () => {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        pre.className = "prettyprint";
+        pre.textContent = xhr.responseText;
+      }
+      prettyPrint();
+    };
+    xhr.open('GET', link);
+    xhr.send();
+  }
 
+  function onSearchButtonClicked(e) {
+    e.preventDefault();
+    var query = $("#queryTextField").val();
+    var terms = query.split(' ');
+    
+    var result = {};
+    for (var i = 0; i < terms.length; ++i) {
+      var term = terms[i].toLowerCase();
+      if (term in index.Terms)
+      {
+        for (i = 0; i < index.Terms[term].length; i += 2) {
+          var doc = index.Terms[term][i];
+          var count = index.Terms[term][i + 1];
+          if (doc in result) {
+            result[doc] += count;
+          } else {
+            result[doc] = count;
+          }
+        }
+      }
+    }
+    
+    $("#content").empty();
+    for (var key in result) {
+      $("#content").append($('<a>', {
+        href: index.Documents[key].replace("../../content","").replace(".md",""),
+        text: index.Titles[key]
+      }));
+      $("#content").append($('<br>'));
+    }
+  }
 
+  $(document).ready(function () {
+    var darkMode = getCookie("darkMode");
+    if (darkMode == "true") {
+      document.body.classList.add("dark-theme");
+      document.body.classList.remove("light-theme");
+    }
+    ensureIcon();
 
+    $("#toggleDarkModeButton").click(function (e) {
+      e.preventDefault();
+      document.body.classList.toggle("dark-theme");
+      document.body.classList.toggle("light-theme");
+      saveCookie();
+      ensureIcon();
+    });
 
+    $("#searchButton").click(onSearchButtonClicked);
 
+    var pres = document.getElementsByTagName("pre");
+    for (var i = 0; i < pres.length; ++i) {
+      var pre = pres[i];
+      if (pre.classList.contains("pretty-github-code")) {
+        load(pre);
+      }
+    }
+  });
 
-
-
-
-
-
-
-
-
-</div>
-  </div>
-</footer>
-
-    <div style="display:none">
-    <script type="text/javascript" src="https://www.free-counters.org/count/86pd"></script><br><a href='http://www.counter-zaehler.de'>besucherzähler ip</a> <script type='text/javascript'     src='https://whomania.com/ctr?id=695d5b016077d10ada0ea41fc87e54f2421f8966'></script>
-    </div>
-  </body>
-
+  $(window).on("load", function () {
+    $("body").show();
+  });
+</script></body>
 </html>

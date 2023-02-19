@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/style.css">
+    <link rel="stylesheet" type="text/css" href="/css/syntax.css">
+    
+    
+    <title>My Blog | rosalind</title>
+
+
+</head><body class="light-theme"><div id="nav-border" class="container">
+    <nav id="nav" class="nav justify-content-center">
+        
+        <a class="nav-link" href="/">
+        
+        
+        <i data-feather="home"></i> 
+        
+        
+        Home
+        </a>
+        
+        <a class="nav-link" href="/tags/">
+        
+        
+        <i data-feather="tag"></i> 
+        
+        
+        Tags
+        </a>
+        
+        <a class="nav-link" href="#" id="toggleDarkModeButton"><i data-feather="sun"></i></a>
+        <span style="padding:5px"><input type="text" id="queryTextField"></span><a class="nav-link" href="#" id="searchButton"><i data-feather="search"></i></a>
+    </nav>
+</div><div id="content" style="margin:20px">
+<h1>rosalind</h1>
+
+<p>
+    <h3><a class="title" href="/posts/rosalind-inferring-mrna-from-protein/">Rosalind - Inferring mRNA from Protein</a></h3>
+    
+
+<i data-feather="calendar"></i>
+<time datetime="2019-08-10">Aug 10, 2019</time>
+
+<i data-feather="tag"></i>
+
+
+<a class="btn btn-sm btn-outline-dark tag-btn" href="https://cshung.github.io/tags/rosalind">rosalind</a>
+
+
+    <a class="summary" href="/posts/rosalind-inferring-mrna-from-protein/">
+        <p>Problem:
+Please find the problem here.
+Solution:
+To figure out how many RNA is possible, we simply multiply all possibilities. Note that we also make sure the protein ends with a stop codon.
+Code:
+ </p>
+    </a>
+</p>
+
+<p>
+    <h3><a class="title" href="/posts/rosalind-independent-alleles/">Rosalind - Independent Alleles</a></h3>
+    
+
+<i data-feather="calendar"></i>
+<time datetime="2019-08-10">Aug 10, 2019</time>
+
+<i data-feather="tag"></i>
+
+
+<a class="btn btn-sm btn-outline-dark tag-btn" href="https://cshung.github.io/tags/rosalind">rosalind</a>
+
+
+    <a class="summary" href="/posts/rosalind-independent-alleles/">
+        <p>Problem:
+Please find the problem here.
+Analysis:
+The code is deceptively simple. Let&rsquo;s not read the code and understand the problem first. Because A and B are independent, we can consider them separately.
+Tom&rsquo;s offspring has the following distribution:
+AA - 0.25 Aa - 0.5 aa - 0.25 To consider the next generation, let&rsquo;s generalize and consider the next generation of an arbitrary distribution. Let&rsquo;s say the current distribution is</p>
+    </a>
+</p>
+
+<p>
+    <h3><a class="title" href="/posts/rosalind-calculating-expected-offspring/">Rosalind - Calculating Expected Offspring</a></h3>
+    
+
+<i data-feather="calendar"></i>
+<time datetime="2019-08-10">Aug 10, 2019</time>
+
+<i data-feather="tag"></i>
+
+
+<a class="btn btn-sm btn-outline-dark tag-btn" href="https://cshung.github.io/tags/rosalind">rosalind</a>
+
+
+    <a class="summary" href="/posts/rosalind-calculating-expected-offspring/">
+        <p>Problem:
+Please find the problem here.
+Solution:
+The probability for AA-AA to produce an offspring with a dominant phenotype offspring is 1.
+The probability for AA-Aa to produce an offspring with a dominant phenotype offspring is 1.
+The probability for AA-aa to produce an offspring with a dominant phenotype offspring is 1.
+The probability for Aa-Aa to produce an offspring with a dominant phenotype offspring is 0.75.
+The probability for Aa-aa to produce an offspring with a dominant phenotype offspring is 0.</p>
+    </a>
+</p>
+
+<p>
+    <h3><a class="title" href="/posts/rosalind-overlap-graphs/">Rosalind - Overlap Graphs</a></h3>
+    
+
+<i data-feather="calendar"></i>
+<time datetime="2019-08-10">Aug 10, 2019</time>
+
+<i data-feather="tag"></i>
+
+
+<a class="btn btn-sm btn-outline-dark tag-btn" href="https://cshung.github.io/tags/rosalind">rosalind</a>
+
+
+    <a class="summary" href="/posts/rosalind-overlap-graphs/">
+        <p>Problem:
+Please find the problem here.
+Solution:
+To construct the graph, we go through every pair, excluding self-loops, and output an edge when the suffix matches the prefix. Care is taken to make sure the string actually has at least 3 characters.
+Code:
+ </p>
+    </a>
+</p>
+
+<p>
+    <h3><a class="title" href="/posts/rosalind-finding-a-shared-motif/">Rosalind - Finding a Shared Motif</a></h3>
+    
+
+<i data-feather="calendar"></i>
+<time datetime="2019-08-05">Aug 5, 2019</time>
+
+<i data-feather="tag"></i>
+
+
+<a class="btn btn-sm btn-outline-dark tag-btn" href="https://cshung.github.io/tags/rosalind">rosalind</a>
+
+
+    <a class="summary" href="/posts/rosalind-finding-a-shared-motif/">
+        <p>Problem:
+Please find the problem here.
+Solution:
+This is a complicated solution. I spent almost a week on it. It is based on a suffix tree. Suffix tree itself is a complicated beast. I described it earlier in this series of posts, please check it out if you have no idea what is a suffix tree.
+In the sequel, I assumed the suffix tree is built on a string built on the DNAs concatenated and separated by unique characters.</p>
+    </a>
+</p>
+
+<p>
+    <h3><a class="title" href="/posts/rosalind-mortal-fibonacci-rabbits/">Rosalind - Mortal Fibonacci Rabbits</a></h3>
+    
+
+<i data-feather="calendar"></i>
+<time datetime="2019-08-05">Aug 5, 2019</time>
+
+<i data-feather="tag"></i>
+
+
+<a class="btn btn-sm btn-outline-dark tag-btn" href="https://cshung.github.io/tags/rosalind">rosalind</a>
+
+
+    <a class="summary" href="/posts/rosalind-mortal-fibonacci-rabbits/">
+        <p>Problem:
+Please find the problem here.
+Solution:
+The matrix solution I used in my previous solution is still applicable, but it is cumbersome to implement. It is time to actually use dynamic programming.
+Conceptually, it is easy. We know rabbits can have life from \( 0 \) to \( m - 1 \) month, so we keep an array to see how many pairs of rabbits are there at that age.</p>
+    </a>
+</p>
+
+<p>
+    <h3><a class="title" href="/posts/rosalind-consensus-and-profile/">Rosalind - Consensus and Profile</a></h3>
+    
+
+<i data-feather="calendar"></i>
+<time datetime="2019-08-05">Aug 5, 2019</time>
+
+<i data-feather="tag"></i>
+
+
+<a class="btn btn-sm btn-outline-dark tag-btn" href="https://cshung.github.io/tags/rosalind">rosalind</a>
+
+
+    <a class="summary" href="/posts/rosalind-consensus-and-profile/">
+        <p>Problem:
+Please find the problem here.
+Solution:
+Because we need to output the whole matrix, we just simply have to compute it.
+Code:
+ </p>
+    </a>
+</p>
+
+<p>
+    <h3><a class="title" href="/posts/rosalind-finding-a-motif-in-dna/">Rosalind - Finding a Motif in DNA</a></h3>
+    
+
+<i data-feather="calendar"></i>
+<time datetime="2019-08-03">Aug 3, 2019</time>
+
+<i data-feather="tag"></i>
+
+
+<a class="btn btn-sm btn-outline-dark tag-btn" href="https://cshung.github.io/tags/rosalind">rosalind</a>
+
+
+    <a class="summary" href="/posts/rosalind-finding-a-motif-in-dna/">
+        <p>Problem:
+Please find the problem here.
+Solution:
+This feels like cheating. The problem is obviously asking for implementing a substring search, and I am using the Python builtin.
+I have implemented Boyer Moore in C#, so I don&rsquo;t feel bad. In fact, I validated my implementation using the Rosalind test cases, and it passed there as well.
+Code:
+ </p>
+    </a>
+</p>
+
+<p>
+    <h3><a class="title" href="/posts/rosalind-translating-rna-into-protein/">Rosalind - Translating RNA into Protein</a></h3>
+    
+
+<i data-feather="calendar"></i>
+<time datetime="2019-08-03">Aug 3, 2019</time>
+
+<i data-feather="tag"></i>
+
+
+<a class="btn btn-sm btn-outline-dark tag-btn" href="https://cshung.github.io/tags/rosalind">rosalind</a>
+
+
+    <a class="summary" href="/posts/rosalind-translating-rna-into-protein/">
+        <p>Problem:
+Please find the problem here.
+Solution:
+To perform the translation, we used a lookup table.
+Code:
+ </p>
+    </a>
+</p>
+
+<p>
+    <h3><a class="title" href="/posts/rosalind-mendels-first-law/">Rosalind - Mendel&#39;s First Law</a></h3>
+    
+
+<i data-feather="calendar"></i>
+<time datetime="2019-08-03">Aug 3, 2019</time>
+
+<i data-feather="tag"></i>
+
+
+<a class="btn btn-sm btn-outline-dark tag-btn" href="https://cshung.github.io/tags/rosalind">rosalind</a>
+
+
+    <a class="summary" href="/posts/rosalind-mendels-first-law/">
+        <p>Problem:
+Please find the problem here.
+Solution:
+When two heterozygous organisms mate, the offspring have \( \frac{1}{4} \) chance to be homozygous recessive.
+When a heterozygous organism and a homozygous organism mate, the offspring have \( \frac{1}{2} \) chance to be homozygous recessive.
+When two homozygous recessive organisms mate, their offspring must be homozygous recessive.
+There are no other ways to produce a homozygous recessive offspring.
+The probability of getting a homozygous recessive is therefore:</p>
+    </a>
+</p>
+
+    <ul class="pagination pagination-default">
+      <li class="page-item">
+        <a href="/tags/rosalind/" aria-label="First" class="page-link" role="button"><span aria-hidden="true">&laquo;&laquo;</span></a>
+      </li>
+      <li class="page-item">
+        <a href="/tags/rosalind/page/3/" aria-label="Previous" class="page-link" role="button"><span aria-hidden="true">&laquo;</span></a>
+      </li>
+      <li class="page-item">
+        <a href="/tags/rosalind/" aria-label="Page 1" class="page-link" role="button">1</a>
+      </li>
+      <li class="page-item">
+        <a href="/tags/rosalind/page/2/" aria-label="Page 2" class="page-link" role="button">2</a>
+      </li>
+      <li class="page-item">
+        <a href="/tags/rosalind/page/3/" aria-label="Page 3" class="page-link" role="button">3</a>
+      </li>
+      <li class="page-item active">
+        <a aria-current="page" aria-label="Page 4" class="page-link" role="button">4</a>
+      </li>
+      <li class="page-item">
+        <a href="/tags/rosalind/page/5/" aria-label="Page 5" class="page-link" role="button">5</a>
+      </li>
+      <li class="page-item">
+        <a href="/tags/rosalind/page/5/" aria-label="Next" class="page-link" role="button"><span aria-hidden="true">&raquo;</span></a>
+      </li>
+      <li class="page-item">
+        <a href="/tags/rosalind/page/5/" aria-label="Last" class="page-link" role="button"><span aria-hidden="true">&raquo;&raquo;</span></a>
+      </li>
+    </ul>
+        </div><p class="footer text-center">Copyright (c) 2023 Andrew Au</p><script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true });</script>
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/prettify.js"></script>
+<script src="/js/feather.min.js"></script>
+<script src="/index.js"></script>
+<script>
+
+  function getCookie(cname) {
+    let name = cname + "=";
+    let ca = document.cookie.split(';');
+    for (let i = 0; i < ca.length; i++) {
+      let c = ca[i];
+      while (c.charAt(0) == ' ') {
+        c = c.substring(1);
+      }
+      if (c.indexOf(name) == 0) {
+        return c.substring(name.length, c.length);
+      }
+    }
+    return "";
+  }
+
+  function setCookie(cname, cvalue, exdays) {
+    const d = new Date();
+    d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+    let expires = "expires=" + d.toUTCString();
+    document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+  }
+
+  function ensureIcon() {
+    if (document.body.classList.contains("dark-theme")) {
+      toggleDarkModeButton.innerHTML = '<i data-feather="sun"></i>';
+    } else {
+      toggleDarkModeButton.innerHTML = '<i data-feather="moon"></i>';
+    }
+    feather.replace();
+  }
+  function saveCookie() {
+    if (document.body.classList.contains("dark-theme")) {
+      setCookie("darkMode", "true", 365);
+    } else {
+      setCookie("darkMode", "false", 365);
+    }
+  }
+
+  function load(pre) {
+    link = pre.getAttribute("data-code-link");
+    const xhr = new XMLHttpRequest();
+    xhr.onload = () => {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        pre.className = "prettyprint";
+        pre.textContent = xhr.responseText;
+      }
+      prettyPrint();
+    };
+    xhr.open('GET', link);
+    xhr.send();
+  }
+
+  function onSearchButtonClicked(e) {
+    e.preventDefault();
+    var query = $("#queryTextField").val();
+    var terms = query.split(' ');
+    
+    var result = {};
+    for (var i = 0; i < terms.length; ++i) {
+      var term = terms[i].toLowerCase();
+      if (term in index.Terms)
+      {
+        for (i = 0; i < index.Terms[term].length; i += 2) {
+          var doc = index.Terms[term][i];
+          var count = index.Terms[term][i + 1];
+          if (doc in result) {
+            result[doc] += count;
+          } else {
+            result[doc] = count;
+          }
+        }
+      }
+    }
+    
+    $("#content").empty();
+    for (var key in result) {
+      $("#content").append($('<a>', {
+        href: index.Documents[key].replace("../../content","").replace(".md",""),
+        text: index.Titles[key]
+      }));
+      $("#content").append($('<br>'));
+    }
+  }
+
+  $(document).ready(function () {
+    var darkMode = getCookie("darkMode");
+    if (darkMode == "true") {
+      document.body.classList.add("dark-theme");
+      document.body.classList.remove("light-theme");
+    }
+    ensureIcon();
+
+    $("#toggleDarkModeButton").click(function (e) {
+      e.preventDefault();
+      document.body.classList.toggle("dark-theme");
+      document.body.classList.toggle("light-theme");
+      saveCookie();
+      ensureIcon();
+    });
+
+    $("#searchButton").click(onSearchButtonClicked);
+
+    var pres = document.getElementsByTagName("pre");
+    for (var i = 0; i < pres.length; ++i) {
+      var pre = pres[i];
+      if (pre.classList.contains("pretty-github-code")) {
+        load(pre);
+      }
+    }
+  });
+
+  $(window).on("load", function () {
+    $("body").show();
+  });
+</script></body>
+</html>
