@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Floyd Warshall on My Blog</title>
+    <link>https://cshung.github.io/tags/floyd-warshall/</link>
+    <description>Recent content in Floyd Warshall on My Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Thu, 06 Nov 2014 06:00:00 -0800</lastBuildDate><atom:link href="https://cshung.github.io/tags/floyd-warshall/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>SPOJ Problem Set (classical) - Fishmonger</title>
+      <link>https://cshung.github.io/posts/spoj-problem-set-classical-fishmonger/</link>
+      <pubDate>Thu, 06 Nov 2014 06:00:00 -0800</pubDate>
+      
+      <guid>https://cshung.github.io/posts/spoj-problem-set-classical-fishmonger/</guid>
+      <description>Problem:
+Please find the problem here.
+Solution:
+I started the problem using the a simple complete search of all path. Of course, we are not going to be able to enumerate through all the paths. But fortunately we don&amp;rsquo;t have to, once we have tried a path we can memoize the result as follow.
+If I am at a certain node n1 with certain an initial time constraint T1before, and with time t12 I can get to node n2, recursively we know the best path to get to market from n2 with budget T-t12 take time T2after and has minimal cost C2after, then we have one best path candidate from n1 to n2 within time constraint T1before that actually spend time T2after + t12 with cost C2after + c12.</description>
+    </item>
+    
+  </channel>
+</rss>

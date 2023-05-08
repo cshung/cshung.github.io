@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/style.css">
+    <link rel="stylesheet" type="text/css" href="/css/syntax.css">
+    
+    
+    <title>My Blog | SPOJ Problem Set (classical) - Light switching (2nd attempt)</title>
+
+
+</head><body class="light-theme"><div id="nav-border" class="container">
+    <nav id="nav" class="nav justify-content-center">
+        
+        <a class="nav-link" href="/">
+        
+        
+        <i data-feather="home"></i> 
+        
+        
+        Home
+        </a>
+        
+        <a class="nav-link" href="/tags/">
+        
+        
+        <i data-feather="tag"></i> 
+        
+        
+        Tags
+        </a>
+        
+        <a class="nav-link" href="#" id="toggleDarkModeButton"><i data-feather="sun"></i></a>
+        <span style="padding:5px"><input type="text" id="queryTextField"></span><a class="nav-link" href="#" id="searchButton"><i data-feather="search"></i></a>
+    </nav>
+</div><div id="content" style="margin:20px">
+<h1>SPOJ Problem Set (classical) - Light switching (2nd attempt)</h1>
+
+
+<i data-feather="calendar"></i>
+<time datetime="2014-10-26">Oct 26, 2014</time>
+
+<i data-feather="tag"></i>
+
+
+<a class="btn btn-sm btn-outline-dark tag-btn" href="https://cshung.github.io/tags/segment-tree">segment tree</a>
+
+
+<a class="btn btn-sm btn-outline-dark tag-btn" href="https://cshung.github.io/tags/divide-and-conquer">divide and conquer</a>
+
+
+<a class="btn btn-sm btn-outline-dark tag-btn" href="https://cshung.github.io/tags/spoj">spoj</a>
+
+
+<br><br>
+<p><strong>Problem:</strong></p>
+<p>Please find the problem <a href="http://www.spoj.com/problems/LITE/">here</a>.</p>
+<p><strong>Solution:</strong></p>
+<p>After doing some optimization - the previous solution still cannot be accepted - need to try something else. Previously I was worried about memory consumption creating a full blown segment tree by virtualizing the segments. What if I just create it? Again, we consider this simple example of inserting the segment [1, 5] and [3, 7]</p>
+<p>Initially the tree is completely empty.</p>
+<table border=1><tbody><tr><td colspan=4>0</td><td colspan=4>0</td></tr><tr><td colspan=2>0</td><td colspan=2>0</td><td colspan=2>0</td><td colspan=2>0</td></tr><tr><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr></tbody></table>
+<p>Now we insert [1, 5]</p>
+<table border=1><tbody><tr><td colspan=4 bgcolor=red>4</td><td colspan=4>1</td></tr><tr><td colspan=2>0</td><td colspan=2>0 </td><td colspan=2>1</td><td colspan=2>0 </td></tr><tr><td>0</td><td>0 </td><td>0 </td><td>0 </td><td>1</td><td>0 </td><td>0 </td><td>0 </td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr></tbody></table>
+<p>The highlighted cell is the key idea - I don&rsquo;t want to update all the leaves cells. If I do then that would be slow, and I would just brute force instead.</p>
+<p>Now we insert [3, 7], it involve a cell that we lazily not propagating the changes down, so now we are forced to do, but let&rsquo;s do it just one level now.</p>
+<table border=1><tbody><tr><td colspan=4>4</td><td colspan=4>1</td></tr><tr><td colspan=2 bgcolor=red>2</td><td colspan=2 bgcolor=red>2</td><td colspan=2>1</td><td colspan=2>0 </td></tr><tr><td>0</td><td>0 </td><td>0 </td><td>0 </td><td>1 </td><td>0 </td><td>0 </td><td>0 </td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr></tbody></table>
+<p>Now we are ready to go. The interval [3, 7] is splitted into [3, 4] and [4, 7]. Let&rsquo;s handle [3, 4] first. On the left hand side, all we need to do is to flip that lazy segment back and nothing further need to be done.</p>
+<table border=1><tbody><tr><td colspan=4>2</td><td colspan=4>1</td></tr><tr><td colspan=2 bgcolor=red>2</td><td colspan=2>0</td><td colspan=2>1</td><td colspan=2>0 </td></tr><tr><td>0</td><td>0 </td><td>0 </td><td>0 </td><td>1 </td><td>0 </td><td>0 </td><td>0 </td></tr></tbody></table>For the right hand side, it is similarly done splitted into [4, 6] and [7, 7]. For [4, 6], it covers the whole interval so we can also be lazy there too.
+<table border=1><tbody><tr><td colspan=4>2</td><td colspan=4>2</td></tr><tr><td colspan=2 bgcolor=red>2</td><td colspan=2>0</td><td colspan=2 bgcolor=red>1</td><td colspan=2>1 </td></tr><tr><td>0</td><td>0 </td><td>0 </td><td>0 </td><td>1 </td><td>0 </td><td>1</td><td>0 </td></tr></tbody></table>
+<p>Last, consider a query from [2, 6], we follow the normal segment tree query except that we do the work when we hit a lazy node, and that&rsquo;s it. Turn out both lazy nodes will need to be done for this case.</p>
+<p>Note that for updates or query, neighboring intervals are doubling in size, so worst case is just processing \( O (\log n) \) intervals. Working on the lazy node is constant work at a time so no need to worry about it for complexity sake. We get an \( O (m \log n) \) algorithm, this time \( n \) is the number of lights. This is fast enough and get accepted. Compare with the previous algorithm, the previous algorithm is independent of \( n \), so in theory one could feed it billions of lights without worrying about time, but for small number of lights this is superior.</p>
+<p>Another great advantage of this approach is simplicity, it took me no more than two hours to get this done. The simplicity will also allow us to evolve this approach to do harder problems.</p>
+<p><strong>Code:</strong></p>
+<pre class="pretty-github-code" data-code-link="https://raw.githubusercontent.com/cshung/Competition/main/Competition/SPOJ_LITE_2.cpp"></pre>
+
+
+
+        </div><p class="footer text-center">Copyright (c) 2023 Andrew Au</p><script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true });</script>
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/prettify.js"></script>
+<script src="/js/feather.min.js"></script>
+<script src="/index.js"></script>
+<script>
+
+  function getCookie(cname) {
+    let name = cname + "=";
+    let ca = document.cookie.split(';');
+    for (let i = 0; i < ca.length; i++) {
+      let c = ca[i];
+      while (c.charAt(0) == ' ') {
+        c = c.substring(1);
+      }
+      if (c.indexOf(name) == 0) {
+        return c.substring(name.length, c.length);
+      }
+    }
+    return "";
+  }
+
+  function setCookie(cname, cvalue, exdays) {
+    const d = new Date();
+    d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+    let expires = "expires=" + d.toUTCString();
+    document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+  }
+
+  function ensureIcon() {
+    if (document.body.classList.contains("dark-theme")) {
+      toggleDarkModeButton.innerHTML = '<i data-feather="sun"></i>';
+    } else {
+      toggleDarkModeButton.innerHTML = '<i data-feather="moon"></i>';
+    }
+    feather.replace();
+  }
+  function saveCookie() {
+    if (document.body.classList.contains("dark-theme")) {
+      setCookie("darkMode", "true", 365);
+    } else {
+      setCookie("darkMode", "false", 365);
+    }
+  }
+
+  function load(pre) {
+    link = pre.getAttribute("data-code-link");
+    const xhr = new XMLHttpRequest();
+    xhr.onload = () => {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        pre.className = "prettyprint";
+        pre.textContent = xhr.responseText;
+      }
+      prettyPrint();
+    };
+    xhr.open('GET', link);
+    xhr.send();
+  }
+
+  function onSearchButtonClicked(e) {
+    e.preventDefault();
+    var query = $("#queryTextField").val();
+    var terms = query.split(' ');
+    
+    var result = {};
+    for (var i = 0; i < terms.length; ++i) {
+      var term = terms[i].toLowerCase();
+      if (term in index.Terms)
+      {
+        for (i = 0; i < index.Terms[term].length; i += 2) {
+          var doc = index.Terms[term][i];
+          var count = index.Terms[term][i + 1];
+          if (doc in result) {
+            result[doc] += count;
+          } else {
+            result[doc] = count;
+          }
+        }
+      }
+    }
+    
+    $("#content").empty();
+    for (var key in result) {
+      $("#content").append($('<a>', {
+        href: index.Documents[key].replace("../../content","").replace(".md",""),
+        text: index.Titles[key]
+      }));
+      $("#content").append($('<br>'));
+    }
+  }
+
+  $(document).ready(function () {
+    var darkMode = getCookie("darkMode");
+    if (darkMode == "true") {
+      document.body.classList.add("dark-theme");
+      document.body.classList.remove("light-theme");
+    }
+    ensureIcon();
+
+    $("#toggleDarkModeButton").click(function (e) {
+      e.preventDefault();
+      document.body.classList.toggle("dark-theme");
+      document.body.classList.toggle("light-theme");
+      saveCookie();
+      ensureIcon();
+    });
+
+    $("#searchButton").click(onSearchButtonClicked);
+
+    var pres = document.getElementsByTagName("pre");
+    for (var i = 0; i < pres.length; ++i) {
+      var pre = pres[i];
+      if (pre.classList.contains("pretty-github-code")) {
+        load(pre);
+      }
+    }
+  });
+
+  $(window).on("load", function () {
+    $("body").show();
+  });
+</script></body>
+</html>

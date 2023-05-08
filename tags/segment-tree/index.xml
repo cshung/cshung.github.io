@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>segment tree on My Blog</title>
+    <link>https://cshung.github.io/tags/segment-tree/</link>
+    <description>Recent content in segment tree on My Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sun, 26 Oct 2014 16:44:00 -0700</lastBuildDate><atom:link href="https://cshung.github.io/tags/segment-tree/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>SPOJ Problem Set (classical) - Horrible Queries</title>
+      <link>https://cshung.github.io/posts/spoj-problem-set-classical-horrible-queries/</link>
+      <pubDate>Sun, 26 Oct 2014 16:44:00 -0700</pubDate>
+      
+      <guid>https://cshung.github.io/posts/spoj-problem-set-classical-horrible-queries/</guid>
+      <description>Problem:
+Please find the problem here.
+Solution:
+Using the segment tree like in SPOJ_LITE_2. This time the summary is the sum instead of on light count, but it is just as easy to update those summaries.
+Code:
+ </description>
+    </item>
+    
+    <item>
+      <title>SPOJ Problem Set (classical) - Light switching (2nd attempt)</title>
+      <link>https://cshung.github.io/posts/spoj-problem-set-classical-light-switching-2nd-attempt/</link>
+      <pubDate>Sun, 26 Oct 2014 08:38:00 -0700</pubDate>
+      
+      <guid>https://cshung.github.io/posts/spoj-problem-set-classical-light-switching-2nd-attempt/</guid>
+      <description>Problem:
+Please find the problem here.
+Solution:
+After doing some optimization - the previous solution still cannot be accepted - need to try something else. Previously I was worried about memory consumption creating a full blown segment tree by virtualizing the segments. What if I just create it? Again, we consider this simple example of inserting the segment [1, 5] and [3, 7]
+Initially the tree is completely empty.
+00000000000000 Now we insert [1, 5]</description>
+    </item>
+    
+  </channel>
+</rss>

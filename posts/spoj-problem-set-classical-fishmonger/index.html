@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/style.css">
+    <link rel="stylesheet" type="text/css" href="/css/syntax.css">
+    
+    
+    <title>My Blog | SPOJ Problem Set (classical) - Fishmonger</title>
+
+
+</head><body class="light-theme"><div id="nav-border" class="container">
+    <nav id="nav" class="nav justify-content-center">
+        
+        <a class="nav-link" href="/">
+        
+        
+        <i data-feather="home"></i> 
+        
+        
+        Home
+        </a>
+        
+        <a class="nav-link" href="/tags/">
+        
+        
+        <i data-feather="tag"></i> 
+        
+        
+        Tags
+        </a>
+        
+        <a class="nav-link" href="#" id="toggleDarkModeButton"><i data-feather="sun"></i></a>
+        <span style="padding:5px"><input type="text" id="queryTextField"></span><a class="nav-link" href="#" id="searchButton"><i data-feather="search"></i></a>
+    </nav>
+</div><div id="content" style="margin:20px">
+<h1>SPOJ Problem Set (classical) - Fishmonger</h1>
+
+
+<i data-feather="calendar"></i>
+<time datetime="2014-11-06">Nov 6, 2014</time>
+
+<i data-feather="tag"></i>
+
+
+<a class="btn btn-sm btn-outline-dark tag-btn" href="https://cshung.github.io/tags/dynamic-programming">dynamic programming</a>
+
+
+<a class="btn btn-sm btn-outline-dark tag-btn" href="https://cshung.github.io/tags/graph">graph</a>
+
+
+<a class="btn btn-sm btn-outline-dark tag-btn" href="https://cshung.github.io/tags/floyd-warshall">Floyd Warshall</a>
+
+
+<a class="btn btn-sm btn-outline-dark tag-btn" href="https://cshung.github.io/tags/spoj">spoj</a>
+
+
+<br><br>
+<p><strong>Problem:</strong></p>
+<p>Please find the problem <a href="http://www.spoj.com/problems/FISHER/">here</a>.</p>
+<p><strong>Solution:</strong></p>
+<p>I started the problem using the a simple complete search of all path. Of course, we are not going to be able to enumerate through all the paths. But fortunately we don&rsquo;t have to, once we have tried a path we can memoize the result as follow.</p>
+<p>If I am at a certain node n<sub>1</sub> with certain an initial time constraint T<sub>1before</sub>, and with time t<sub>12</sub> I can get to node n<sub>2</sub>, recursively we know the best path to get to market from n<sub>2</sub> with budget T-t<sub>12</sub> take time T<sub>2after</sub> and has minimal cost C<sub>2after</sub>, then we have one best path candidate from n<sub>1</sub> to n<sub>2</sub> within time constraint T<sub>1before</sub> that actually spend time T<sub>2after</sub> + t<sub>12</sub> with cost C<sub>2after</sub> + c<sub>12</sub>. Try all candidate and find the solution.</p>
+<p>The key to the above idea is memoization - we save the fact that if we are going from node n<sub>1</sub>, the budget given is between T<sub>1before</sub> and T<sub>2after</sub> + t<sub>12</sub>, then the best path has the be the best path found, no point to find a best path again.</p>
+<p>I have coded the solution, unforunately it is <strong>Wrong Answer</strong>. Removed memoization, clearly <strong>Time Limit Exceeded</strong>.  Looking in retrospect, could be similar bug that I hit in the approach below.</p>
+<p>Now I tried something else, based on Floyd Warshall. Floyd Warshall is that we can find the shortest path between every two nodes by allowing incrementally more intermediate nodes. I thought, if instead of the shortest path, what if we maintain the set of <a href="http://stackoverflow.com/questions/17010914/algorithm-for-maximum-non-dominated-set">non dominated</a> paths? By non-dominated, I mean paths that has either lower cost higher time, or path with higher time lower cost, but not higher time, higher cost ones. We also constraint the time of those path within time budget. At the end of the algorithm, we will get, between all pairs of nodes, the set of all non-dominated paths, and therefore we can pick the one with least cost within time budget at the end of the algorithm.</p>
+<p>For non-dominated filtering, I just used the simple \( O(p^2) \) algorithm, where \( p \) is the number of candidate paths. There exists \( O(p \log p) \) algorithm, and maybe even better, I just didn&rsquo;t do it since the time is good enough for the problem to accept.</p>
+<p>All is fine, except one bug I just can&rsquo;t find myself. When I initialized the table, I put the initial distance and initial cost between two nodes into the table. I didn&rsquo;t check if those values are within time budget, as a result, if there is a graph with a low cost path within short time budget that reach the market directly, I would have returned that path - wrong.</p>
+<p>If I got more time, I can try modifying Dijkstra&rsquo;s algorithm or Bellman Ford&rsquo;s algorithm, basically the same idea of keeping non-dominated paths. These single source shortest path algorithm should be faster than the all pair shortest path problem, I believe.</p>
+<p>As an aside - thanks a lot for those who helped me to find out the tricky test case that I missed. I guess I need to be a better adversary of my own code to find that out. I also got the feedback that the code is hard to read, I tried to make my code as descriptive as it can be, but I guess everybody have a different taste of what does it mean by readable, or well, code are just not fun to read, wrapping it with sugar just doesn&rsquo;t cover the bitterness.</p>
+<p><strong>Code:</strong></p>
+<pre class="pretty-github-code" data-code-link="https://raw.githubusercontent.com/cshung/Competition/main/Competition/SPOJ_FISHER.cpp"></pre>
+
+
+
+        </div><p class="footer text-center">Copyright (c) 2023 Andrew Au</p><script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true });</script>
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/prettify.js"></script>
+<script src="/js/feather.min.js"></script>
+<script src="/index.js"></script>
+<script>
+
+  function getCookie(cname) {
+    let name = cname + "=";
+    let ca = document.cookie.split(';');
+    for (let i = 0; i < ca.length; i++) {
+      let c = ca[i];
+      while (c.charAt(0) == ' ') {
+        c = c.substring(1);
+      }
+      if (c.indexOf(name) == 0) {
+        return c.substring(name.length, c.length);
+      }
+    }
+    return "";
+  }
+
+  function setCookie(cname, cvalue, exdays) {
+    const d = new Date();
+    d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+    let expires = "expires=" + d.toUTCString();
+    document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+  }
+
+  function ensureIcon() {
+    if (document.body.classList.contains("dark-theme")) {
+      toggleDarkModeButton.innerHTML = '<i data-feather="sun"></i>';
+    } else {
+      toggleDarkModeButton.innerHTML = '<i data-feather="moon"></i>';
+    }
+    feather.replace();
+  }
+  function saveCookie() {
+    if (document.body.classList.contains("dark-theme")) {
+      setCookie("darkMode", "true", 365);
+    } else {
+      setCookie("darkMode", "false", 365);
+    }
+  }
+
+  function load(pre) {
+    link = pre.getAttribute("data-code-link");
+    const xhr = new XMLHttpRequest();
+    xhr.onload = () => {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        pre.className = "prettyprint";
+        pre.textContent = xhr.responseText;
+      }
+      prettyPrint();
+    };
+    xhr.open('GET', link);
+    xhr.send();
+  }
+
+  function onSearchButtonClicked(e) {
+    e.preventDefault();
+    var query = $("#queryTextField").val();
+    var terms = query.split(' ');
+    
+    var result = {};
+    for (var i = 0; i < terms.length; ++i) {
+      var term = terms[i].toLowerCase();
+      if (term in index.Terms)
+      {
+        for (i = 0; i < index.Terms[term].length; i += 2) {
+          var doc = index.Terms[term][i];
+          var count = index.Terms[term][i + 1];
+          if (doc in result) {
+            result[doc] += count;
+          } else {
+            result[doc] = count;
+          }
+        }
+      }
+    }
+    
+    $("#content").empty();
+    for (var key in result) {
+      $("#content").append($('<a>', {
+        href: index.Documents[key].replace("../../content","").replace(".md",""),
+        text: index.Titles[key]
+      }));
+      $("#content").append($('<br>'));
+    }
+  }
+
+  $(document).ready(function () {
+    var darkMode = getCookie("darkMode");
+    if (darkMode == "true") {
+      document.body.classList.add("dark-theme");
+      document.body.classList.remove("light-theme");
+    }
+    ensureIcon();
+
+    $("#toggleDarkModeButton").click(function (e) {
+      e.preventDefault();
+      document.body.classList.toggle("dark-theme");
+      document.body.classList.toggle("light-theme");
+      saveCookie();
+      ensureIcon();
+    });
+
+    $("#searchButton").click(onSearchButtonClicked);
+
+    var pres = document.getElementsByTagName("pre");
+    for (var i = 0; i < pres.length; ++i) {
+      var pre = pres[i];
+      if (pre.classList.contains("pretty-github-code")) {
+        load(pre);
+      }
+    }
+  });
+
+  $(window).on("load", function () {
+    $("body").show();
+  });
+</script></body>
+</html>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>avl tree on My Blog</title>
+    <link>https://cshung.github.io/tags/avl-tree/</link>
+    <description>Recent content in avl tree on My Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sat, 25 Oct 2014 07:30:00 -0700</lastBuildDate><atom:link href="https://cshung.github.io/tags/avl-tree/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>SPOJ Problem Set (classical) - Light switching (1st attempt)</title>
+      <link>https://cshung.github.io/posts/spoj-problem-set-classical-light-switching-1st-attempt/</link>
+      <pubDate>Sat, 25 Oct 2014 07:30:00 -0700</pubDate>
+      
+      <guid>https://cshung.github.io/posts/spoj-problem-set-classical-light-switching-1st-attempt/</guid>
+      <description>Problem:
+Please find the problem here.
+Solution:
+This problem is really a hard nut to crack. I know there exist simpler solution, but I am going with my idea and implement that complex idea first. The goal is, really, to prove to myself that my idea works, and that to practice coding and debugging complex algorithm.
+It all started with some simple observations. Judging from the numbers, I believe we can’t allow update to take time proportional to the interval length, or otherwise one could easily construct an example to just keep flipping the whole interval and we are screwed with awful performance.</description>
+    </item>
+    
+  </channel>
+</rss>
