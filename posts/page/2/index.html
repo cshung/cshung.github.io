@@ -38,6 +38,19 @@
 <h1>Posts</h1>
 
 <p>
+    <h3><a class="title" href="/posts/false-memory-leak/">False Memory Leak</a></h3>
+    
+
+<i data-feather="calendar"></i>
+<time datetime="2021-08-13">Aug 13, 2021</time>
+
+    <a class="summary" href="/posts/false-memory-leak/">
+        <p>I am writing this post to share a memory leak investigation which turns out to be a false positive (i.e. we are not having a managed memory leak). This goal of this document is to share the analysis method so that it could be applied to similar situations.
+Highlights Before I go into the details, here is a one line summary of the conclusion. This case is NOT a managed memory leak, but because a compiler generated temp is considered a reference and therefore the garbage collector cannot eliminate it.</p>
+    </a>
+</p>
+
+<p>
     <h3><a class="title" href="/posts/memory-corruption-2/">Memory Corruption (2)</a></h3>
     
 
@@ -153,19 +166,6 @@ Out of 1,000 objects in the SOH, \( a \) of them survives and \( b \) of them ar
     <a class="summary" href="/posts/poh-tuning-3/">
         <p>In the last post, we discussed what the benchmark does and how the weights are computed. In this post, we will talk about some other interesting statistical properties. The lesson learned here is that we know how objects behave in the benchmark, and we can use this to judge whether or not the benchmark actually matches with real-life use cases.
 Object lifetime In this previous post, we know about an object&rsquo;s life cycle.</p>
-    </a>
-</p>
-
-<p>
-    <h3><a class="title" href="/posts/poh-tuning-2/">POH Tuning (Part 2 - What am I running?)</a></h3>
-    
-
-<i data-feather="calendar"></i>
-<time datetime="2021-03-01">Mar 1, 2021</time>
-
-    <a class="summary" href="/posts/poh-tuning-2/">
-        <p>In the last post, we talk about the event tracing infrastructure, it allows us to measure the metrics we wanted to study when we run the program. But what program do we want to run? The program that we will run is called a benchmark. In this post, I will look into the details of the benchmark program.
-Overview The program that we will run is called GCPerfSim. As its name suggests, it simulates workload for the GC to understand its performance.</p>
     </a>
 </p>
 

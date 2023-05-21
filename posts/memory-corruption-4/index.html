@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/style.css">
+    <link rel="stylesheet" type="text/css" href="/css/syntax.css">
+    
+    
+    <title>My Blog | Memory Corruption (4)</title>
+
+
+</head><body class="light-theme"><div id="nav-border" class="container">
+    <nav id="nav" class="nav justify-content-center">
+        
+        <a class="nav-link" href="/">
+        
+        
+        <i data-feather="home"></i> 
+        
+        
+        Home
+        </a>
+        
+        <a class="nav-link" href="/tags/">
+        
+        
+        <i data-feather="tag"></i> 
+        
+        
+        Tags
+        </a>
+        
+        <a class="nav-link" href="#" id="toggleDarkModeButton"><i data-feather="sun"></i></a>
+        <span style="padding:5px"><input type="text" id="queryTextField"></span><a class="nav-link" href="#" id="searchButton"><i data-feather="search"></i></a>
+    </nav>
+</div><div id="content" style="margin:20px">
+<h1>Memory Corruption (4)</h1>
+
+
+<i data-feather="calendar"></i>
+<time datetime="2023-05-21">May 21, 2023</time>
+
+<br><br>
+<h1 id="an-object-reference-pointing-to-outside-of-gen-1">An object reference pointing to outside of gen 1</h1>
+<p>In this post, I will talk about yet another memory corruption bug we found and fixed. Check out my <a href="/posts/memory-corruption-3">previous post</a> for more context and examples.</p>
+<h1 id="symptom">Symptom</h1>
+<p>As reported in <a href="https://github.com/microsoft/FASTER/issues/835">this issue</a>, we are hitting random crashes when running the FASTER database. Their developers kindly narrowed it down into a simple repro.</p>
+<h1 id="a-few-observations">A few observations</h1>
+<ul>
+<li>It crashes quickly on some machines, but on some others, it doesn&rsquo;t.</li>
+<li>It crashes on .NET 7, but not on .NET 8. Some other reports it does also crash on .NET 8.</li>
+<li>When it crashes, we are trying to mark an object, but the object is invalid, it is just a bunch of zeros.</li>
+<li>The bad object seems to be always slightly after gen 1 of one of the heaps.</li>
+</ul>
+<h1 id="time-travel-tracing">Time travel tracing</h1>
+<p>Since the repro is short in duration, we can use the time travel tracing to see what happened. Since the bug does not repro on my machine, Mukund kindly helped to provide a trace. Time travel trace is awesome for the purpose of investigating memory corruption, because it allows us to see the entire history of the process, so we can get a full picture of what happened.</p>
+<h1 id="time-0-bad-marking-happened">Time 0: Bad marking happened</h1>
+<p>Without knowing what gone wrong in the past, let&rsquo;s look at the crime scene first, at the moment of crash, we have this stack trace:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="cl">coreclr!SVR::CObjectHeader::IsMarked
+</span></span><span class="line"><span class="cl">coreclr!SVR::mark_queue_t::queue_mark+0x39
+</span></span><span class="line"><span class="cl">coreclr!SVR::gc_heap::mark_object_simple+0x66
+</span></span><span class="line"><span class="cl">coreclr!SVR::gc_heap::mark_through_cards_helper+0x5a
+</span></span><span class="line"><span class="cl">coreclr!SVR::gc_heap::mark_through_cards_for_uoh_objects+0x5b7
+</span></span><span class="line"><span class="cl">...
+</span></span></code></pre></div><p>The crash happened when we are trying to mark an object. Let&rsquo;s take a look at the object:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="cl">0:010&gt; .frame 2
+</span></span><span class="line"><span class="cl">0:010&gt; ?? o
+</span></span><span class="line"><span class="cl">unsigned char * 0x0000021c`1fa71090
+</span></span><span class="line"><span class="cl">0:010&gt; dq 0x0000021c`1fa71090
+</span></span><span class="line"><span class="cl">0000021c`1fa71090  00000000`00000000 00000000`00000000
+</span></span><span class="line"><span class="cl">0000021c`1fa710a0  00000000`00000000 00000000`00000000
+</span></span><span class="line"><span class="cl">0:010&gt; !eeheap -gc
+</span></span><span class="line"><span class="cl">...
+</span></span><span class="line"><span class="cl">Heap 19 (0000021B935E8A30)
+</span></span><span class="line"><span class="cl">...
+</span></span><span class="line"><span class="cl">generation 1:
+</span></span><span class="line"><span class="cl">         segment             begin         allocated         committed    allocated size    committed size
+</span></span><span class="line"><span class="cl">0000021B90041078  0000021C1F800020  0000021C1FA5A1C0  0000021C1FA5D000  0x25a1a0(2466208)  0x25cfe0(2478048)
+</span></span></code></pre></div><p>We need to get back the frame 2 just because the earlier frames are inlined so no debug info is available there. As we expected, the pointer is bad, it is just a bunch of zero, and it is outside of gen 1 of heap 19. Note that the bad object <code>0x0000021c1fa71090</code> is close to the allocated <code>0000021C1FA5A1C0</code>, but it is larger, so it is not considered allocated. Therefore we have a case of a pointer pointing to somewhere not allocated.</p>
+<p>In this trace, we turned off the mark prefetch so that the marking is never delayed. Now we can use the stack to see the parent object leading to the marking of the bad object.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="cl">0:010&gt; .frame 4
+</span></span><span class="line"><span class="cl">0:010&gt; ?? o
+</span></span><span class="line"><span class="cl">unsigned char * 0x0000021b`fc400040
+</span></span><span class="line"><span class="cl">0:010&gt; !do 0x0000021b`fc400040
+</span></span><span class="line"><span class="cl">Name:        &lt;error&gt;
+</span></span><span class="line"><span class="cl">MethodTable: 00007fff807b6368
+</span></span><span class="line"><span class="cl">EEClass:     00007fff8050a9d0
+</span></span><span class="line"><span class="cl">Tracked Type: false
+</span></span><span class="line"><span class="cl">Size:        131096(0x20018) bytes
+</span></span><span class="line"><span class="cl">Array:       Rank 1, Number of elements 16384, Type CLASS (Print Array)
+</span></span><span class="line"><span class="cl">Fields:
+</span></span><span class="line"><span class="cl">None
+</span></span></code></pre></div><p>The parent object is a big array, presumably one of its entry is the bad object. Let&rsquo;s take a look at the array:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="cl">0:010&gt; dq 0x0000021b`fc400040
+</span></span><span class="line"><span class="cl">0000021b`fc400040  00007fff`807b6368 00000000`00004000
+</span></span><span class="line"><span class="cl">0000021b`fc400050  0000021c`1fa70d90 0000021c`1fa70dc0
+</span></span><span class="line"><span class="cl">0000021b`fc400060  0000021c`1fa70df0 0000021c`1fa70e20
+</span></span></code></pre></div><p>As usual, the array starts with a method table pointer <code>00007fff807b6368</code>, and then a size <code>0000000000004000</code>, and then the rest are array entries. Note the regularity of the array entries, it must be the case that the allocation was done so fast that we simply bumped the pointer very quickly without any interruption. Now we can use some simple arithmetic to see where the bad pointer is in the array.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="cl">0:010&gt; dq 0000021b`fc4000d0 L1
+</span></span><span class="line"><span class="cl">0000021b`fc4000d0  0000021c`1fa71090
+</span></span></code></pre></div><p>Now we have found the memory location storing the bad pointer.</p>
+<h1 id="time--1-the-bad-pointer-is-populated">Time -1: The bad pointer is populated</h1>
+<p>Now we know the bad pointer is stored in the array, but who put a bad pointer there. Let&rsquo;s go back in time and see how that happened.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="cl">0:010&gt; !ttpw 0000021b`fc4000d0
+</span></span><span class="line"><span class="cl">Searching for all writes at 0x21bfc4000d0.
+</span></span><span class="line"><span class="cl">(96b8.b268): Break instruction exception - code 80000003 (first/second chance not available)
+</span></span><span class="line"><span class="cl">Time Travel Position: 15A5E3:1131
+</span></span><span class="line"><span class="cl">0:010&gt; k
+</span></span><span class="line"><span class="cl">coreclr!SVR::gc_heap::relocate_address+0xf8
+</span></span><span class="line"><span class="cl">coreclr!SVR::gc_heap::mark_through_cards_helper+0x5a
+</span></span><span class="line"><span class="cl">coreclr!SVR::gc_heap::mark_through_cards_for_uoh_objects+0x5b7
+</span></span><span class="line"><span class="cl">coreclr!SVR::gc_heap::relocate_phase+0x20a
+</span></span><span class="line"><span class="cl">coreclr!SVR::gc_heap::plan_phase+0x205c
+</span></span><span class="line"><span class="cl">...
+</span></span></code></pre></div><p>So it is clear, during the relocate phase, we relocated the pointer to the bad object, but why? The relocation is calculated by finding the plug tree root and then read the offset. We see something suspicious here:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="cl">0:010&gt; dv
+</span></span><span class="line"><span class="cl">...
+</span></span><span class="line"><span class="cl">    old_address = 0x0000021c`21a70ed0 &#34;???&#34;
+</span></span><span class="line"><span class="cl">           node = 0x0000021c`21a58020 &#34;???&#34;
+</span></span></code></pre></div><p>The <code>old_address</code> and <code>node</code> are too far apart, indicating a possibly wrong <code>node</code> is found. The <code>node</code> is found using the bricks, so let&rsquo;s take a look at the brick:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="cl">0:010&gt; ?? svr::gc_heap::g_heaps[0]-&gt;brick_table[(old_address - coreclr!svr::gc_heap::g_heaps[0]-&gt;lowest_address)/4096]
+</span></span><span class="line"><span class="cl">short 0n-1
+</span></span></code></pre></div><blockquote>
+<p>The expression is meant for simply <code>brick_of</code>.</p>
+</blockquote>
+<p>This is bad, as we knew we have many small objects allocated around it, there is no way we don&rsquo;t have a plug tree root within the brick. In retrospect, exactly the same happened in <a href="/posts/memory-corruption-1">this</a> earlier case, although this time around we have a different reason for having a bad brick.</p>
+<h1 id="time--2-the-bad-brick-is-populated">Time -2: The bad brick is populated</h1>
+<p>Now we know the brick is bad, but who populated it? Let&rsquo;s go back in time again.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="cl">0:010&gt; ?? &amp;svr::gc_heap::g_heaps[0]-&gt;brick_table[(old_address - coreclr!svr::gc_heap::g_heaps[0]-&gt;lowest_address)/4096]
+</span></span><span class="line"><span class="cl">short * 0x0000021b`880cc520
+</span></span><span class="line"><span class="cl">0:010&gt; !ttpw 0x0000021b`880cc520
+</span></span><span class="line"><span class="cl">Searching for all writes at 0x21b880cc520.
+</span></span><span class="line"><span class="cl">(96b8.9e20): Break instruction exception - code 80000003 (first/second chance not available)
+</span></span><span class="line"><span class="cl">Time Travel Position: 15A4C0:266B
+</span></span><span class="line"><span class="cl">0:025&gt; k
+</span></span><span class="line"><span class="cl">coreclr!SVR::gc_heap::set_brick+0x7
+</span></span><span class="line"><span class="cl">coreclr!SVR::gc_heap::update_brick_table+0x70
+</span></span><span class="line"><span class="cl">coreclr!SVR::gc_heap::plan_phase+0x839
+</span></span><span class="line"><span class="cl">...
+</span></span></code></pre></div><p>Not surprisingly, the brick is populated during by the <code>set_brick</code> function, looking back in the code, the setting of the brick is because we believe there are no marked object between <code>plug_end</code> and <code>x</code>.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="cl">0:025&gt; ?? plug_end
+</span></span><span class="line"><span class="cl">unsigned char * 0x0000021c`21a5a000
+</span></span><span class="line"><span class="cl">0:025&gt; ?? x
+</span></span><span class="line"><span class="cl">unsigned char * 0x0000021c`21bfff00
+</span></span></code></pre></div><p>But that&rsquo;s wrong. The object we cared about, <code>0x0000021c21a70ed0</code> is right between this two pointers. So either it is not marked, or the code determined that there are no marked object between two pointers is wrong. Using a simple check, we determined that it is the latter case.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="cl">0:025&gt; dq 0x0000021c21a70ed0 L1
+</span></span><span class="line"><span class="cl">0000021c`21a70ed0  00007fff`807b62d9
+</span></span></code></pre></div><p>The method table of that object still has mark bit on, so it was indeed marked.</p>
+<p>Stepping a few calls backward, we found that <code>find_next_marked</code> returns the end of the region while its input was <code>plug_end</code>. That tells us somewhere inside the mark list processing, it is gone.</p>
+<h1 id="time--4-it-was-there">Time -4: It was there!</h1>
+<p>We know that the object is marked, it must have been marked in some time in the past. Let&rsquo;s see how it was marked.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="cl">0:000&gt; !ttpw 0x0000021c21a70ed0
+</span></span><span class="line"><span class="cl">Searching for all writes at 0x21c21a70ed0.
+</span></span><span class="line"><span class="cl">(96b8.a32c): Break instruction exception - code 80000003 (first/second chance not available)
+</span></span><span class="line"><span class="cl">Time Travel Position: 1582BA:104E
+</span></span><span class="line"><span class="cl">0:014&gt; k
+</span></span><span class="line"><span class="cl"> # Child-SP          RetAddr               Call Site
+</span></span><span class="line"><span class="cl">00 (Inline Function) --------`--------     coreclr!Object::RawSetMethodTable [C:\runtime-2\src\coreclr\vm\object.h @ 148]
+</span></span><span class="line"><span class="cl">01 (Inline Function) --------`--------     coreclr!SVR::CObjectHeader::SetMarked+0x4 [C:\runtime-2\src\coreclr\gc\gc.cpp @ 4562]
+</span></span><span class="line"><span class="cl">02 (Inline Function) --------`--------     coreclr!SVR::mark_queue_t::queue_mark+0x3f [C:\runtime-2\src\coreclr\gc\gc.cpp @ 24162]
+</span></span><span class="line"><span class="cl">03 (Inline Function) --------`--------     coreclr!SVR::mark_queue_t::queue_mark+0x79 [C:\runtime-2\src\coreclr\gc\gc.cpp @ 24182]
+</span></span><span class="line"><span class="cl">04 000000e8`8fb7efc0 00007fff`dff85695     coreclr!SVR::gc_heap::mark_object_simple1+0x3ac [C:\runtime-2\src\coreclr\gc\gc.cpp @ 24297]
+</span></span><span class="line"><span class="cl">05 000000e8`8fb7f070 00007fff`dff84f77     coreclr!SVR::gc_heap::mark_object_simple+0x395 [C:\runtime-2\src\coreclr\gc\gc.cpp @ 24843]
+</span></span><span class="line"><span class="cl">06 (Inline Function) --------`--------     coreclr!SVR::gc_heap::mark_through_cards_helper+0x5a [C:\runtime-2\src\coreclr\gc\gc.cpp @ 37985]
+</span></span><span class="line"><span class="cl">...
+</span></span></code></pre></div><p>Not surprisingly, the object was marked in the mark phase. At frame 4 we have this code:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl"><span class="n">go_through_object_cl</span> <span class="p">(</span><span class="n">method_table</span><span class="p">(</span><span class="n">oo</span><span class="p">),</span> <span class="n">oo</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">ppslot</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">uint8_t</span><span class="o">*</span> <span class="n">o</span> <span class="o">=</span> <span class="n">mark_queue</span><span class="p">.</span><span class="n">queue_mark</span><span class="p">(</span><span class="o">*</span><span class="n">ppslot</span><span class="p">,</span> <span class="n">condemned_gen</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">o</span> <span class="o">!=</span> <span class="k">nullptr</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="n">full_p</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">m_boundary_fullgc</span> <span class="p">(</span><span class="n">o</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="k">else</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">m_boundary</span> <span class="p">(</span><span class="n">o</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span></code></pre></div><p>Since we are marking card, this cannot be a full GC, so we are calling <code>m_boundary</code>. Let&rsquo;s see what it does:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="cl">#define m_boundary(o) {if (mark_list_index &lt;= mark_list_end) {*mark_list_index = o;mark_list_index++;} else {mark_list_index++;}}
+</span></span></code></pre></div><p>So we are indeed putting it into the mark list, in fact we can easily check. After stepping for a few more instructions, it is in the mark list.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="cl">0:014&gt; ?? this-&gt;mark_list[16]
+</span></span><span class="line"><span class="cl">unsigned char * 0x0000021c`21a70ed0
+</span></span></code></pre></div><p>So we are sure, between <code>t = -4</code> and <code>t = -2</code>, there must be a <code>t = -3</code> where the object is silently dropped, but when? It turns out that we are doing quite a lot to the mark list between these two times, and for brevity for this post, I will just outline them.</p>
+<ul>
+<li>At the end of the <code>mark_phase</code>, we sort them. Since marking is a process that follow pointers, the mark list is not sorted, we want to sort it so that it can be used easily.</li>
+<li>After it is sorted, we knew that pointers belongs to the same region are adjacent to each other, so contigous sub array of the mark list correspond to the same region.</li>
+<li>But we have multiple mark lists by different heaps, so there could be multiple pieces of the same region, we need to merge them.</li>
+</ul>
+<h1 id="time--3-get_region_mark_list">Time -3: get_region_mark_list</h1>
+<p>The merging is done by <code>get_region_mark_list</code>. At that point, we are trying to find all the pieces and merge them into a single list so that the <code>find_next_marked</code> can use. The merging is done by appending pieces to an output buffer, here is the code:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl"><span class="kt">void</span> <span class="n">gc_heap</span><span class="o">::</span><span class="n">append_to_mark_list</span> <span class="p">(</span><span class="kt">uint8_t</span> <span class="o">**</span><span class="n">start</span><span class="p">,</span> <span class="kt">uint8_t</span> <span class="o">**</span><span class="n">end</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">size_t</span> <span class="n">slots_needed</span> <span class="o">=</span> <span class="n">end</span> <span class="o">-</span> <span class="n">start</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">size_t</span> <span class="n">slots_available</span> <span class="o">=</span> <span class="n">mark_list_end</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">mark_list_index</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">size_t</span> <span class="n">slots_to_copy</span> <span class="o">=</span> <span class="n">min</span><span class="p">(</span><span class="n">slots_needed</span><span class="p">,</span> <span class="n">slots_available</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="n">memcpy</span><span class="p">(</span><span class="n">mark_list_index</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">slots_to_copy</span><span class="o">*</span><span class="k">sizeof</span><span class="p">(</span><span class="o">*</span><span class="n">start</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">    <span class="n">mark_list_index</span> <span class="o">+=</span> <span class="n">slots_to_copy</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">dprintf</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="p">(</span><span class="s">&#34;h%d: appended %zd slots to mark_list</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">heap_number</span><span class="p">,</span> <span class="n">slots_to_copy</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>But here is a problem, it looks like there is a possibility that the mark list is already full, and we silently drop the suffix of the input!</p>
+<p>In fact, this is the bug. When we try to <code>append_to_mark_list</code> for the input range containing <code>0x0000021c21a70ed0</code>, the <code>mark_list</code> is already full at that point, and so we skipped it.</p>
+<p>With a truncated <code>mark_list</code>, now it is clear why <code>find_next_marked</code> cannot find the object, and therefore we have the wrong brick and finally the wrong pointer!</p>
+<h1 id="fix">Fix</h1>
+<p>The fix is simple. The code already have provision to disable the mark list optimization by setting <code>use_mark_list</code> to <code>false</code>. We just need to make sure by the end of <code>get_region_mark_list</code>, we set it back to <code>false</code> in case the <code>mark_list</code> is overflowed. With that fix, we are able to run the repro without crashes! This conclude the investigation of this memory corruption bug.</p>
+
+
+        </div><p class="footer text-center">Copyright (c) 2023 Andrew Au</p><script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true });</script>
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/prettify.js"></script>
+<script src="/js/feather.min.js"></script>
+<script src="/index.js"></script>
+<script>
+
+  function getCookie(cname) {
+    let name = cname + "=";
+    let ca = document.cookie.split(';');
+    for (let i = 0; i < ca.length; i++) {
+      let c = ca[i];
+      while (c.charAt(0) == ' ') {
+        c = c.substring(1);
+      }
+      if (c.indexOf(name) == 0) {
+        return c.substring(name.length, c.length);
+      }
+    }
+    return "";
+  }
+
+  function setCookie(cname, cvalue, exdays) {
+    const d = new Date();
+    d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+    let expires = "expires=" + d.toUTCString();
+    document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+  }
+
+  function ensureIcon() {
+    if (document.body.classList.contains("dark-theme")) {
+      toggleDarkModeButton.innerHTML = '<i data-feather="sun"></i>';
+    } else {
+      toggleDarkModeButton.innerHTML = '<i data-feather="moon"></i>';
+    }
+    feather.replace();
+  }
+  function saveCookie() {
+    if (document.body.classList.contains("dark-theme")) {
+      setCookie("darkMode", "true", 365);
+    } else {
+      setCookie("darkMode", "false", 365);
+    }
+  }
+
+  function load(pre) {
+    link = pre.getAttribute("data-code-link");
+    const xhr = new XMLHttpRequest();
+    xhr.onload = () => {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        pre.className = "prettyprint";
+        pre.textContent = xhr.responseText;
+      }
+      prettyPrint();
+    };
+    xhr.open('GET', link);
+    xhr.send();
+  }
+
+  function onSearchButtonClicked(e) {
+    e.preventDefault();
+    var query = $("#queryTextField").val();
+    var terms = query.split(' ');
+    
+    var result = {};
+    for (var i = 0; i < terms.length; ++i) {
+      var term = terms[i].toLowerCase();
+      if (term in index.Terms)
+      {
+        for (i = 0; i < index.Terms[term].length; i += 2) {
+          var doc = index.Terms[term][i];
+          var count = index.Terms[term][i + 1];
+          if (doc in result) {
+            result[doc] += count;
+          } else {
+            result[doc] = count;
+          }
+        }
+      }
+    }
+    
+    $("#content").empty();
+    for (var key in result) {
+      $("#content").append($('<a>', {
+        href: index.Documents[key].replace("../../content","").replace(".md",""),
+        text: index.Titles[key]
+      }));
+      $("#content").append($('<br>'));
+    }
+  }
+
+  $(document).ready(function () {
+    var darkMode = getCookie("darkMode");
+    if (darkMode == "true") {
+      document.body.classList.add("dark-theme");
+      document.body.classList.remove("light-theme");
+    }
+    ensureIcon();
+
+    $("#toggleDarkModeButton").click(function (e) {
+      e.preventDefault();
+      document.body.classList.toggle("dark-theme");
+      document.body.classList.toggle("light-theme");
+      saveCookie();
+      ensureIcon();
+    });
+
+    $("#searchButton").click(onSearchButtonClicked);
+
+    var pres = document.getElementsByTagName("pre");
+    for (var i = 0; i < pres.length; ++i) {
+      var pre = pres[i];
+      if (pre.classList.contains("pretty-github-code")) {
+        load(pre);
+      }
+    }
+  });
+
+  $(window).on("load", function () {
+    $("body").show();
+  });
+</script></body>
+</html>

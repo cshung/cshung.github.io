@@ -6,7 +6,18 @@
     <description>Recent content on My Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 17 Dec 2022 12:31:46 -0800</lastBuildDate><atom:link href="https://cshung.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 21 May 2023 10:01:16 -0700</lastBuildDate><atom:link href="https://cshung.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Memory Corruption (4)</title>
+      <link>https://cshung.github.io/posts/memory-corruption-4/</link>
+      <pubDate>Sun, 21 May 2023 10:01:16 -0700</pubDate>
+      
+      <guid>https://cshung.github.io/posts/memory-corruption-4/</guid>
+      <description>An object reference pointing to outside of gen 1 In this post, I will talk about yet another memory corruption bug we found and fixed. Check out my previous post for more context and examples.
+Symptom As reported in this issue, we are hitting random crashes when running the FASTER database. Their developers kindly narrowed it down into a simple repro.
+A few observations  It crashes quickly on some machines, but on some others, it doesn&amp;rsquo;t.</description>
+    </item>
+    
     <item>
       <title>Memory Corruption (3)</title>
       <link>https://cshung.github.io/posts/memory-corruption-3/</link>
