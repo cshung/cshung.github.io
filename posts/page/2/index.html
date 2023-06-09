@@ -38,6 +38,20 @@
 <h1>Posts</h1>
 
 <p>
+    <h3><a class="title" href="/posts/fake-interior-pointer/">Fake Interior Pointer</a></h3>
+    
+
+<i data-feather="calendar"></i>
+<time datetime="2021-09-10">Sep 10, 2021</time>
+
+    <a class="summary" href="/posts/fake-interior-pointer/">
+        <p>GC reporting basics When CoreCLR performs a garbage collection, the GC asks the VM where the roots are. The runtime will report to the GC the pointers to the pointers of the objects. This process is called GC reporting.
+Suppose we have a pointer on the stack pointing to an object on the GC heap, it will look like this:
+Stack: Heap 0x00001000: .......... 0x00F00000: ..........: .......... ..........: .......... ..........: .</p>
+    </a>
+</p>
+
+<p>
     <h3><a class="title" href="/posts/false-memory-leak/">False Memory Leak</a></h3>
     
 
@@ -153,19 +167,6 @@ To use the notebook to get to the data frame, we need to run the first cell (as 
         <p>Benchmark design Armed with the knowledge about how the allocation ratios works in the previous post. Now we can design our benchmarks. My goal is to produce a pair of benchmarks so that I can compare pinning objects by using the old pinned handle, or by the new pinned object heap.
 In the pinned handle case, we can have a general design like this:
 Out of 1,000 objects in the SOH, \( a \) of them survives and \( b \) of them are pinned.</p>
-    </a>
-</p>
-
-<p>
-    <h3><a class="title" href="/posts/poh-tuning-3/">POH Tuning (Part 3 - Other statistical properties)</a></h3>
-    
-
-<i data-feather="calendar"></i>
-<time datetime="2021-03-01">Mar 1, 2021</time>
-
-    <a class="summary" href="/posts/poh-tuning-3/">
-        <p>In the last post, we discussed what the benchmark does and how the weights are computed. In this post, we will talk about some other interesting statistical properties. The lesson learned here is that we know how objects behave in the benchmark, and we can use this to judge whether or not the benchmark actually matches with real-life use cases.
-Object lifetime In this previous post, we know about an object&rsquo;s life cycle.</p>
     </a>
 </p>
 

@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/style.css">
+    <link rel="stylesheet" type="text/css" href="/css/syntax.css">
+    
+    
+    <title>My Blog | NativeAOT Development</title>
+
+
+</head><body class="light-theme"><div id="nav-border" class="container">
+    <nav id="nav" class="nav justify-content-center">
+        
+        <a class="nav-link" href="/">
+        
+        
+        <i data-feather="home"></i> 
+        
+        
+        Home
+        </a>
+        
+        <a class="nav-link" href="/tags/">
+        
+        
+        <i data-feather="tag"></i> 
+        
+        
+        Tags
+        </a>
+        
+        <a class="nav-link" href="#" id="toggleDarkModeButton"><i data-feather="sun"></i></a>
+        <span style="padding:5px"><input type="text" id="queryTextField"></span><a class="nav-link" href="#" id="searchButton"><i data-feather="search"></i></a>
+    </nav>
+</div><div id="content" style="margin:20px">
+<h1>NativeAOT Development</h1>
+
+
+<i data-feather="calendar"></i>
+<time datetime="2023-05-30">May 30, 2023</time>
+
+<br><br>
+<p>This post is written to document the process of development runtime or library features for NativeAOT. This is <em>NOT</em> meant for NativeAOT compiling your application.</p>
+<h1 id="hello-native-aot">Hello Native AOT</h1>
+<p>To begin with, we will start with building a HelloWorld application and then NativeAOT compile it. The application itself is unimportant, we can simply use <code>dotnet new console</code> to create a HelloWorld application.</p>
+<p>Next, we add the following MSBuild property to the project file:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="line"><span class="cl"><span class="nt">&lt;PublishAot&gt;</span>true<span class="nt">&lt;/PublishAot&gt;</span>
+</span></span></code></pre></div><p>This will enable the NativeAOT compilation during publish. We can then publish the application using the following command:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">dotnet publish
+</span></span></code></pre></div><p>This will generate a native executable in the publish folder, the problem is that it will be using whatever version of .NET you are targetting and installed.</p>
+<p>For our purpose, we would like to use our own build of .NET. To do that, we can add a specific reference to the ILCompiler nuget package on the dotnet 8 transport feed as follow:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="line"><span class="cl"><span class="nt">&lt;ItemGroup&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;PackageReference</span> <span class="na">Include=</span><span class="s">&#34;Microsoft.DotNet.ILCompiler&#34;</span> <span class="na">Version=</span><span class="s">&#34;*-*&#34;</span><span class="nt">/&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="nt">&lt;/ItemGroup&gt;</span>
+</span></span></code></pre></div><p>And also make the build system aware of the <code>dotnet8-transport</code> feed through the <code>nuget.config</code> file:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="line"><span class="cl"><span class="cp">&lt;?xml version=&#34;1.0&#34; encoding=&#34;utf-8&#34;?&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="nt">&lt;configuration&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&lt;packageSources&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="c">&lt;!--To inherit the global NuGet package sources remove the &lt;clear/&gt; line below --&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;clear</span> <span class="nt">/&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;add</span> <span class="na">key=</span><span class="s">&#34;dotnet8&#34;</span> <span class="na">value=</span><span class="s">&#34;https://pkgs.dev.azure.com/dnceng/public/_packaging/dotnet8/nuget/v3/index.json&#34;</span> <span class="nt">/&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;add</span> <span class="na">key=</span><span class="s">&#34;nuget&#34;</span> <span class="na">value=</span><span class="s">&#34;https://api.nuget.org/v3/index.json&#34;</span> <span class="nt">/&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&lt;/packageSources&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="nt">&lt;/configuration&gt;</span>
+</span></span></code></pre></div><p>Now the build will try to use the latest build it can find on the transport feed and hopefully this will be recent enough for the development.</p>
+<h1 id="determine-the-build">Determine the build</h1>
+<p>The next step is to determine the build we are using, this is to synchronize our development so that the change is based on top of the right commit.</p>
+<p>To do that, clean the <code>bin</code> and <code>obj</code> folder to force native compilation to happen. Then publish the app with the logging option as follow:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">dotnet publish -bl
+</span></span></code></pre></div><p>This will generate a file named <code>msbuild.binlog</code>, then we can inspect the log using the <a href="https://msbuildlog.com/">MSBuild Binary and Structured Log Viewer</a>. In particular, search for the <code>IlcCompile</code> target and look for the <code>CommandLineArguments</code> of the <code>Exec</code> task. That should show you the path to the <code>Ilc</code> executable, while should include the version number.</p>
+<h1 id="determining-the-commit-hash">Determining the commit hash</h1>
+<p>The version number is not enough, we need the commit hash so that we can synchronize the build. The easiest way to determine the commit hash is to look at the <code>Ilc</code> executable itself. On Windows, we can use the file explorer and right click to see the detail tab to find it. For Linux, we can use the <code>strings</code> command on the executable to find it.</p>
+<h1 id="synchronize-the-build">Synchronize the build</h1>
+<p>Once we have the commit hash, we can now synchronize our runtime repo clone to that commit hash, apply the desired changes, and build the runtime repo as usual. NativeAOT binaries are built as part of the CoreCLR subset.</p>
+<h1 id="use-the-build">Use the build</h1>
+<p>As we can see, the <code>Exec</code> task of the <code>IlcCompile</code> target contains the Ilc command line. It references a <code>rsp</code> file. We can change the RSP file to point to our locally built binaries. Similarly, the <code>Exec</code> task of the <code>LinkNative</code> target contains the Link command line, and we can just as easily change that target. With that, we can run those command lines and generate the final binary using our locally build NativeAOT binaries as we needed.</p>
+
+
+        </div><p class="footer text-center">Copyright (c) 2023 Andrew Au</p><script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true });</script>
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/prettify.js"></script>
+<script src="/js/feather.min.js"></script>
+<script src="/index.js"></script>
+<script>
+
+  function getCookie(cname) {
+    let name = cname + "=";
+    let ca = document.cookie.split(';');
+    for (let i = 0; i < ca.length; i++) {
+      let c = ca[i];
+      while (c.charAt(0) == ' ') {
+        c = c.substring(1);
+      }
+      if (c.indexOf(name) == 0) {
+        return c.substring(name.length, c.length);
+      }
+    }
+    return "";
+  }
+
+  function setCookie(cname, cvalue, exdays) {
+    const d = new Date();
+    d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+    let expires = "expires=" + d.toUTCString();
+    document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+  }
+
+  function ensureIcon() {
+    if (document.body.classList.contains("dark-theme")) {
+      toggleDarkModeButton.innerHTML = '<i data-feather="sun"></i>';
+    } else {
+      toggleDarkModeButton.innerHTML = '<i data-feather="moon"></i>';
+    }
+    feather.replace();
+  }
+  function saveCookie() {
+    if (document.body.classList.contains("dark-theme")) {
+      setCookie("darkMode", "true", 365);
+    } else {
+      setCookie("darkMode", "false", 365);
+    }
+  }
+
+  function load(pre) {
+    link = pre.getAttribute("data-code-link");
+    const xhr = new XMLHttpRequest();
+    xhr.onload = () => {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        pre.className = "prettyprint";
+        pre.textContent = xhr.responseText;
+      }
+      prettyPrint();
+    };
+    xhr.open('GET', link);
+    xhr.send();
+  }
+
+  function onSearchButtonClicked(e) {
+    e.preventDefault();
+    var query = $("#queryTextField").val();
+    var terms = query.split(' ');
+    
+    var result = {};
+    for (var i = 0; i < terms.length; ++i) {
+      var term = terms[i].toLowerCase();
+      if (term in index.Terms)
+      {
+        for (i = 0; i < index.Terms[term].length; i += 2) {
+          var doc = index.Terms[term][i];
+          var count = index.Terms[term][i + 1];
+          if (doc in result) {
+            result[doc] += count;
+          } else {
+            result[doc] = count;
+          }
+        }
+      }
+    }
+    
+    $("#content").empty();
+    for (var key in result) {
+      $("#content").append($('<a>', {
+        href: index.Documents[key].replace("../../content","").replace(".md",""),
+        text: index.Titles[key]
+      }));
+      $("#content").append($('<br>'));
+    }
+  }
+
+  $(document).ready(function () {
+    var darkMode = getCookie("darkMode");
+    if (darkMode == "true") {
+      document.body.classList.add("dark-theme");
+      document.body.classList.remove("light-theme");
+    }
+    ensureIcon();
+
+    $("#toggleDarkModeButton").click(function (e) {
+      e.preventDefault();
+      document.body.classList.toggle("dark-theme");
+      document.body.classList.toggle("light-theme");
+      saveCookie();
+      ensureIcon();
+    });
+
+    $("#searchButton").click(onSearchButtonClicked);
+
+    var pres = document.getElementsByTagName("pre");
+    for (var i = 0; i < pres.length; ++i) {
+      var pre = pres[i];
+      if (pre.classList.contains("pretty-github-code")) {
+        load(pre);
+      }
+    }
+  });
+
+  $(window).on("load", function () {
+    $("body").show();
+  });
+</script></body>
+</html>

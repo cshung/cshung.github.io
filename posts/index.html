@@ -38,6 +38,20 @@
 <h1>Posts</h1>
 
 <p>
+    <h3><a class="title" href="/posts/native-aot-development/">NativeAOT Development</a></h3>
+    
+
+<i data-feather="calendar"></i>
+<time datetime="2023-05-30">May 30, 2023</time>
+
+    <a class="summary" href="/posts/native-aot-development/">
+        <p>This post is written to document the process of development runtime or library features for NativeAOT. This is NOT meant for NativeAOT compiling your application.
+Hello Native AOT To begin with, we will start with building a HelloWorld application and then NativeAOT compile it. The application itself is unimportant, we can simply use dotnet new console to create a HelloWorld application.
+Next, we add the following MSBuild property to the project file:</p>
+    </a>
+</p>
+
+<p>
     <h3><a class="title" href="/posts/memory-corruption-4/">Memory Corruption (4)</a></h3>
     
 
@@ -155,20 +169,6 @@ using System; namespace ReadyToDebug { class Program { static void Main(string[]
     <a class="summary" href="/posts/optimize-bricks/">
         <p>In this post, I am going to talk about an optimization I made in the GC to reduce tail latency.
 Scenario One of our customers reported that occassionally, they are observing gen 1 GC taking longer time than usual. Usually, their gen 1 GC takes around 4 milliseconds, but once in a while it could be as long as 15 milliseconds, and this is getting into their tail latencies measurements.</p>
-    </a>
-</p>
-
-<p>
-    <h3><a class="title" href="/posts/fake-interior-pointer/">Fake Interior Pointer</a></h3>
-    
-
-<i data-feather="calendar"></i>
-<time datetime="2021-09-10">Sep 10, 2021</time>
-
-    <a class="summary" href="/posts/fake-interior-pointer/">
-        <p>GC reporting basics When CoreCLR performs a garbage collection, the GC asks the VM where the roots are. The runtime will report to the GC the pointers to the pointers of the objects. This process is called GC reporting.
-Suppose we have a pointer on the stack pointing to an object on the GC heap, it will look like this:
-Stack: Heap 0x00001000: .......... 0x00F00000: ..........: .......... ..........: .......... ..........: .</p>
     </a>
 </p>
 

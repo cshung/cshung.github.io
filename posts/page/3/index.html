@@ -38,6 +38,19 @@
 <h1>Posts</h1>
 
 <p>
+    <h3><a class="title" href="/posts/poh-tuning-3/">POH Tuning (Part 3 - Other statistical properties)</a></h3>
+    
+
+<i data-feather="calendar"></i>
+<time datetime="2021-03-01">Mar 1, 2021</time>
+
+    <a class="summary" href="/posts/poh-tuning-3/">
+        <p>In the last post, we discussed what the benchmark does and how the weights are computed. In this post, we will talk about some other interesting statistical properties. The lesson learned here is that we know how objects behave in the benchmark, and we can use this to judge whether or not the benchmark actually matches with real-life use cases.
+Object lifetime In this previous post, we know about an object&rsquo;s life cycle.</p>
+    </a>
+</p>
+
+<p>
     <h3><a class="title" href="/posts/poh-tuning-2/">POH Tuning (Part 2 - What am I running?)</a></h3>
     
 
@@ -173,20 +186,6 @@ Why does it matter? The GC expects the heap to be tightly packed with objects. I
 Please find the problem here. Solution:
 Suppose we have 3 A and 2 U, the first U can choose from 3 A, the second choose from 2 A, therefore, the number of matches for these 3 A and 2 U is 3 x 2 = 6. In general, the answer is the falling factorial. Code:
  </p>
-    </a>
-</p>
-
-<p>
-    <h3><a class="title" href="/posts/hello-reflection/">Hello Reflection</a></h3>
-    
-
-<i data-feather="calendar"></i>
-<time datetime="2020-12-05">Dec 5, 2020</time>
-
-    <a class="summary" href="/posts/hello-reflection/">
-        <p>To get started using ILCompiler.Reflection.ReadyToRun, let&rsquo;s construct a simple HelloWorld project. If you don&rsquo;t know what it is, please take a look at the previous post.
-Getting started We will create a .NET Core console application. Create a folder named HelloReflection and invoke dotnet new console.
-C:\dev&gt;mkdir HelloReflection C:\dev&gt;cd HelloReflection C:\dev\HelloReflection&gt;dotnet new console The template &#34;Console Application&#34; was created successfully. Processing post-creation actions... Running &#39;dotnet restore&#39; on C:\dev\HelloReflection\HelloReflection.csproj... Determining projects to restore.</p>
     </a>
 </p>
 

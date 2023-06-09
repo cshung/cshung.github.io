@@ -38,6 +38,20 @@
 <h1>Posts</h1>
 
 <p>
+    <h3><a class="title" href="/posts/hello-reflection/">Hello Reflection</a></h3>
+    
+
+<i data-feather="calendar"></i>
+<time datetime="2020-12-05">Dec 5, 2020</time>
+
+    <a class="summary" href="/posts/hello-reflection/">
+        <p>To get started using ILCompiler.Reflection.ReadyToRun, let&rsquo;s construct a simple HelloWorld project. If you don&rsquo;t know what it is, please take a look at the previous post.
+Getting started We will create a .NET Core console application. Create a folder named HelloReflection and invoke dotnet new console.
+C:\dev&gt;mkdir HelloReflection C:\dev&gt;cd HelloReflection C:\dev\HelloReflection&gt;dotnet new console The template &#34;Console Application&#34; was created successfully. Processing post-creation actions... Running &#39;dotnet restore&#39; on C:\dev\HelloReflection\HelloReflection.csproj... Determining projects to restore.</p>
+    </a>
+</p>
+
+<p>
     <h3><a class="title" href="/posts/coreclrgc-mono/">Debugging help for CoreCLR GC - Mono</a></h3>
     
 
@@ -209,29 +223,6 @@ Recall that the z array tell us the length of the z-box at the beginning of the 
 Please find the problem here.
 Solution:
 Denote the number of &lsquo;A&rsquo; to be x. Fixing a U, there are x choices. Once an A is used, it cannot be used anymore. Therefore, there are x! way to bond the A and U pairs. Similarly, we have y! way to bond the C and G pairs (where y is the number of &lsquo;C&rsquo;). Therefore the total number of ways to bond these pairs is x!</p>
-    </a>
-</p>
-
-<p>
-    <h3><a class="title" href="/posts/rosalind-open-reading-frames/">Rosalind - Open Reading Frames</a></h3>
-    
-
-<i data-feather="calendar"></i>
-<time datetime="2020-08-20">Aug 20, 2020</time>
-
-<i data-feather="tag"></i>
-
-
-<a class="btn btn-sm btn-outline-dark tag-btn" href="https://cshung.github.io/tags/rosalind">rosalind</a>
-
-
-    <a class="summary" href="/posts/rosalind-open-reading-frames/">
-        <p>Problem:
-Please find the problem here.
-Solution:
-There are two parts to this problem. We need to find all the start and stop codons, and we need to pair them up so that we know where to start and stop decoding.
-The former is performed using the Aho Corasick algorithm, by using a trie, we can match all codons in a single pass.
-Imagine we are walking from left to right, whenever we see a stop codon, we want all the start codon before it that is after the last stop codon.</p>
     </a>
 </p>
 

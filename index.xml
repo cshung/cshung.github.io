@@ -6,7 +6,18 @@
     <description>Recent content on My Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 21 May 2023 10:01:16 -0700</lastBuildDate><atom:link href="https://cshung.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 30 May 2023 12:19:41 -0700</lastBuildDate><atom:link href="https://cshung.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>NativeAOT Development</title>
+      <link>https://cshung.github.io/posts/native-aot-development/</link>
+      <pubDate>Tue, 30 May 2023 12:19:41 -0700</pubDate>
+      
+      <guid>https://cshung.github.io/posts/native-aot-development/</guid>
+      <description>This post is written to document the process of development runtime or library features for NativeAOT. This is NOT meant for NativeAOT compiling your application.
+Hello Native AOT To begin with, we will start with building a HelloWorld application and then NativeAOT compile it. The application itself is unimportant, we can simply use dotnet new console to create a HelloWorld application.
+Next, we add the following MSBuild property to the project file:</description>
+    </item>
+    
     <item>
       <title>Memory Corruption (4)</title>
       <link>https://cshung.github.io/posts/memory-corruption-4/</link>
