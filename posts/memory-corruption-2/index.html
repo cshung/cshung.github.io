@@ -95,7 +95,7 @@
 <p>We are currently at the <code>ptr</code> of an allocation context and we see zero, so there must be something wrong with the <code>fix_allocation_context</code> not doing its job. Indeed, there is something wrong in that area of code, and this <a href="https://github.com/dotnet/runtime/pull/54931">PR</a> fixed it. The key issue is that with regions, there could be multiple linked regions representing the old to new objects, and in general the region addresses are not sorted, so we need to check explicitly that we are at the end of the <code>ephemeral_heap_segment</code> or not when trying to decide which case we should do to fix the allocation context.</p>
 
 
-        </div><p class="footer text-center">Copyright (c) 2023 Andrew Au</p><script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
+        </div><p class="footer text-center">Copyright (c) 2024 Andrew Au</p><script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
 <script>mermaid.initialize({ startOnLoad: true });</script>
 <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>

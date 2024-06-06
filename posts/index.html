@@ -38,6 +38,21 @@
 <h1>Posts</h1>
 
 <p>
+    <h3><a class="title" href="/posts/linux-virtual-memory-mapping-debugging/">Linux Virtual Memory Mapping Debugging</a></h3>
+    
+
+<i data-feather="calendar"></i>
+<time datetime="2024-06-05">Jun 5, 2024</time>
+
+    <a class="summary" href="/posts/linux-virtual-memory-mapping-debugging/">
+        <p>In this post, I will talk an issue related to Linux virtual memory mapping exhaustion. The issue involve understanding the Linux memory management subsystem, and so it is quite interesting to look at.
+For the impatient, this blog entry described some concepts for Linux virtual memory, described the debugging process, and proposed the next steps.
+What is the problem? In this GitHub issue, customers are hitting this error.
+Fatal error. Failed to create RW mapping for RX memory.</p>
+    </a>
+</p>
+
+<p>
     <h3><a class="title" href="/posts/native-aot-development/">NativeAOT Development</a></h3>
     
 
@@ -61,7 +76,7 @@ Next, we add the following MSBuild property to the project file:</p>
     <a class="summary" href="/posts/memory-corruption-4/">
         <p>An object reference pointing to outside of gen 1 In this post, I will talk about yet another memory corruption bug we found and fixed. Check out my previous post for more context and examples.
 Symptom As reported in this issue, we are hitting random crashes when running the FASTER database. Their developers kindly narrowed it down into a simple repro.
-A few observations  It crashes quickly on some machines, but on some others, it doesn&rsquo;t.</p>
+A few observations It crashes quickly on some machines, but on some others, it doesn&rsquo;t.</p>
     </a>
 </p>
 
@@ -89,7 +104,7 @@ A first look When the program crashes at the object equality check.</p>
     <a class="summary" href="/posts/soccer-with-socks/">
         <p>As of the time of writing, tomorrow is the final for World Cup 2022. It is a pity to miss it. Unfortunately, in the US, unlike most other places in the world, you can&rsquo;t watch it for free, while it is available for free online in many other countries.
 To get around that restriction, I &hellip;
- hosted a cheap Linux virtual machine on Azure. used SSH as a sock server.</p>
+hosted a cheap Linux virtual machine on Azure. used SSH as a sock server. used SSH tunnel to encrypt the traffic, and made Chrome use the sock server and start watching Part 1 - hosting a Linux Virtual Machine After logging on the Azure portal, I can easily create a Linux virtual machine.</p>
     </a>
 </p>
 
@@ -116,7 +131,8 @@ Procedure Step 1: Launching the App. I start the MAUI app in Visual Studio as us
     <a class="summary" href="/posts/sais/">
         <p>Today, I would like to write about my understanding of the SA-IS algorithm for constructing a suffix array.
 What is a suffix array? Consider the string &ldquo;banana&rdquo;, this string has 6 suffixes.
-   suffix index     banana 0   anana 1   nana 2   ana 3   na 4   a 5    And if we sort them, we have these:</p>
+suffix index banana 0 anana 1 nana 2 ana 3 na 4 a 5 And if we sort them, we have these:
+suffix index a 5 ana 3 anana 1 banana 0 na 4 nana 2 And therefore the suffix array is [5,3,1,0,4,2].</p>
     </a>
 </p>
 
@@ -159,19 +175,6 @@ using System; namespace ReadyToDebug { class Program { static void Main(string[]
     </a>
 </p>
 
-<p>
-    <h3><a class="title" href="/posts/optimize-bricks/">Optimize Bricks</a></h3>
-    
-
-<i data-feather="calendar"></i>
-<time datetime="2021-10-06">Oct 6, 2021</time>
-
-    <a class="summary" href="/posts/optimize-bricks/">
-        <p>In this post, I am going to talk about an optimization I made in the GC to reduce tail latency.
-Scenario One of our customers reported that occassionally, they are observing gen 1 GC taking longer time than usual. Usually, their gen 1 GC takes around 4 milliseconds, but once in a while it could be as long as 15 milliseconds, and this is getting into their tail latencies measurements.</p>
-    </a>
-</p>
-
     <ul class="pagination pagination-default">
       <li class="page-item disabled">
         <a aria-disabled="true" aria-label="First" class="page-link" role="button" tabindex="-1"><span aria-hidden="true">&laquo;&laquo;</span></a>
@@ -201,7 +204,7 @@ Scenario One of our customers reported that occassionally, they are observing ge
         <a href="/posts/page/9/" aria-label="Last" class="page-link" role="button"><span aria-hidden="true">&raquo;&raquo;</span></a>
       </li>
     </ul>
-        </div><p class="footer text-center">Copyright (c) 2023 Andrew Au</p><script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
+        </div><p class="footer text-center">Copyright (c) 2024 Andrew Au</p><script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
 <script>mermaid.initialize({ startOnLoad: true });</script>
 <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>

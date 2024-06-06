@@ -38,6 +38,29 @@
 <h1>Posts</h1>
 
 <p>
+    <h3><a class="title" href="/posts/rosalind-finding-a-shared-spliced-motif/">Rosalind - Finding a Shared Spliced Motif</a></h3>
+    
+
+<i data-feather="calendar"></i>
+<time datetime="2019-09-08">Sep 8, 2019</time>
+
+<i data-feather="tag"></i>
+
+
+<a class="btn btn-sm btn-outline-dark tag-btn" href="https://cshung.github.io/tags/rosalind">rosalind</a>
+
+
+    <a class="summary" href="/posts/rosalind-finding-a-shared-spliced-motif/">
+        <p>Problem:
+Please find the problem here.
+Solution:
+This is the classic longest common subsequence problem, it can be solved using the Levenshtein edit distance algorithm.
+If we disallow replacing characters, then the edit can be visualized as an alignment of two strings as follow:
+A A C C T T G G A C A C T G T G A When the first string has a gap, this is an insertion operation.</p>
+    </a>
+</p>
+
+<p>
     <h3><a class="title" href="/posts/rosalind-introduction-to-set-operations/">Rosalind - Introduction to Set Operations</a></h3>
     
 
@@ -55,8 +78,7 @@
 Please find the problem here.
 Solution:
 This is rather straightforward. By making the input sets hash tables, we can do these set operations fast.
-Code:
- </p>
+Code:</p>
     </a>
 </p>
 
@@ -78,8 +100,7 @@ Code:
 Please find the problem here.
 Solution:
 To find the corresponding indexes, we initialize two pointers to the beginning of both strings. Walk the sequence pointer one by one, and walk the subsequence pointer only when there is a match. This way we will find all the indexes.
-Code:
- </p>
+Code:</p>
     </a>
 </p>
 
@@ -101,8 +122,7 @@ Code:
 Please find the problem here.
 Solution:
 The number of subsets of a set of size \( n \) is \( 2^n \). The following code implements the repeated squaring algorithm. The numbers are computed modulo \( 1000000 \) as soon as we are done with multiplying. This is done to keep the number small, and so that the multiplications are quick.
-Code:
- </p>
+Code:</p>
     </a>
 </p>
 
@@ -168,8 +188,7 @@ Unlike the earlier problem Overlap Graphs, we do not know how long is the overla
 Please find the problem here.
 Solution:
 By iteratively eliminating leaves, it is easy to see that a tree of \( n \) nodes has \( n - 1 \) edges. Therefore the solution is simply computing \( (n - 1) \) - number of edges, which is also equal to \( n \) - number of lines. Remember the first line is the number of nodes :)
-Code:
- </p>
+Code:</p>
     </a>
 </p>
 
@@ -191,8 +210,7 @@ Code:
 Please find the problem here.
 Solution:
 This is simply the permutation coefficient. All we need to do is to compute it.
-Code:
- </p>
+Code:</p>
     </a>
 </p>
 
@@ -214,8 +232,7 @@ Code:
 Please find the problem here.
 Solution:
 This solution is based on dynamic programming, in particular, patience sorting. The code should explain in details how its work.
-Code:
- </p>
+Code:</p>
     </a>
 </p>
 
@@ -237,30 +254,6 @@ Code:
 Please find the problem here.
 Solution:
 The key to do this problem is to interpret these k-mers as an integer with the number of alphabets as a base. That way enumerating them lexicographically is simply looping.
-Code:
- </p>
-    </a>
-</p>
-
-<p>
-    <h3><a class="title" href="/posts/rosalind-rna-splicing/">Rosalind - RNA Splicing</a></h3>
-    
-
-<i data-feather="calendar"></i>
-<time datetime="2019-09-01">Sep 1, 2019</time>
-
-<i data-feather="tag"></i>
-
-
-<a class="btn btn-sm btn-outline-dark tag-btn" href="https://cshung.github.io/tags/rosalind">rosalind</a>
-
-
-    <a class="summary" href="/posts/rosalind-rna-splicing/">
-        <p>Problem:
-Please find the problem here.
-Solution:
-I am lazy with this one. I could try my hands on the rope data structure, but I didn&rsquo;t. I simply reconstructed the string again and again on the splicing.
-To implement this properly with the rope data structure is going to be challenging. In particular, I need to implement my own version of fast substring search on the rope data structure.
 Code:</p>
     </a>
 </p>
@@ -294,7 +287,7 @@ Code:</p>
         <a href="/posts/page/9/" aria-label="Last" class="page-link" role="button"><span aria-hidden="true">&raquo;&raquo;</span></a>
       </li>
     </ul>
-        </div><p class="footer text-center">Copyright (c) 2023 Andrew Au</p><script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
+        </div><p class="footer text-center">Copyright (c) 2024 Andrew Au</p><script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
 <script>mermaid.initialize({ startOnLoad: true });</script>
 <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>

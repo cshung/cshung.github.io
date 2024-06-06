@@ -161,8 +161,8 @@
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">volatile</span> <span class="n">uint</span> <span class="o">*</span><span class="n">lapic</span><span class="p">;</span>  <span class="c1">// Initialized in mp.c
 </span></span></span></code></pre></div><p>and here it is in mp.c:</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl">  <span class="p">...</span>
-</span></span><span class="line"><span class="cl">  <span class="k">if</span><span class="p">((</span><span class="n">conf</span> <span class="o">=</span> <span class="n">mpconfig</span><span class="p">(</span><span class="o">&amp;</span><span class="n">mp</span><span class="p">))</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">    <span class="n">panic</span><span class="p">(</span><span class="s">&#34;Expect to run on an SMP&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">if</span><span class="p">((</span><span class="n">conf</span> <span class="o">=</span> <span class="nf">mpconfig</span><span class="p">(</span><span class="o">&amp;</span><span class="n">mp</span><span class="p">))</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">panic</span><span class="p">(</span><span class="s">&#34;Expect to run on an SMP&#34;</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">  <span class="n">ismp</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">  <span class="n">lapic</span> <span class="o">=</span> <span class="p">(</span><span class="n">uint</span><span class="o">*</span><span class="p">)</span><span class="n">conf</span><span class="o">-&gt;</span><span class="n">lapicaddr</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">  <span class="p">...</span>
@@ -182,15 +182,15 @@
 </span></span><span class="line"><span class="cl">  <span class="kt">int</span> <span class="n">i</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">  <span class="n">uint</span> <span class="n">pcs</span><span class="p">[</span><span class="mi">10</span><span class="p">];</span>
 </span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">  <span class="n">cli</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="nf">cli</span><span class="p">();</span>
 </span></span><span class="line"><span class="cl">  <span class="n">cons</span><span class="p">.</span><span class="n">locking</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">  <span class="c1">// use lapiccpunum so that we can call panic from mycpu()
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="n">cprintf</span><span class="p">(</span><span class="s">&#34;lapicid %d: panic: &#34;</span><span class="p">,</span> <span class="n">lapicid</span><span class="p">());</span>
-</span></span><span class="line"><span class="cl">  <span class="n">cprintf</span><span class="p">(</span><span class="n">s</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">  <span class="n">cprintf</span><span class="p">(</span><span class="s">&#34;</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">  <span class="n">getcallerpcs</span><span class="p">(</span><span class="o">&amp;</span><span class="n">s</span><span class="p">,</span> <span class="n">pcs</span><span class="p">);</span>
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="nf">cprintf</span><span class="p">(</span><span class="s">&#34;lapicid %d: panic: &#34;</span><span class="p">,</span> <span class="nf">lapicid</span><span class="p">());</span>
+</span></span><span class="line"><span class="cl">  <span class="nf">cprintf</span><span class="p">(</span><span class="n">s</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="nf">cprintf</span><span class="p">(</span><span class="s">&#34;</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="nf">getcallerpcs</span><span class="p">(</span><span class="o">&amp;</span><span class="n">s</span><span class="p">,</span> <span class="n">pcs</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">  <span class="k">for</span><span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="mi">10</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">    <span class="n">cprintf</span><span class="p">(</span><span class="s">&#34; %p&#34;</span><span class="p">,</span> <span class="n">pcs</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">cprintf</span><span class="p">(</span><span class="s">&#34; %p&#34;</span><span class="p">,</span> <span class="n">pcs</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
 </span></span><span class="line"><span class="cl">  <span class="n">panicked</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="c1">// freeze other CPU
 </span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">for</span><span class="p">(;;)</span>
 </span></span><span class="line"><span class="cl">    <span class="p">;</span>
@@ -198,15 +198,15 @@
 </span></span></code></pre></div><p>Now we know, there is a function named <code>cprintf()</code> that can print something to the screen. Now, let&rsquo;s use that to figure out what is <code>conf</code>. I changed it so that it prints the value of <code>conf</code>.</p>
 <p>From:</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl">  <span class="p">...</span>
-</span></span><span class="line"><span class="cl">  <span class="k">if</span><span class="p">((</span><span class="n">conf</span> <span class="o">=</span> <span class="n">mpconfig</span><span class="p">(</span><span class="o">&amp;</span><span class="n">mp</span><span class="p">))</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">     <span class="n">panic</span><span class="p">(</span><span class="s">&#34;Expect to run on an SMP&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">if</span><span class="p">((</span><span class="n">conf</span> <span class="o">=</span> <span class="nf">mpconfig</span><span class="p">(</span><span class="o">&amp;</span><span class="n">mp</span><span class="p">))</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">     <span class="nf">panic</span><span class="p">(</span><span class="s">&#34;Expect to run on an SMP&#34;</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">  <span class="p">...</span>
 </span></span></code></pre></div><p>To:</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl">  <span class="p">...</span>
-</span></span><span class="line"><span class="cl">  <span class="n">conf</span> <span class="o">=</span> <span class="n">mpconfig</span><span class="p">(</span><span class="o">&amp;</span><span class="n">mp</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">  <span class="n">cprintf</span><span class="p">(</span><span class="s">&#34;conf = %p</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">conf</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="n">conf</span> <span class="o">=</span> <span class="nf">mpconfig</span><span class="p">(</span><span class="o">&amp;</span><span class="n">mp</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="nf">cprintf</span><span class="p">(</span><span class="s">&#34;conf = %p</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">conf</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">  <span class="k">if</span><span class="p">(</span><span class="n">conf</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">     <span class="n">panic</span><span class="p">(</span><span class="s">&#34;Expect to run on an SMP&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">     <span class="nf">panic</span><span class="p">(</span><span class="s">&#34;Expect to run on an SMP&#34;</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">  <span class="p">...</span>
 </span></span></code></pre></div><p>Now we see this, the address is always <code>800f6ef0</code>. Now we can investigate what populated that address.</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="cl">SeaBIOS (version rel-1.10.0-39-g3fdabae-dirty-20170530_143849-nyu)
@@ -345,7 +345,7 @@ Now we have some context, 0x801024EB, which is <code>kfree</code>. Further ahead
 </span></span></code></pre></div><p>This is an obvious error, that we need a separate disk. It could be a hard task, but turn out the code is mostly already available on v86. All I did in <a href="https://github.com/copy/v86/commit/6ab0fa85a985743ac35c2b470dc4ecafdad6889e">this commit</a> is to configure it and surface it to the web frontend. With the slave hard disk connected to <code>fs.img</code>, the system booted successfully!.</p>
 
 
-        </div><p class="footer text-center">Copyright (c) 2023 Andrew Au</p><script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
+        </div><p class="footer text-center">Copyright (c) 2024 Andrew Au</p><script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
 <script>mermaid.initialize({ startOnLoad: true });</script>
 <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>

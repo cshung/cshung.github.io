@@ -6,7 +6,19 @@
     <description>Recent content on My Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 30 May 2023 12:19:41 -0700</lastBuildDate><atom:link href="https://cshung.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 05 Jun 2024 13:33:14 -0700</lastBuildDate><atom:link href="https://cshung.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Linux Virtual Memory Mapping Debugging</title>
+      <link>https://cshung.github.io/posts/linux-virtual-memory-mapping-debugging/</link>
+      <pubDate>Wed, 05 Jun 2024 13:33:14 -0700</pubDate>
+      
+      <guid>https://cshung.github.io/posts/linux-virtual-memory-mapping-debugging/</guid>
+      <description>In this post, I will talk an issue related to Linux virtual memory mapping exhaustion. The issue involve understanding the Linux memory management subsystem, and so it is quite interesting to look at.
+For the impatient, this blog entry described some concepts for Linux virtual memory, described the debugging process, and proposed the next steps.
+What is the problem? In this GitHub issue, customers are hitting this error.
+Fatal error. Failed to create RW mapping for RX memory.</description>
+    </item>
+    
     <item>
       <title>NativeAOT Development</title>
       <link>https://cshung.github.io/posts/native-aot-development/</link>
@@ -26,7 +38,7 @@ Next, we add the following MSBuild property to the project file:</description>
       <guid>https://cshung.github.io/posts/memory-corruption-4/</guid>
       <description>An object reference pointing to outside of gen 1 In this post, I will talk about yet another memory corruption bug we found and fixed. Check out my previous post for more context and examples.
 Symptom As reported in this issue, we are hitting random crashes when running the FASTER database. Their developers kindly narrowed it down into a simple repro.
-A few observations  It crashes quickly on some machines, but on some others, it doesn&amp;rsquo;t.</description>
+A few observations It crashes quickly on some machines, but on some others, it doesn&amp;rsquo;t.</description>
     </item>
     
     <item>
@@ -48,7 +60,7 @@ A first look When the program crashes at the object equality check.</description
       <guid>https://cshung.github.io/posts/soccer-with-socks/</guid>
       <description>As of the time of writing, tomorrow is the final for World Cup 2022. It is a pity to miss it. Unfortunately, in the US, unlike most other places in the world, you can&amp;rsquo;t watch it for free, while it is available for free online in many other countries.
 To get around that restriction, I &amp;hellip;
- hosted a cheap Linux virtual machine on Azure. used SSH as a sock server.</description>
+hosted a cheap Linux virtual machine on Azure. used SSH as a sock server. used SSH tunnel to encrypt the traffic, and made Chrome use the sock server and start watching Part 1 - hosting a Linux Virtual Machine After logging on the Azure portal, I can easily create a Linux virtual machine.</description>
     </item>
     
     <item>
@@ -69,7 +81,8 @@ Procedure Step 1: Launching the App. I start the MAUI app in Visual Studio as us
       <guid>https://cshung.github.io/posts/sais/</guid>
       <description>Today, I would like to write about my understanding of the SA-IS algorithm for constructing a suffix array.
 What is a suffix array? Consider the string &amp;ldquo;banana&amp;rdquo;, this string has 6 suffixes.
-   suffix index     banana 0   anana 1   nana 2   ana 3   na 4   a 5    And if we sort them, we have these:</description>
+suffix index banana 0 anana 1 nana 2 ana 3 na 4 a 5 And if we sort them, we have these:
+suffix index a 5 ana 3 anana 1 banana 0 na 4 nana 2 And therefore the suffix array is [5,3,1,0,4,2].</description>
     </item>
     
     <item>
@@ -254,8 +267,7 @@ I wanted to implement a solution that is analogous to an odometer. The key thing
       <guid>https://cshung.github.io/posts/rosalind-k-mer-composition/</guid>
       <description>Problem:
 Please find the problem here. Solution:
-To produce the array, slide a window of width 4 from the leftmost to the rightmost of the string. When processing a window, we quickly compute the k-mer index as a base 4 number. Code:
- </description>
+To produce the array, slide a window of width 4 from the leftmost to the rightmost of the string. When processing a window, we quickly compute the k-mer index as a base 4 number. Code:</description>
     </item>
     
     <item>
@@ -315,8 +327,7 @@ Why does it matter? The GC expects the heap to be tightly packed with objects. I
       <guid>https://cshung.github.io/posts/rosalind-maximum-matchings-and-rna-secondary-structures/</guid>
       <description>Problem:
 Please find the problem here. Solution:
-Suppose we have 3 A and 2 U, the first U can choose from 3 A, the second choose from 2 A, therefore, the number of matches for these 3 A and 2 U is 3 x 2 = 6. In general, the answer is the falling factorial. Code:
- </description>
+Suppose we have 3 A and 2 U, the first U can choose from 3 A, the second choose from 2 A, therefore, the number of matches for these 3 A and 2 U is 3 x 2 = 6. In general, the answer is the falling factorial. Code:</description>
     </item>
     
     <item>
@@ -375,8 +386,7 @@ That observation immediately suggests a dynamic programming approach where sub-p
 Please find the problem here.
 Solution:
 As we have already pre-computed the shortest path in the previous problem, all we have to present the shortest path.
-Code:
- </description>
+Code:</description>
     </item>
     
     <item>
@@ -403,8 +413,7 @@ The set of all solutions is daunting (10!) squared. I make one observation to ma
 Please find the problem here.
 Solution:
 This is just calculating the pairwise hamming distance as required.
-Code:
- </description>
+Code:</description>
     </item>
     
     <item>
@@ -466,8 +475,7 @@ Imagine we are walking from left to right, whenever we see a stop codon, we want
 Please find the problem here.
 Solution:
 This is just a counting exercise
-Code:
- </description>
+Code:</description>
     </item>
     
     <item>
@@ -490,8 +498,7 @@ What can it do? If you open a ReadyToRun image in ILSpy, it will show up exactly
 Please find the problem here.
 Solution:
 Like the previous problem, we use a recursive routine to generate all permutations. For each permutation, we will use another recursion to give each element a sign.
-Code:
- </description>
+Code:</description>
     </item>
     
     <item>
@@ -504,8 +511,7 @@ Code:
 Please find the problem here.
 Solution:
 Again, using the matrix generated by the Levenshtein&amp;rsquo;s edit distance algorithm, we can compute the shortest common super sequence.
-Code:
- </description>
+Code:</description>
     </item>
     
     <item>
@@ -528,8 +534,7 @@ The key characteristic of these two systems is that they are simple compared to 
 Please find the problem here.
 Solution:
 Again, using the matrix generated by the Levenshtein&amp;rsquo;s edit distance algorithm, we can compute the alignment.
-Code:
- </description>
+Code:</description>
     </item>
     
     <item>
@@ -553,8 +558,7 @@ What is native compilation? When a managed language (such as C#) is compiled, it
 Please find the problem here.
 Solution:
 After implementing the Levenshtein&amp;rsquo;s edit distance algorithm, it is time to use it :)
-Code:
- </description>
+Code:</description>
     </item>
     
     <item>
@@ -568,7 +572,7 @@ Please find the problem here.
 Solution:
 This is the classic longest common subsequence problem, it can be solved using the Levenshtein edit distance algorithm.
 If we disallow replacing characters, then the edit can be visualized as an alignment of two strings as follow:
-                  A  A C C T  T G G    A C A C  T G T G  A    When the first string has a gap, this is an insertion operation.</description>
+A A C C T T G G A C A C T G T G A When the first string has a gap, this is an insertion operation.</description>
     </item>
     
     <item>
@@ -581,8 +585,7 @@ If we disallow replacing characters, then the edit can be visualized as an align
 Please find the problem here.
 Solution:
 This is rather straightforward. By making the input sets hash tables, we can do these set operations fast.
-Code:
- </description>
+Code:</description>
     </item>
     
     <item>
@@ -595,8 +598,7 @@ Code:
 Please find the problem here.
 Solution:
 To find the corresponding indexes, we initialize two pointers to the beginning of both strings. Walk the sequence pointer one by one, and walk the subsequence pointer only when there is a match. This way we will find all the indexes.
-Code:
- </description>
+Code:</description>
     </item>
     
     <item>
@@ -609,8 +611,7 @@ Code:
 Please find the problem here.
 Solution:
 The number of subsets of a set of size \( n \) is \( 2^n \). The following code implements the repeated squaring algorithm. The numbers are computed modulo \( 1000000 \) as soon as we are done with multiplying. This is done to keep the number small, and so that the multiplications are quick.
-Code:
- </description>
+Code:</description>
     </item>
     
     <item>
@@ -649,8 +650,7 @@ Unlike the earlier problem Overlap Graphs, we do not know how long is the overla
 Please find the problem here.
 Solution:
 By iteratively eliminating leaves, it is easy to see that a tree of \( n \) nodes has \( n - 1 \) edges. Therefore the solution is simply computing \( (n - 1) \) - number of edges, which is also equal to \( n \) - number of lines. Remember the first line is the number of nodes :)
-Code:
- </description>
+Code:</description>
     </item>
     
     <item>
@@ -663,8 +663,7 @@ Code:
 Please find the problem here.
 Solution:
 This is simply the permutation coefficient. All we need to do is to compute it.
-Code:
- </description>
+Code:</description>
     </item>
     
     <item>
@@ -677,8 +676,7 @@ Code:
 Please find the problem here.
 Solution:
 This solution is based on dynamic programming, in particular, patience sorting. The code should explain in details how its work.
-Code:
- </description>
+Code:</description>
     </item>
     
     <item>
@@ -691,8 +689,7 @@ Code:
 Please find the problem here.
 Solution:
 The key to do this problem is to interpret these k-mers as an integer with the number of alphabets as a base. That way enumerating them lexicographically is simply looping.
-Code:
- </description>
+Code:</description>
     </item>
     
     <item>
@@ -721,8 +718,7 @@ Solution:
 A restriction site is basically a palindrome (with the complement twist). I modified the Manacher&amp;rsquo;s algorithm to solve this problem.
 First, when trying to expand to find palindrome half-length, I apply the complement rule.
 Second, I skipped the &amp;lsquo;#&amp;rsquo; sign thing because we knew all palindromes will be of even length.
-Code:
- </description>
+Code:</description>
     </item>
     
     <item>
@@ -735,8 +731,7 @@ Code:
 Please find the problem here.
 Solution:
 This is simply mapping from protein to their mass and then sum it up
-Code:
- </description>
+Code:</description>
     </item>
     
     <item>
@@ -750,8 +745,7 @@ Please find the problem here.
 Solution:
 I attempted to create a solution that processes each character exactly once, and I succeed, here is the state machine that works.
 The diagram should be self-evident - the code is a just a faithful implementation of the diagram.
-Code:
- </description>
+Code:</description>
     </item>
     
     <item>
@@ -764,8 +758,7 @@ Code:
 Please find the problem here.
 Solution:
 A simple recursive solution is to pick one out of the list, and compute the permutation of the rest. The problem is, how do we represent &amp;rsquo;the rest&amp;rsquo;? My approach is that we make sure the suffix of the list is &amp;rsquo;the rest&amp;rsquo;, and therefore we can simply use an integer to represent the rest.
-Code:
- </description>
+Code:</description>
     </item>
     
     <item>
@@ -778,8 +771,7 @@ Code:
 Please find the problem here.
 Solution:
 To figure out how many RNA is possible, we simply multiply all possibilities. Note that we also make sure the protein ends with a stop codon.
-Code:
- </description>
+Code:</description>
     </item>
     
     <item>
@@ -822,8 +814,7 @@ The probability for Aa-aa to produce an offspring with a dominant phenotype offs
 Please find the problem here.
 Solution:
 To construct the graph, we go through every pair, excluding self-loops, and output an edge when the suffix matches the prefix. Care is taken to make sure the string actually has at least 3 characters.
-Code:
- </description>
+Code:</description>
     </item>
     
     <item>
@@ -862,8 +853,7 @@ Conceptually, it is easy. We know rabbits can have life from \( 0 \) to \( m - 1
 Please find the problem here.
 Solution:
 Because we need to output the whole matrix, we just simply have to compute it.
-Code:
- </description>
+Code:</description>
     </item>
     
     <item>
@@ -877,8 +867,7 @@ Please find the problem here.
 Solution:
 This feels like cheating. The problem is obviously asking for implementing a substring search, and I am using the Python builtin.
 I have implemented Boyer Moore in C#, so I don&amp;rsquo;t feel bad. In fact, I validated my implementation using the Rosalind test cases, and it passed there as well.
-Code:
- </description>
+Code:</description>
     </item>
     
     <item>
@@ -891,8 +880,7 @@ Code:
 Please find the problem here.
 Solution:
 To perform the translation, we used a lookup table.
-Code:
- </description>
+Code:</description>
     </item>
     
     <item>
@@ -921,8 +909,7 @@ The probability of getting a homozygous recessive is therefore:</description>
 Please find the problem here.
 Solution:
 To compute the Hamming distance, we walk the strings together and count the number of differences.
-Code:
- </description>
+Code:</description>
     </item>
     
     <item>
@@ -935,8 +922,7 @@ Code:
 Please find the problem here.
 Solution:
 The only challenge for this problem is to parse the FASTA format. To make life easy, I added a &amp;lsquo;&amp;gt;&amp;rsquo; sign at the end of all the inputs - now every DNA is simply a &amp;lsquo;&amp;gt;&amp;rsquo; terminating string. Therefore a simple scan of the file parses all the input correctly.
-Code:
- </description>
+Code:</description>
     </item>
     
     <item>
@@ -976,8 +962,7 @@ To build a string, I was thinking about something like a StringBuilder, but ther
 Please find the problem here.
 Solution:
 This one is even simpler than the one before, this is just replacing a single character.
-Code:
- </description>
+Code:</description>
     </item>
     
     <item>
@@ -990,8 +975,7 @@ Code:
 Please find the problem here.
 Solution:
 The problem is very simple, just counting the number of alphabets.
-Code:
- </description>
+Code:</description>
     </item>
     
     <item>
@@ -1004,8 +988,7 @@ Code:
 Please find the problem here.
 Solution:
 A necessary condition is that the total number of candies can be distributed evenly, therefore we check if sum % N == 0. In that case, all bags with less candies must get filled, and there must be one available. So we sum the total number of candies needed to fill and that&amp;rsquo;s the answer.
-Code:
- </description>
+Code:</description>
     </item>
     
     <item>
@@ -1031,8 +1014,7 @@ If I am at a certain node n1 with certain an initial time constraint T1before, a
 Please find the problem here.
 Solution:
 Using the segment tree like in SPOJ_LITE_2. This time the summary is the sum instead of on light count, but it is just as easy to update those summaries.
-Code:
- </description>
+Code:</description>
     </item>
     
     <item>
@@ -1073,8 +1055,7 @@ Please find the problem here.
 Solution:
 To celebrate I have done with my 42nd problem, I decided to attempt this question. Apparently, this isn&amp;rsquo;t really a question, we can just get it accepted blindfolded - yes, it is that easy :p
 Consider this a joke in this blog!
-Code:
- </description>
+Code:</description>
     </item>
     
     <item>

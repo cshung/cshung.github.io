@@ -17,8 +17,7 @@
 Please find the problem here.
 Solution:
 A necessary condition is that the total number of candies can be distributed evenly, therefore we check if sum % N == 0. In that case, all bags with less candies must get filled, and there must be one available. So we sum the total number of candies needed to fill and that&amp;rsquo;s the answer.
-Code:
- </description>
+Code:</description>
     </item>
     
     <item>
@@ -44,8 +43,7 @@ If I am at a certain node n1 with certain an initial time constraint T1before, a
 Please find the problem here.
 Solution:
 Using the segment tree like in SPOJ_LITE_2. This time the summary is the sum instead of on light count, but it is just as easy to update those summaries.
-Code:
- </description>
+Code:</description>
     </item>
     
     <item>
@@ -86,8 +84,7 @@ Please find the problem here.
 Solution:
 To celebrate I have done with my 42nd problem, I decided to attempt this question. Apparently, this isn&amp;rsquo;t really a question, we can just get it accepted blindfolded - yes, it is that easy :p
 Consider this a joke in this blog!
-Code:
- </description>
+Code:</description>
     </item>
     
     <item>

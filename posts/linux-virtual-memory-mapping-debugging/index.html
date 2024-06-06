@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/style.css">
+    <link rel="stylesheet" type="text/css" href="/css/syntax.css">
+    
+    
+    <title>My Blog | Linux Virtual Memory Mapping Debugging</title>
+
+
+</head><body class="light-theme"><div id="nav-border" class="container">
+    <nav id="nav" class="nav justify-content-center">
+        
+        <a class="nav-link" href="/">
+        
+        
+        <i data-feather="home"></i> 
+        
+        
+        Home
+        </a>
+        
+        <a class="nav-link" href="/tags/">
+        
+        
+        <i data-feather="tag"></i> 
+        
+        
+        Tags
+        </a>
+        
+        <a class="nav-link" href="#" id="toggleDarkModeButton"><i data-feather="sun"></i></a>
+        <span style="padding:5px"><input type="text" id="queryTextField"></span><a class="nav-link" href="#" id="searchButton"><i data-feather="search"></i></a>
+    </nav>
+</div><div id="content" style="margin:20px">
+<h1>Linux Virtual Memory Mapping Debugging</h1>
+
+
+<i data-feather="calendar"></i>
+<time datetime="2024-06-05">Jun 5, 2024</time>
+
+<br><br>
+<p>In this post, I will talk an issue related to Linux virtual memory mapping exhaustion. The issue involve understanding the Linux memory management subsystem, and so it is quite interesting to look at.</p>
+<p>For the impatient, this blog entry described some concepts for Linux virtual memory, described the debugging process, and proposed the next steps.</p>
+<h1 id="what-is-the-problem">What is the problem?</h1>
+<p>In <a href="https://github.com/dotnet/runtime/issues/97316">this</a> GitHub issue, customers are hitting this error.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">Fatal error. Failed to create RW mapping for RX memory. This can be caused by insufficient memory or hitting the limit of memory mappings on Linux (vm.map_max_count).
+</span></span></code></pre></div><p>It is relatively easy to reproduce this locally, in order to avoid running a huge application, all we really needed to is to scale the limit down. For example, we can run our GCPerfSim with these arguments:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">GCPerfSim.dll -tc <span class="m">6</span> -tagb 100.0 -tlgb 0.1 -lohar <span class="m">0</span> -pohar <span class="m">0</span> -sohsi <span class="m">10</span> -lohsi <span class="m">0</span> -pohsi <span class="m">0</span> -sohsr 100-4000 -lohsr 102400-204800 -pohsr 100-4000 -sohp
+</span></span><span class="line"><span class="cl">i <span class="m">10</span> -lohpi <span class="m">0</span> -sohfi <span class="m">0</span> -lohfi <span class="m">0</span> -pohfi <span class="m">0</span> -allocType reference -testKind <span class="nb">time</span>
+</span></span></code></pre></div><p>with a reduced number of mappings</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">sudo sysctl -w vm.max_map_count<span class="o">=</span><span class="m">600</span>
+</span></span></code></pre></div><p>This will reproduce the issue all the time, there is just no need to run a big application at all.</p>
+<h1 id="preliminary-analysis">Preliminary analysis</h1>
+<p>Apparently, this has something to do with memory mappings. To do that, we can inspect the virtual memory mappings. In Linux, we can inspect the <code>/proc/pid/maps</code> file to look at the mappings.</p>
+<p>Larger heap size tends to create more mappings, which we can do with ServerGC and increase the <code>tlgb</code> value.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">tlgb</th>
+<th style="text-align:center"># GC/Total mappings</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">0.01</td>
+<td style="text-align:center">222/787</td>
+</tr>
+<tr>
+<td style="text-align:center">0.1</td>
+<td style="text-align:center">476/1363</td>
+</tr>
+<tr>
+<td style="text-align:center">1</td>
+<td style="text-align:center">35106/35825</td>
+</tr>
+</tbody>
+</table>
+<p>It is quite obvious that the majority of the mappings comes from the GC heap even when the live data size is just 1G. The heap size, according to the trace, fluctuates. It can go as high as 24G but then come back down to 16G. Even when we take the heap size at its highest time, each range on average is just 71k. These tiny mappings are really wasteful.</p>
+<p>Looking at some sample mappings, we can see that there are runs of mappings that are consecutive, having the same protection, very small, but are separate entries.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="cl">...
+</span></span><span class="line"><span class="cl">7f8bd6800000-7f8bd6801000 rw-p 00000000 00:00 0 
+</span></span><span class="line"><span class="cl">7f8bd6801000-7f8bd6830000 rw-p 00000000 00:00 0 
+</span></span><span class="line"><span class="cl">7f8bd6830000-7f8bd6832000 rw-p 00000000 00:00 0 
+</span></span><span class="line"><span class="cl">7f8bd6832000-7f8bd6862000 rw-p 00000000 00:00 0 
+</span></span><span class="line"><span class="cl">7f8bd6862000-7f8bd6864000 rw-p 00000000 00:00 0 
+</span></span><span class="line"><span class="cl">...
+</span></span></code></pre></div><p>Something is going on in the underlying system.</p>
+<h1 id="background">Background</h1>
+<h2 id="what-is-a-virtual-memory-area-vma">What is a Virtual Memory Area (VMA)?</h2>
+<p>Linux processes use virtual memory, all memory addresses that a Linux process access is a virtual address, which will be backed by something. That could be physical memory, swapped out content, or file. As such, the operating system needs to be able to store these information in a data structure so that when a page fault happens, it knows what to do to make sure the memory is available for accessing.</p>
+<p>We only need a single object for a range of virtual address that share the same information, and therefore we have a <code>vm_area_struct</code> that represents a memory range, and it is being used to store the information related to that range.</p>
+<h2 id="merging-as-an-optimization">Merging as an optimization</h2>
+<p>Obviously, page fault handling needs to be fast, and therefore it is a goal to minimize the number of <code>vm_area_struct</code> object instances so that we can quickly find the <code>vm_area_struct</code> associated to a memory address for page fault processing. In principle, adjacent <code>vm_area_struct</code> that share the same information (e.g. protect flags) can be merged together.</p>
+<p>But apparently, in our run, it doesn&rsquo;t. The goal of this investigation is to figure out why.</p>
+<h1 id="debugging-kernel">Debugging kernel</h1>
+<p>With a friend&rsquo;s help, I am able to debug the kernel in two ways.</p>
+<ol>
+<li>Adding <code>printk</code> statements so that we can output some logging information, and</li>
+<li>Setting breakpoints in the kernel so that I can step.</li>
+</ol>
+<p>These turn out to be very useful to understand the problem.</p>
+<p>Presented below is only a reasonable way to debug through this problem, in reality, debugging is messy, lot of guess work and leading to blind allies, those missteps are not documented at all, there is no point to.</p>
+<h2 id="how-vmas-are-created">How VMAs are created?</h2>
+<p>To start with, I begin my understanding of the code starting from the beginning where the GC used <code>mmap</code> to reserve a range of addresses. Very soon, I get to this piece of code:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">unsigned</span> <span class="kt">long</span> <span class="nf">do_mmap</span><span class="p">(</span><span class="k">struct</span> <span class="n">file</span> <span class="o">*</span><span class="n">file</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">addr</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">...</span>
+</span></span><span class="line"><span class="cl">	<span class="cm">/* Too many mappings? */</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="p">(</span><span class="n">mm</span><span class="o">-&gt;</span><span class="n">map_count</span> <span class="o">&gt;</span> <span class="n">sysctl_max_map_count</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="o">-</span><span class="n">ENOMEM</span><span class="p">;</span>
+</span></span></code></pre></div><p>That looks familiar, we altered the <code>vm.map_max_count</code> before, this must be how we check the number of <code>VMA</code>. Therefore, it is relatively easy to just search for <code>sysctl_max_map_count</code> to find the other places where the number if being checked.</p>
+<p>There are only a few:</p>
+<ol>
+<li><code>do_mmap</code>, as we have just found.</li>
+<li><code>split_vma</code>, as the name suggest, splitting an existing <code>VMA</code> so we will have an extra <code>VMA</code>, and</li>
+<li>some other related to <code>unmap</code>, <code>remap</code>, which seems unrelated as of now.</li>
+</ol>
+<h2 id="how-split_vma-is-invoked">How split_vma is invoked?</h2>
+<p>We can easily answer this question with a breakpoint, here is a call stack:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="cl">#0  split_vma          at mm/mmap.c:2480
+</span></span><span class="line"><span class="cl">#1  vma_modify         at mm/mmap.c:2480
+</span></span><span class="line"><span class="cl">#2  vma_modify_flags   at mm/mprotect.c:635
+</span></span><span class="line"><span class="cl">#4  do_mprotect_pkey   at mm/mprotect.c:818
+</span></span><span class="line"><span class="cl">#5  __do_sys_mprotect  at mm/mprotect.c:839
+</span></span><span class="line"><span class="cl">#6  __se_sys_mprotect  at mm/mprotect.c:836
+</span></span><span class="line"><span class="cl">#7  __x64_sys_mprotect at mm/mprotect.c:836
+</span></span><span class="line"><span class="cl">#8  do_syscall_x64     at arch/x86/entry/common.c:52
+</span></span><span class="line"><span class="cl">#9  do_syscall_64      at arch/x86/entry/common.c:83
+</span></span><span class="line"><span class="cl">#10 entry_SYSCALL_64   at arch/x86/entry/entry_64.S:121
+</span></span></code></pre></div><p>So basically the stack trace is telling us the kernel is executing a system call <code>mprotect</code>, it is trying to modify flags on a range, and so it found the <code>VMA</code> associated with the range, and discovered that because of a change of flags in a subrange of that range, it needs to split the vma.</p>
+<p>Also, we see te implementation of <code>vma_modify</code> also call <code>vma_merge</code>, it only make sense that <code>mprotect</code> call can also potentially leads to merging <code>VMA</code>s.</p>
+<h2 id="how-vma_merge-works">How vma_merge works?</h2>
+<p><code>vma_merge</code> is a lot of code, but in essence it does the following.</p>
+<ol>
+<li>It relies on it caller to provide a <code>prev</code>, so we know the <code>VMA</code> that comes before the current <code>VMA</code>.</li>
+<li>It uses <code>curr-&gt;vm_end</code> to invoke <code>vma_lookup</code> to find the next.</li>
+<li>Using some policy decision, check if it can merge with <code>prev</code> and <code>next</code>.</li>
+</ol>
+<p>Of all policy decisions, this check seems to be the key check that fails.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="nf">is_mergeable_anon_vma</span><span class="p">(</span><span class="n">prev</span><span class="o">-&gt;</span><span class="n">anon_vma</span><span class="p">,</span> <span class="n">next</span><span class="o">-&gt;</span><span class="n">anon_vma</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">static</span> <span class="kr">inline</span> <span class="kt">bool</span> <span class="nf">is_mergeable_anon_vma</span><span class="p">(</span><span class="k">struct</span> <span class="n">anon_vma</span> <span class="o">*</span><span class="n">anon_vma1</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">		 <span class="k">struct</span> <span class="n">anon_vma</span> <span class="o">*</span><span class="n">anon_vma2</span><span class="p">,</span> <span class="k">struct</span> <span class="n">vm_area_struct</span> <span class="o">*</span><span class="n">vma</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="cm">/*
+</span></span></span><span class="line"><span class="cl"><span class="cm">	 * The list_is_singular() test is to avoid merging VMA cloned from
+</span></span></span><span class="line"><span class="cl"><span class="cm">	 * parents. This can improve scalability caused by anon_vma lock.
+</span></span></span><span class="line"><span class="cl"><span class="cm">	 */</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="p">((</span><span class="o">!</span><span class="n">anon_vma1</span> <span class="o">||</span> <span class="o">!</span><span class="n">anon_vma2</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="o">!</span><span class="n">vma</span> <span class="o">||</span>
+</span></span><span class="line"><span class="cl">		<span class="nf">list_is_singular</span><span class="p">(</span><span class="o">&amp;</span><span class="n">vma</span><span class="o">-&gt;</span><span class="n">anon_vma_chain</span><span class="p">)))</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="n">anon_vma1</span> <span class="o">==</span> <span class="n">anon_vma2</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>For the code, either only one of <code>anon_vma</code> instances is non-null, or they are the same, otherwise this check fails.</p>
+<h2 id="what-is-anon_vma">What is anon_vma?</h2>
+<p>First, <code>anon_vma</code> has the type <code>anon_vma</code>, which is not <code>vm_area_struct</code>, these aren&rsquo;t the virtual memory area that are subject to the system limitation. I was tricked by that at first. <code>anon_vma</code> is a field on the <code>vm_area_struct</code>. I know it is confusing, the kernel code used the <code>anon_vma</code> as both a variable, a type, and a field name, so we have to live with it.</p>
+<p>Judging from the name <code>anon</code>, I can only guess this has to do with <code>anonymous</code>. Basically when we call <code>mmap</code>, the kernel has no idea what that mapping is for, so it just decide this is an anonymous mapping.</p>
+<h2 id="how-anon_vma-are-created">How anon_vma are created?</h2>
+<p>Conveniently, <code>anon_vma</code> objects are constructed using <code>anon_vma_alloc</code>, and it is only called in a couple of places, the interesting call stack is here.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="cl">#0  anon_vma_alloc     at ../mm/rmap.c:204
+</span></span><span class="line"><span class="cl">#1  __anon_vma_prepare at ../mm/rmap.c:204
+</span></span><span class="line"><span class="cl">#2  anon_vma_prepare   at ../include/linux/rmap.h:169
+</span></span><span class="line"><span class="cl">#3  do_anonymous_page  at ../mm/memory.c:4433
+</span></span><span class="line"><span class="cl">#4  do_pte_missing     at ../mm/memory.c:3879
+</span></span><span class="line"><span class="cl">#5  handle_pte_fault   at ../mm/memory.c:5303
+</span></span><span class="line"><span class="cl">#6  __handle_mm_fault  at ../mm/memory.c:5444
+</span></span><span class="line"><span class="cl">#7  handle_mm_fault    at ../mm/memory.c:5610
+</span></span><span class="line"><span class="cl">#8  do_user_addr_fault at ../arch/x86/mm/fault.c:1382
+</span></span><span class="line"><span class="cl">#9  handle_page_fault  at ../arch/x86/mm/fault.c:1474
+</span></span><span class="line"><span class="cl">#10 exc_page_fault     at ../arch/x86/mm/fault.c:1532
+</span></span><span class="line"><span class="cl">#11 asm_exc_page_fault at ../arch/x86/include/asm/idtentry.h:623
+</span></span></code></pre></div><p>What the callstack is telling us is that an <code>anon_vma</code> instance is created when we handle a page fault of an anonymous page, which make sense because the Linux documentation tells us physical pages are allocated lazily, which means the associated <code>anon_vma</code> object instance is also allocated that way.</p>
+<h2 id="hypothesis">Hypothesis</h2>
+<p>Now I hypothesize that the <code>VMA</code>s are not merged because of this sequence:</p>
+<ol>
+<li>Perform a <code>mmap</code> of a range of 3 pages to <code>PROT_NONE</code>, this will create a single VMA with no <code>anon_vma</code>.</li>
+<li>Perform a <code>mprotect</code> the first page to <code>PROT_READ | PROT_WRITE</code>, this will <code>vma_split</code> into two <code>VMA</code>s, still no <code>anon_vma</code> on both.</li>
+<li>Touch the first page, this will cause a page fault on the first page, and therefore create a <code>anon_vma</code> associated with the <code>VMA</code> of the first page.</li>
+<li>Perform a <code>mprotect</code> the last page to <code>PROT_READ | PROT_WRITE</code>, this will <code>vma_split</code> the second <code>VMA</code> into two <code>VMA</code>s, still no <code>anon_vma</code> on all three of them.</li>
+<li>Touch the last page, this will cause a page fault on the last page, and therefore create a <code>anon_vma</code> associated with the <code>VMA</code> of the last page. This is going to be a different <code>anon_vma</code> object instance from the first one.</li>
+<li>Perform a <code>mprotect</code> the middle page to <code>PROT_READ | PROT_WRITE</code>, this will not create any new <code>VMA</code>, but merely changing the flags.</li>
+<li>At this point, <code>mprotect</code> will attempt to <code>vma_merge</code>, but it will fail because the <code>prev</code> and <code>next</code> both have a different <code>anon_vma</code> instance.</li>
+</ol>
+<h2 id="result">Result</h2>
+<p>Experiment confirms that this is that case. <code>printk</code> clearly show that it happened. The <code>/proc/pid/maps</code> also indicate the ranges are not merged.</p>
+<p>Here is the sample program that I used, the threads are probably unimportant, they were there just because we thought thread could be the reason of the proliferation of <code>VMA</code>s.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cp">#define _GNU_SOURCE
+</span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;unistd.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;sys/mman.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;pthread.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;sched.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;stdint.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
+</span></span><span class="line"><span class="cl"><span class="k">const</span> <span class="kt">size_t</span> <span class="n">page</span> <span class="o">=</span> <span class="mi">4096</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kt">char</span> <span class="o">*</span><span class="n">reserved</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">const</span> <span class="kt">int</span> <span class="n">distance</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="o">*</span><span class="nf">worker</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">param</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">uint64_t</span> <span class="n">id</span> <span class="o">=</span> <span class="p">(</span><span class="kt">uint64_t</span> <span class="p">)</span><span class="n">param</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">uint64_t</span>  <span class="n">second</span> <span class="o">=</span> <span class="p">(</span><span class="mi">3</span> <span class="o">-</span> <span class="n">id</span><span class="p">)</span> <span class="o">%</span> <span class="mi">3</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nf">sleep</span><span class="p">((</span><span class="kt">int</span><span class="p">)(</span><span class="n">second</span> <span class="o">*</span> <span class="mi">10</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nf">mprotect</span><span class="p">(</span><span class="n">reserved</span> <span class="o">+</span> <span class="n">id</span> <span class="o">*</span> <span class="n">distance</span> <span class="o">*</span> <span class="n">page</span><span class="p">,</span> <span class="mi">4096</span> <span class="o">*</span> <span class="n">distance</span><span class="p">,</span> <span class="n">PROT_READ</span> <span class="o">|</span> <span class="n">PROT_WRITE</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="o">*</span><span class="p">(</span><span class="n">reserved</span> <span class="o">+</span> <span class="n">id</span> <span class="o">*</span> <span class="n">distance</span> <span class="o">*</span> <span class="n">page</span><span class="p">)</span> <span class="o">=</span> <span class="sc">&#39;a&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nb">NULL</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span><span class="o">**</span> <span class="n">argv</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">reserved</span> <span class="o">=</span> <span class="nf">mmap</span><span class="p">(</span><span class="nb">NULL</span><span class="p">,</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">distance</span> <span class="o">*</span> <span class="n">page</span><span class="p">,</span> <span class="n">PROT_NONE</span><span class="p">,</span> <span class="n">MAP_PRIVATE</span> <span class="o">|</span> <span class="n">MAP_ANONYMOUS</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">mprotect</span><span class="p">(</span><span class="n">reserved</span> <span class="o">+</span> <span class="mi">5</span> <span class="o">*</span> <span class="n">page</span><span class="p">,</span> <span class="n">page</span><span class="p">,</span> <span class="n">PROT_READ</span> <span class="o">|</span> <span class="n">PROT_WRITE</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="o">*</span><span class="p">(</span><span class="n">reserved</span> <span class="o">+</span> <span class="mi">5</span> <span class="o">*</span> <span class="n">page</span><span class="p">)</span> <span class="o">=</span> <span class="sc">&#39;a&#39;</span><span class="p">;</span> <span class="c1">// let the kernel create a anon_vma
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">mprotect</span><span class="p">(</span><span class="n">reserved</span> <span class="o">+</span> <span class="mi">5</span> <span class="o">*</span> <span class="n">page</span><span class="p">,</span> <span class="n">page</span><span class="p">,</span> <span class="n">PROT_NONE</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;Reserved memory from %p to %p</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">reserved</span><span class="p">,</span> <span class="n">reserved</span> <span class="o">+</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">distance</span> <span class="o">*</span> <span class="n">page</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">pthread_t</span> <span class="n">threads</span><span class="p">[</span><span class="mi">3</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="p">(</span><span class="kt">uint64_t</span>  <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kt">pthread_attr_t</span> <span class="n">attr</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="kt">cpu_set_t</span> <span class="n">mask</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">CPU_ZERO</span><span class="p">(</span><span class="o">&amp;</span><span class="n">mask</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">CPU_SET</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">mask</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">pthread_attr_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">attr</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">pthread_attr_setaffinity_np</span><span class="p">(</span><span class="o">&amp;</span><span class="n">attr</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="kt">cpu_set_t</span><span class="p">),</span> <span class="o">&amp;</span><span class="n">mask</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">pthread_create</span><span class="p">(</span><span class="o">&amp;</span><span class="n">threads</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="o">&amp;</span><span class="n">attr</span><span class="p">,</span> <span class="n">worker</span><span class="p">,</span> <span class="p">(</span><span class="kt">void</span><span class="o">*</span><span class="p">)</span><span class="n">i</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">pthread_join</span><span class="p">(</span><span class="n">threads</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="nb">NULL</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;Done</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">getchar</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>The sleep is really just an experimental technique - by giving me 10 seconds between each operation, I can have a chance to break into the debugger, or I can correlate the <code>printk</code> statements definitely with the operation.</p>
+<p>Adding <code>printk</code> to <code>vma_merge</code> as well, put this right before the <code>is_mergeable_anon_vma</code> check (but before the early return because <code>merge_prev == 0</code> and <code>merge_next == 0</code>) so that we get to see those cases.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="nf">printk</span><span class="p">(</span><span class="s">&#34;Merge decision 1 merge_prev = %d, merge_next = %d, prev-&gt;anon_vma = %llx, next-&gt;anon_vma = %llx</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">		<span class="n">merge_prev</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">		<span class="n">merge_next</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">		<span class="n">prev</span> <span class="o">==</span> <span class="nb">NULL</span> <span class="o">?</span> <span class="mi">0</span> <span class="o">:</span> <span class="p">(</span><span class="kt">uint64_t</span><span class="p">)</span><span class="n">prev</span><span class="o">-&gt;</span><span class="n">anon_vma</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">		<span class="n">next</span> <span class="o">==</span> <span class="nb">NULL</span> <span class="o">?</span> <span class="mi">0</span> <span class="o">:</span> <span class="p">(</span><span class="kt">uint64_t</span><span class="p">)</span><span class="n">next</span><span class="o">-&gt;</span><span class="n">anon_vma</span>
+</span></span><span class="line"><span class="cl">	<span class="p">);</span>
+</span></span></code></pre></div><p>The log is obvious.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="cl">Reserved memory from 0x7fbe17c48000 to 0x7fbe17c4e000
+</span></span><span class="line"><span class="cl">[   20.862157] Merge decision 1 merge_prev = 0, merge_next = 0, prev-&gt;anon_vma = ffff888004c7d208, next-&gt;anon_vma = 0
+</span></span><span class="line"><span class="cl">[   30.870179] Merge decision 1 merge_prev = 0, merge_next = 0, prev-&gt;anon_vma = 0, next-&gt;anon_vma = ffff888004c7d1a0
+</span></span><span class="line"><span class="cl">[   40.865433] Merge decision 1 merge_prev = 1, merge_next = 1, prev-&gt;anon_vma = ffff888004175000, next-&gt;anon_vma = ffff888004c7d1a0
+</span></span></code></pre></div><ul>
+<li>When the first page is touch, both the <code>prev</code> and <code>next</code> are not the same type, so <code>merge_prev</code> and <code>merge_next</code> fails.</li>
+<li>Same happened with the last page, the <code>prev</code> is not writable, and the <code>next</code> is outside of the initial <code>mmap</code> call.</li>
+<li>When the last call happened, the log proved that while the flags are compatible with <code>merge_prev</code> and <code>merge_next</code>, the <code>anon_vma</code> are different and so we failed the merge.</li>
+</ul>
+<p>The <code>/proc/pid/maps</code> also show the failure to merge.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="cl">7fbe17c48000-7fbe17c4c000 rw-p 00000000 00:00 0
+</span></span><span class="line"><span class="cl">7fbe17c4c000-7fbe17c4d000 rw-p 00000000 00:00 0
+</span></span><span class="line"><span class="cl">7fbe17c4d000-7fbe17c4e000 rw-p 00000000 00:00 0
+</span></span></code></pre></div><h2 id="what-can-we-do-about-it">What can we do about it?</h2>
+<p>Thanks the Jan Vorlicek, we tried a hack to force the initial creation of an <code>anon_vma</code> as follows, changes:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl">    <span class="n">reserved</span> <span class="o">=</span> <span class="nf">mmap</span><span class="p">(</span><span class="nb">NULL</span><span class="p">,</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">distance</span> <span class="o">*</span> <span class="n">page</span><span class="p">,</span> <span class="n">PROT_NONE</span><span class="p">,</span> <span class="n">MAP_PRIVATE</span> <span class="o">|</span> <span class="n">MAP_ANONYMOUS</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+</span></span></code></pre></div><p>to</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl">    <span class="n">reserved</span> <span class="o">=</span> <span class="nf">mmap</span><span class="p">(</span><span class="nb">NULL</span><span class="p">,</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">distance</span> <span class="o">*</span> <span class="n">page</span><span class="p">,</span> <span class="n">PROT_READ</span> <span class="o">|</span> <span class="n">PROT_WRITE</span><span class="p">,</span> <span class="n">MAP_PRIVATE</span> <span class="o">|</span> <span class="n">MAP_ANONYMOUS</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="o">*</span><span class="n">reserved</span> <span class="o">=</span> <span class="sc">&#39;a&#39;</span><span class="p">;</span> <span class="c1">// let the kernel create a anon_vma
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">mprotect</span><span class="p">(</span><span class="n">reserved</span><span class="p">,</span> <span class="n">page</span><span class="p">,</span> <span class="n">PROT_NONE</span><span class="p">);</span>
+</span></span></code></pre></div><p>The sequence of becomes the following:</p>
+<ol>
+<li>Perform a <code>mmap</code> of a range of 3 pages to <code>PROT_READ | PROT_WRITE</code>, this will create a single VMA with no <code>anon_vma</code>.</li>
+<li>Touch the first page, this will cause a page fault on the first page, and therefore create a <code>anon_vma</code> associated with the <code>VMA</code>.</li>
+<li>Perform a <code>mprotect</code> the 3 pages to <code>PROT_NONE</code>, this will not create any new <code>VMA</code>, but merely changing the flags.</li>
+<li>Perform a <code>mprotect</code> the first page to <code>PROT_READ | PROT_WRITE</code>, this will <code>vma_split</code> the second <code>VMA</code> into two <code>VMA</code>s, both <code>VMA</code>s will have the same <code>anon_vma</code>.</li>
+<li>Touch the first page, this will cause a page fault on the first page, and we already have an <code>anon_vma</code> for it.</li>
+<li>Perform a <code>mprotect</code> the last page to <code>PROT_READ | PROT_WRITE</code>, this will <code>vma_split</code> the second <code>VMA</code> into two <code>VMA</code>s, all three of them will have the same <code>anon_vma</code>.</li>
+<li>Touch the last page, this will cause a page fault on the last page, and we already have an <code>anon_vma</code> for it.</li>
+<li>Perform a <code>mprotect</code> the middle page to <code>PROT_READ | PROT_WRITE</code>, this will not create any new <code>VMA</code>, but merely changing the flags.</li>
+<li>At this point, <code>mprotect</code> will attempt to <code>vma_merge</code>, and it will succeed because the <code>prev</code> and <code>next</code> both have the same <code>anon_vma</code> instance.</li>
+</ol>
+<p>The fact that <code>vma_split</code> decides to just reference the same <code>anon_vma</code> is the key to this hack, it only works conditionally though, here are the conditions.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">dst</span><span class="o">-&gt;</span><span class="n">anon_vma</span> <span class="o">&amp;&amp;</span> <span class="n">src</span><span class="o">-&gt;</span><span class="n">anon_vma</span> <span class="o">&amp;&amp;</span>
+</span></span><span class="line"><span class="cl">            <span class="n">anon_vma</span><span class="o">-&gt;</span><span class="n">num_children</span> <span class="o">&lt;</span> <span class="mi">2</span> <span class="o">&amp;&amp;</span>
+</span></span><span class="line"><span class="cl">            <span class="n">anon_vma</span><span class="o">-&gt;</span><span class="n">num_active_vmas</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="n">dst</span><span class="o">-&gt;</span><span class="n">anon_vma</span> <span class="o">=</span> <span class="n">anon_vma</span><span class="p">;</span>
+</span></span></code></pre></div><p>I won&rsquo;t pretend I understand what those conditions are, but the comments seems to indicate it has something to do with forks.</p>
+<p>Unfortunately, this hack only work on this simple case. There are at least two hurdles on applying this to the CoreCLR context.</p>
+<ol>
+<li>The initial <code>mmap</code> call with <code>PROT_READ | PROT_WRITE</code> call will fail because of the overcommit settings. We never really intend to use that much memory, we just wanted the <code>anon_vma</code> instance, and</li>
+<li>Even when I reduced the initial region range to a size less than the physical memory where the <code>mmap</code> call won&rsquo;t fail, the proliferation of small <code>VMA</code>s is still there with reason that we are still unclear.</li>
+</ol>
+<p>Even if it did work, it is programming to implementation, which is fragile. We will never know if Linux decides on some other memory management logic that will break it.</p>
+<p>The fact that <code>is_mergeable_anon_vma</code> causing <code>VMA</code> proliferation is not new, Jakub already studied the problem and even proposed a patch <a href="https://lwn.net/ml/linux-kernel/20220516125405.1675-6-matenajakub@gmail.com/">here</a>. As the discussion goes on <a href="https://lwn.net/ml/linux-kernel/408b79d9-e96a-b961-1565-93bf11e54909@suse.cz/">here</a>, at least one unknown proprietary workload hit exactly the same problem.</p>
+<p>Jakub&rsquo;s study leads to his master thesis <a href="https://dspace.cuni.cz/bitstream/handle/20.500.11956/176288/120426800.pdf">here</a>, I haven&rsquo;t read it yet.</p>
+<p>I think it is time for us to engage with the Linux memory management experts to see what we should do about it, we have done enough study on our part.</p>
+
+
+        </div><p class="footer text-center">Copyright (c) 2024 Andrew Au</p><script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true });</script>
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/prettify.js"></script>
+<script src="/js/feather.min.js"></script>
+<script src="/index.js"></script>
+<script>
+
+  function getCookie(cname) {
+    let name = cname + "=";
+    let ca = document.cookie.split(';');
+    for (let i = 0; i < ca.length; i++) {
+      let c = ca[i];
+      while (c.charAt(0) == ' ') {
+        c = c.substring(1);
+      }
+      if (c.indexOf(name) == 0) {
+        return c.substring(name.length, c.length);
+      }
+    }
+    return "";
+  }
+
+  function setCookie(cname, cvalue, exdays) {
+    const d = new Date();
+    d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+    let expires = "expires=" + d.toUTCString();
+    document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+  }
+
+  function ensureIcon() {
+    if (document.body.classList.contains("dark-theme")) {
+      toggleDarkModeButton.innerHTML = '<i data-feather="sun"></i>';
+    } else {
+      toggleDarkModeButton.innerHTML = '<i data-feather="moon"></i>';
+    }
+    feather.replace();
+  }
+  function saveCookie() {
+    if (document.body.classList.contains("dark-theme")) {
+      setCookie("darkMode", "true", 365);
+    } else {
+      setCookie("darkMode", "false", 365);
+    }
+  }
+
+  function load(pre) {
+    link = pre.getAttribute("data-code-link");
+    const xhr = new XMLHttpRequest();
+    xhr.onload = () => {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        pre.className = "prettyprint";
+        pre.textContent = xhr.responseText;
+      }
+      prettyPrint();
+    };
+    xhr.open('GET', link);
+    xhr.send();
+  }
+
+  function onSearchButtonClicked(e) {
+    e.preventDefault();
+    var query = $("#queryTextField").val();
+    var terms = query.split(' ');
+    
+    var result = {};
+    for (var i = 0; i < terms.length; ++i) {
+      var term = terms[i].toLowerCase();
+      if (term in index.Terms)
+      {
+        for (i = 0; i < index.Terms[term].length; i += 2) {
+          var doc = index.Terms[term][i];
+          var count = index.Terms[term][i + 1];
+          if (doc in result) {
+            result[doc] += count;
+          } else {
+            result[doc] = count;
+          }
+        }
+      }
+    }
+    
+    $("#content").empty();
+    for (var key in result) {
+      $("#content").append($('<a>', {
+        href: index.Documents[key].replace("../../content","").replace(".md",""),
+        text: index.Titles[key]
+      }));
+      $("#content").append($('<br>'));
+    }
+  }
+
+  $(document).ready(function () {
+    var darkMode = getCookie("darkMode");
+    if (darkMode == "true") {
+      document.body.classList.add("dark-theme");
+      document.body.classList.remove("light-theme");
+    }
+    ensureIcon();
+
+    $("#toggleDarkModeButton").click(function (e) {
+      e.preventDefault();
+      document.body.classList.toggle("dark-theme");
+      document.body.classList.toggle("light-theme");
+      saveCookie();
+      ensureIcon();
+    });
+
+    $("#searchButton").click(onSearchButtonClicked);
+
+    var pres = document.getElementsByTagName("pre");
+    for (var i = 0; i < pres.length; ++i) {
+      var pre = pres[i];
+      if (pre.classList.contains("pretty-github-code")) {
+        load(pre);
+      }
+    }
+  });
+
+  $(window).on("load", function () {
+    $("body").show();
+  });
+</script></body>
+</html>

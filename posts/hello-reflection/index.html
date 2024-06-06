@@ -86,12 +86,12 @@
 <p>It means that when the reader needs to find referenced assembly, it needs to be able to read it. To make things simple in HelloWorld, we will just provide a skeleton implementation that simply always fails.</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c#" data-lang="c#"><span class="line"><span class="cl">    <span class="k">class</span> <span class="nc">MyAssemblyResolver</span> <span class="p">:</span> <span class="n">IAssemblyResolver</span>
 </span></span><span class="line"><span class="cl">    <span class="p">{</span>
-</span></span><span class="line"><span class="cl">        <span class="k">public</span> <span class="n">IAssemblyMetadata</span> <span class="n">FindAssembly</span><span class="p">(</span><span class="n">MetadataReader</span> <span class="n">metadataReader</span><span class="p">,</span> <span class="n">AssemblyReferenceHandle</span> <span class="n">assemblyReferenceHandle</span><span class="p">,</span> <span class="kt">string</span> <span class="n">parentFile</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="kd">public</span> <span class="n">IAssemblyMetadata</span> <span class="n">FindAssembly</span><span class="p">(</span><span class="n">MetadataReader</span> <span class="n">metadataReader</span><span class="p">,</span> <span class="n">AssemblyReferenceHandle</span> <span class="n">assemblyReferenceHandle</span><span class="p">,</span> <span class="kt">string</span> <span class="n">parentFile</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl">        <span class="p">{</span>
 </span></span><span class="line"><span class="cl">            <span class="k">throw</span> <span class="k">new</span> <span class="n">NotImplementedException</span><span class="p">();</span>
 </span></span><span class="line"><span class="cl">        <span class="p">}</span>
 </span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">        <span class="k">public</span> <span class="n">IAssemblyMetadata</span> <span class="n">FindAssembly</span><span class="p">(</span><span class="kt">string</span> <span class="n">simpleName</span><span class="p">,</span> <span class="kt">string</span> <span class="n">parentFile</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="kd">public</span> <span class="n">IAssemblyMetadata</span> <span class="n">FindAssembly</span><span class="p">(</span><span class="kt">string</span> <span class="n">simpleName</span><span class="p">,</span> <span class="kt">string</span> <span class="n">parentFile</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl">        <span class="p">{</span>
 </span></span><span class="line"><span class="cl">            <span class="k">throw</span> <span class="k">new</span> <span class="n">NotImplementedException</span><span class="p">();</span>
 </span></span><span class="line"><span class="cl">        <span class="p">}</span>
@@ -115,7 +115,7 @@
 </span></span></code></pre></div><p>This conclude our very simple HelloWorld example. The full source code of the HelloReflection can be found <a href="https://github.com/cshung/blog-samples/tree/main/HelloReflection">here</a>. Next, we will look into the other properties on the <code>ReadyToRunMethod</code> object. Stay tuned.</p>
 
 
-        </div><p class="footer text-center">Copyright (c) 2023 Andrew Au</p><script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
+        </div><p class="footer text-center">Copyright (c) 2024 Andrew Au</p><script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
 <script>mermaid.initialize({ startOnLoad: true });</script>
 <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>

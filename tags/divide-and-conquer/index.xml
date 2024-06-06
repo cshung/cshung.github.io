@@ -17,8 +17,7 @@
 Please find the problem here.
 Solution:
 Using the segment tree like in SPOJ_LITE_2. This time the summary is the sum instead of on light count, but it is just as easy to update those summaries.
-Code:
- </description>
+Code:</description>
     </item>
     
     <item>

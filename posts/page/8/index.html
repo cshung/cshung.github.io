@@ -38,6 +38,28 @@
 <h1>Posts</h1>
 
 <p>
+    <h3><a class="title" href="/posts/rosalind-mortal-fibonacci-rabbits/">Rosalind - Mortal Fibonacci Rabbits</a></h3>
+    
+
+<i data-feather="calendar"></i>
+<time datetime="2019-08-05">Aug 5, 2019</time>
+
+<i data-feather="tag"></i>
+
+
+<a class="btn btn-sm btn-outline-dark tag-btn" href="https://cshung.github.io/tags/rosalind">rosalind</a>
+
+
+    <a class="summary" href="/posts/rosalind-mortal-fibonacci-rabbits/">
+        <p>Problem:
+Please find the problem here.
+Solution:
+The matrix solution I used in my previous solution is still applicable, but it is cumbersome to implement. It is time to actually use dynamic programming.
+Conceptually, it is easy. We know rabbits can have life from \( 0 \) to \( m - 1 \) month, so we keep an array to see how many pairs of rabbits are there at that age.</p>
+    </a>
+</p>
+
+<p>
     <h3><a class="title" href="/posts/rosalind-consensus-and-profile/">Rosalind - Consensus and Profile</a></h3>
     
 
@@ -55,8 +77,7 @@
 Please find the problem here.
 Solution:
 Because we need to output the whole matrix, we just simply have to compute it.
-Code:
- </p>
+Code:</p>
     </a>
 </p>
 
@@ -79,8 +100,7 @@ Please find the problem here.
 Solution:
 This feels like cheating. The problem is obviously asking for implementing a substring search, and I am using the Python builtin.
 I have implemented Boyer Moore in C#, so I don&rsquo;t feel bad. In fact, I validated my implementation using the Rosalind test cases, and it passed there as well.
-Code:
- </p>
+Code:</p>
     </a>
 </p>
 
@@ -102,8 +122,7 @@ Code:
 Please find the problem here.
 Solution:
 To perform the translation, we used a lookup table.
-Code:
- </p>
+Code:</p>
     </a>
 </p>
 
@@ -150,8 +169,7 @@ The probability of getting a homozygous recessive is therefore:</p>
 Please find the problem here.
 Solution:
 To compute the Hamming distance, we walk the strings together and count the number of differences.
-Code:
- </p>
+Code:</p>
     </a>
 </p>
 
@@ -173,8 +191,7 @@ Code:
 Please find the problem here.
 Solution:
 The only challenge for this problem is to parse the FASTA format. To make life easy, I added a &lsquo;&gt;&rsquo; sign at the end of all the inputs - now every DNA is simply a &lsquo;&gt;&rsquo; terminating string. Therefore a simple scan of the file parses all the input correctly.
-Code:
- </p>
+Code:</p>
     </a>
 </p>
 
@@ -241,31 +258,7 @@ To build a string, I was thinking about something like a StringBuilder, but ther
 Please find the problem here.
 Solution:
 This one is even simpler than the one before, this is just replacing a single character.
-Code:
- </p>
-    </a>
-</p>
-
-<p>
-    <h3><a class="title" href="/posts/rosalind-counting-dna-nucleotides/">Rosalind - Counting DNA Nucleotides</a></h3>
-    
-
-<i data-feather="calendar"></i>
-<time datetime="2019-07-21">Jul 21, 2019</time>
-
-<i data-feather="tag"></i>
-
-
-<a class="btn btn-sm btn-outline-dark tag-btn" href="https://cshung.github.io/tags/rosalind">rosalind</a>
-
-
-    <a class="summary" href="/posts/rosalind-counting-dna-nucleotides/">
-        <p>Problem:
-Please find the problem here.
-Solution:
-The problem is very simple, just counting the number of alphabets.
-Code:
- </p>
+Code:</p>
     </a>
 </p>
 
@@ -298,7 +291,7 @@ Code:
         <a href="/posts/page/9/" aria-label="Last" class="page-link" role="button"><span aria-hidden="true">&raquo;&raquo;</span></a>
       </li>
     </ul>
-        </div><p class="footer text-center">Copyright (c) 2023 Andrew Au</p><script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
+        </div><p class="footer text-center">Copyright (c) 2024 Andrew Au</p><script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
 <script>mermaid.initialize({ startOnLoad: true });</script>
 <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
