@@ -106,15 +106,15 @@ $$ E[A_{poh}] = \left(\frac{W_{poh}}{1000} \times (E[S_{poh}] - O)\right) \times
 <p>Since we assumed the weights, so everything is known, except \( N \), so we will cancel out this unknown, by computing a ratio as follow:</p>
 <p>$$
 \begin{eqnarray}
-\frac{R_{soh}}{R_{loh}} &amp;=&amp; \frac{W_{soh}(E[S_{soh}] - O) + O}{W_{loh}(E[S_{loh}] - O)} \\
-\frac{R_{soh}}{R_{poh}} &amp;=&amp; \frac{W_{soh}(E[S_{soh}] - O) + O}{W_{poh}(E[S_{poh}] - O)}
+\frac{R_{soh}}{R_{loh}} &amp;=&amp; \frac{W_{soh}(E[S_{soh}] - O) + 1000 O}{W_{loh}(E[S_{loh}] - O)} \\
+\frac{R_{soh}}{R_{poh}} &amp;=&amp; \frac{W_{soh}(E[S_{soh}] - O) + 1000 O}{W_{poh}(E[S_{poh}] - O)}
 \end{eqnarray}
 $$</p>
 <p>Now we think of the weights as the unknowns. Note that some of them are in the denominators, which is difficult, so we cross multiply</p>
 <p>$$
 \begin{eqnarray}
-R_{soh} (E[S_{loh}] - O) W_{loh} &amp;=&amp; R_{loh} (E[S_{soh}] - O) W_{soh} + R_{loh}O \\
-R_{soh} (E[S_{poh}] - O) W_{poh} &amp;=&amp; R_{poh} (E[S_{soh}] - O) W_{soh} + R_{poh}O
+R_{soh} (E[S_{loh}] - O) W_{loh} &amp;=&amp; R_{loh} (E[S_{soh}] - O) W_{soh} + 1000 R_{loh}O \\
+R_{soh} (E[S_{poh}] - O) W_{poh} &amp;=&amp; R_{poh} (E[S_{soh}] - O) W_{soh} + 1000 R_{poh}O
 \end{eqnarray}
 $$</p>
 <p>While these equations seem complicated, the only unknowns are the \( W \) values, therefore, these are just two linear equations. The third equation is simply</p>
