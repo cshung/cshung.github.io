@@ -38,6 +38,50 @@
 <h1>Posts</h1>
 
 <p>
+    <h3><a class="title" href="/posts/rosalind-overlap-graphs/">Rosalind - Overlap Graphs</a></h3>
+    
+
+<i data-feather="calendar"></i>
+<time datetime="2019-08-10">Aug 10, 2019</time>
+
+<i data-feather="tag"></i>
+
+
+<a class="btn btn-sm btn-outline-dark tag-btn" href="https://cshung.github.io/tags/rosalind">rosalind</a>
+
+
+    <a class="summary" href="/posts/rosalind-overlap-graphs/">
+        <p>Problem:
+Please find the problem here.
+Solution:
+To construct the graph, we go through every pair, excluding self-loops, and output an edge when the suffix matches the prefix. Care is taken to make sure the string actually has at least 3 characters.
+Code:</p>
+    </a>
+</p>
+
+<p>
+    <h3><a class="title" href="/posts/rosalind-finding-a-shared-motif/">Rosalind - Finding a Shared Motif</a></h3>
+    
+
+<i data-feather="calendar"></i>
+<time datetime="2019-08-05">Aug 5, 2019</time>
+
+<i data-feather="tag"></i>
+
+
+<a class="btn btn-sm btn-outline-dark tag-btn" href="https://cshung.github.io/tags/rosalind">rosalind</a>
+
+
+    <a class="summary" href="/posts/rosalind-finding-a-shared-motif/">
+        <p>Problem:
+Please find the problem here.
+Solution:
+This is a complicated solution. I spent almost a week on it. It is based on a suffix tree. Suffix tree itself is a complicated beast. I described it earlier in this series of posts, please check it out if you have no idea what is a suffix tree.
+In the sequel, I assumed the suffix tree is built on a string built on the DNAs concatenated and separated by unique characters.</p>
+    </a>
+</p>
+
+<p>
     <h3><a class="title" href="/posts/rosalind-mortal-fibonacci-rabbits/">Rosalind - Mortal Fibonacci Rabbits</a></h3>
     
 
@@ -218,50 +262,6 @@ The population begins in the first month with a pair of newborn rabbits.</p>
     </a>
 </p>
 
-<p>
-    <h3><a class="title" href="/posts/rosalind-complementing-a-strand-of-dna/">Rosalind - Complementing a Strand of DNA</a></h3>
-    
-
-<i data-feather="calendar"></i>
-<time datetime="2019-07-28">Jul 28, 2019</time>
-
-<i data-feather="tag"></i>
-
-
-<a class="btn btn-sm btn-outline-dark tag-btn" href="https://cshung.github.io/tags/rosalind">rosalind</a>
-
-
-    <a class="summary" href="/posts/rosalind-complementing-a-strand-of-dna/">
-        <p>Problem:
-Please find the problem here.
-Solution:
-This problem has an in-place solution. We can walk the string from two ways and swap and map at the same time. However, Python strings are immutable. We have to create new strings.
-To build a string, I was thinking about something like a StringBuilder, but there is no such thing in Python. It is reported that doing repeated string concatenation is the fastest way.</p>
-    </a>
-</p>
-
-<p>
-    <h3><a class="title" href="/posts/rosalind-transcribing-dna-into-rna/">Rosalind - Transcribing DNA into RNA</a></h3>
-    
-
-<i data-feather="calendar"></i>
-<time datetime="2019-07-21">Jul 21, 2019</time>
-
-<i data-feather="tag"></i>
-
-
-<a class="btn btn-sm btn-outline-dark tag-btn" href="https://cshung.github.io/tags/rosalind">rosalind</a>
-
-
-    <a class="summary" href="/posts/rosalind-transcribing-dna-into-rna/">
-        <p>Problem:
-Please find the problem here.
-Solution:
-This one is even simpler than the one before, this is just replacing a single character.
-Code:</p>
-    </a>
-</p>
-
     <ul class="pagination pagination-default">
       <li class="page-item">
         <a href="/posts/" aria-label="First" class="page-link" role="button"><span aria-hidden="true">&laquo;&laquo;</span></a>
@@ -291,7 +291,7 @@ Code:</p>
         <a href="/posts/page/9/" aria-label="Last" class="page-link" role="button"><span aria-hidden="true">&raquo;&raquo;</span></a>
       </li>
     </ul>
-        </div><p class="footer text-center">Copyright (c) 2024 Andrew Au</p><script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
+        </div><p class="footer text-center">Copyright (c) 2025 Andrew Au</p><script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
 <script>mermaid.initialize({ startOnLoad: true });</script>
 <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>

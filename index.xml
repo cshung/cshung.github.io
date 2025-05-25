@@ -6,7 +6,16 @@
     <description>Recent content on My Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 05 Jun 2024 13:33:14 -0700</lastBuildDate><atom:link href="https://cshung.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 23 May 2025 17:39:02 +0000</lastBuildDate><atom:link href="https://cshung.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Portfolio</title>
+      <link>https://cshung.github.io/posts/portfolio/</link>
+      <pubDate>Fri, 23 May 2025 17:39:02 +0000</pubDate>
+      
+      <guid>https://cshung.github.io/posts/portfolio/</guid>
+      <description>Experience with Servers Adaptive Garbage Collection (2023): Enhanced garbage collection for Azure functions, doubling capacity using a single pool of containers. Memory Management Optimization (2022): Reduced memory footprint by 50%, increasing deployment density and saving $1M monthly. Network Transport Prototype (2013): Improved application throughput by 37% in a RESTful service by bypassing HTTP/1.1 FIFO restrictions. Experience with Code Generation ekans (2025): Built a personal self-hosting Racket compiler that compiles a subset of Racket to C.</description>
+    </item>
+    
     <item>
       <title>Linux Virtual Memory Mapping Debugging</title>
       <link>https://cshung.github.io/posts/linux-virtual-memory-mapping-debugging/</link>
@@ -17,6 +26,17 @@
 For the impatient, this blog entry described some concepts for Linux virtual memory, described the debugging process, and proposed the next steps.
 What is the problem? In this GitHub issue, customers are hitting this error.
 Fatal error. Failed to create RW mapping for RX memory.</description>
+    </item>
+    
+    <item>
+      <title>Here&#39;s a LibC</title>
+      <link>https://cshung.github.io/posts/here-is-a-libc/</link>
+      <pubDate>Sat, 02 Sep 2023 17:39:02 +0000</pubDate>
+      
+      <guid>https://cshung.github.io/posts/here-is-a-libc/</guid>
+      <description>Here&amp;rsquo;s a LibC Today is September 2, a long weekend in the U.S. With some time to spare, I want to see if I can tackle the third binary exploitation challenge.
+Recently, I&amp;rsquo;ve been busy, so I haven&amp;rsquo;t worked on this for two weeks. Now, I need to recap. I actually wanted to summarize and write a detailed explanation.
+Starting with the problem, we have a vuln, a libc.so.6, a Makefile, and a netcat endpoint, and the task is to pwn.</description>
     </item>
     
     <item>

@@ -109,7 +109,7 @@
 <p>Now that we have found the issue, fixing it quickly is trivial. We changed the setting and resetting of the mark bit to an interlocked atomic operation, and it worked great. The customer scenario ran without a crash overnight, meaning the fix is solid. Having to use an interlocked atomic operation is a bit unfortunate because it impacts the whole background mark phase, we will try to see if there is a better solution to it.</p>
 
 
-        </div><p class="footer text-center">Copyright (c) 2024 Andrew Au</p><script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
+        </div><p class="footer text-center">Copyright (c) 2025 Andrew Au</p><script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
 <script>mermaid.initialize({ startOnLoad: true });</script>
 <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>

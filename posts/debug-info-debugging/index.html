@@ -119,9 +119,9 @@ graph TD;
 </span></span><span class="line"><span class="cl">ILCompiler_ReadyToRun!Internal.JitInterface.CorInfoImpl.CompileMethod(...)
 </span></span><span class="line"><span class="cl">...
 </span></span></code></pre></div><p>The last method above is interesting, it includes a filter to detect whether or not to compile code, which allows us to optimize our debugging by compiling just the offending method.</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c#" data-lang="c#"><span class="line"><span class="cl">        <span class="kd">public</span> <span class="k">void</span> <span class="n">CompileMethod</span><span class="p">(</span><span class="n">MethodWithGCInfo</span> <span class="n">methodCodeNodeNeedingCode</span><span class="p">)</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c#" data-lang="c#"><span class="line"><span class="cl">        <span class="k">public</span> <span class="k">void</span> <span class="n">CompileMethod</span><span class="p">(</span><span class="n">MethodWithGCInfo</span> <span class="n">methodCodeNodeNeedingCode</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl">        <span class="p">{</span>
-</span></span><span class="line"><span class="cl">            <span class="kt">bool</span> <span class="n">codeGotPublished</span> <span class="p">=</span> <span class="kc">false</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="kt">bool</span> <span class="n">codeGotPublished</span> <span class="p">=</span> <span class="k">false</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">            <span class="n">_methodCodeNode</span> <span class="p">=</span> <span class="n">methodCodeNodeNeedingCode</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">            <span class="k">try</span>
@@ -129,10 +129,10 @@ graph TD;
 </span></span><span class="line"><span class="cl">                <span class="k">if</span> <span class="p">(!</span><span class="n">ShouldSkipCompilation</span><span class="p">(</span><span class="n">MethodBeingCompiled</span><span class="p">)</span> <span class="p">&amp;&amp;</span> <span class="p">!</span><span class="n">MethodSignatureIsUnstable</span><span class="p">(</span><span class="n">MethodBeingCompiled</span><span class="p">.</span><span class="n">Signature</span><span class="p">,</span> <span class="k">out</span> <span class="kt">var</span> <span class="n">_</span><span class="p">))</span>
 </span></span><span class="line"><span class="cl">                <span class="p">{</span>
 </span></span><span class="line"><span class="cl">                    <span class="n">MethodIL</span> <span class="n">methodIL</span> <span class="p">=</span> <span class="n">_compilation</span><span class="p">.</span><span class="n">GetMethodIL</span><span class="p">(</span><span class="n">MethodBeingCompiled</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">                    <span class="k">if</span> <span class="p">(</span><span class="n">methodIL</span> <span class="p">!=</span> <span class="kc">null</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                    <span class="k">if</span> <span class="p">(</span><span class="n">methodIL</span> <span class="p">!=</span> <span class="k">null</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl">                    <span class="p">{</span>
 </span></span><span class="line"><span class="cl">                        <span class="n">CompileMethodInternal</span><span class="p">(</span><span class="n">methodCodeNodeNeedingCode</span><span class="p">,</span> <span class="n">methodIL</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">                        <span class="n">codeGotPublished</span> <span class="p">=</span> <span class="kc">true</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                        <span class="n">codeGotPublished</span> <span class="p">=</span> <span class="k">true</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">                    <span class="p">}</span>
 </span></span><span class="line"><span class="cl">                <span class="p">}</span>
 </span></span><span class="line"><span class="cl">            <span class="p">}</span>
@@ -176,7 +176,7 @@ graph TD;
 <p>Now it is obvious that this anomaly is a conscious choice. Now we have to adjust <code>DebugInfoHelper</code>. I worked on multiple approaches and found more interesting details in the debug info. For example, I found that sometimes the compiler is able to map two variables to the same physical location because they should share the same value. They are overlapping ranges in the above sense, but it is not wrong at all. To accommodate for these cases as well, instead of mapping a single location to a single variable, I mapped a single location to multiple variables (duplication allowed), and that solved all the problems listed here. I have submitted a <a href="https://github.com/icsharpcode/ILSpy/pull/2279">PR</a> to ILSpy to get this fixed.</p>
 
 
-        </div><p class="footer text-center">Copyright (c) 2024 Andrew Au</p><script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
+        </div><p class="footer text-center">Copyright (c) 2025 Andrew Au</p><script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
 <script>mermaid.initialize({ startOnLoad: true });</script>
 <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
