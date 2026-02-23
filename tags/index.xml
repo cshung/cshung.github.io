@@ -6,87 +6,70 @@
     <description>Recent content in Tags on My Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 14 Feb 2021 15:55:00 -0800</lastBuildDate><atom:link href="https://cshung.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 14 Feb 2021 15:55:00 -0800</lastBuildDate>
+    <atom:link href="https://cshung.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>rosalind</title>
+      <title>Rosalind</title>
       <link>https://cshung.github.io/tags/rosalind/</link>
       <pubDate>Sun, 14 Feb 2021 15:55:00 -0800</pubDate>
-      
       <guid>https://cshung.github.io/tags/rosalind/</guid>
       <description></description>
     </item>
-    
     <item>
-      <title>spoj</title>
+      <title>Spoj</title>
       <link>https://cshung.github.io/tags/spoj/</link>
       <pubDate>Sun, 02 Sep 2018 18:49:00 -0700</pubDate>
-      
       <guid>https://cshung.github.io/tags/spoj/</guid>
       <description></description>
     </item>
-    
     <item>
-      <title>dynamic programming</title>
+      <title>Dynamic Programming</title>
       <link>https://cshung.github.io/tags/dynamic-programming/</link>
       <pubDate>Thu, 06 Nov 2014 06:00:00 -0800</pubDate>
-      
       <guid>https://cshung.github.io/tags/dynamic-programming/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Floyd Warshall</title>
       <link>https://cshung.github.io/tags/floyd-warshall/</link>
       <pubDate>Thu, 06 Nov 2014 06:00:00 -0800</pubDate>
-      
       <guid>https://cshung.github.io/tags/floyd-warshall/</guid>
       <description></description>
     </item>
-    
     <item>
-      <title>graph</title>
+      <title>Graph</title>
       <link>https://cshung.github.io/tags/graph/</link>
       <pubDate>Thu, 06 Nov 2014 06:00:00 -0800</pubDate>
-      
       <guid>https://cshung.github.io/tags/graph/</guid>
       <description></description>
     </item>
-    
     <item>
-      <title>divide and conquer</title>
+      <title>Divide and Conquer</title>
       <link>https://cshung.github.io/tags/divide-and-conquer/</link>
       <pubDate>Sun, 26 Oct 2014 16:44:00 -0700</pubDate>
-      
       <guid>https://cshung.github.io/tags/divide-and-conquer/</guid>
       <description></description>
     </item>
-    
     <item>
-      <title>segment tree</title>
+      <title>Segment Tree</title>
       <link>https://cshung.github.io/tags/segment-tree/</link>
       <pubDate>Sun, 26 Oct 2014 16:44:00 -0700</pubDate>
-      
       <guid>https://cshung.github.io/tags/segment-tree/</guid>
       <description></description>
     </item>
-    
     <item>
-      <title>avl tree</title>
+      <title>Avl Tree</title>
       <link>https://cshung.github.io/tags/avl-tree/</link>
       <pubDate>Sat, 25 Oct 2014 07:30:00 -0700</pubDate>
-      
       <guid>https://cshung.github.io/tags/avl-tree/</guid>
       <description></description>
     </item>
-    
     <item>
-      <title>adhoc</title>
+      <title>Adhoc</title>
       <link>https://cshung.github.io/tags/adhoc/</link>
       <pubDate>Sat, 06 Sep 2014 14:00:00 -0700</pubDate>
-      
       <guid>https://cshung.github.io/tags/adhoc/</guid>
       <description></description>
     </item>
-    
   </channel>
 </rss>

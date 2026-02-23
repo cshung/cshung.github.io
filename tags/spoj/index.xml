@@ -1,104 +1,61 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>spoj on My Blog</title>
+    <title>Spoj on My Blog</title>
     <link>https://cshung.github.io/tags/spoj/</link>
-    <description>Recent content in spoj on My Blog</description>
+    <description>Recent content in Spoj on My Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 02 Sep 2018 18:49:00 -0700</lastBuildDate><atom:link href="https://cshung.github.io/tags/spoj/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 02 Sep 2018 18:49:00 -0700</lastBuildDate>
+    <atom:link href="https://cshung.github.io/tags/spoj/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>SPOJ Problem Set (classical) - Candy I</title>
       <link>https://cshung.github.io/posts/spoj-problem-set-classical-candy-i/</link>
       <pubDate>Sun, 02 Sep 2018 18:49:00 -0700</pubDate>
-      
       <guid>https://cshung.github.io/posts/spoj-problem-set-classical-candy-i/</guid>
-      <description>Problem:
-Please find the problem here.
-Solution:
-A necessary condition is that the total number of candies can be distributed evenly, therefore we check if sum % N == 0. In that case, all bags with less candies must get filled, and there must be one available. So we sum the total number of candies needed to fill and that&amp;rsquo;s the answer.
-Code:</description>
+      <description>Problem:&#xA;Please find the problem here.&#xA;Solution:&#xA;A necessary condition is that the total number of candies can be distributed evenly, therefore we check if sum % N == 0. In that case, all bags with less candies must get filled, and there must be one available. So we sum the total number of candies needed to fill and that&amp;rsquo;s the answer.&#xA;Code:</description>
     </item>
-    
     <item>
       <title>SPOJ Problem Set (classical) - Fishmonger</title>
       <link>https://cshung.github.io/posts/spoj-problem-set-classical-fishmonger/</link>
       <pubDate>Thu, 06 Nov 2014 06:00:00 -0800</pubDate>
-      
       <guid>https://cshung.github.io/posts/spoj-problem-set-classical-fishmonger/</guid>
-      <description>Problem:
-Please find the problem here.
-Solution:
-I started the problem using the a simple complete search of all path. Of course, we are not going to be able to enumerate through all the paths. But fortunately we don&amp;rsquo;t have to, once we have tried a path we can memoize the result as follow.
-If I am at a certain node n1 with certain an initial time constraint T1before, and with time t12 I can get to node n2, recursively we know the best path to get to market from n2 with budget T-t12 take time T2after and has minimal cost C2after, then we have one best path candidate from n1 to n2 within time constraint T1before that actually spend time T2after + t12 with cost C2after + c12.</description>
+      <description>Problem:&#xA;Please find the problem here.&#xA;Solution:&#xA;I started the problem using the a simple complete search of all path. Of course, we are not going to be able to enumerate through all the paths. But fortunately we don&amp;rsquo;t have to, once we have tried a path we can memoize the result as follow.&#xA;If I am at a certain node n1 with certain an initial time constraint T1before, and with time t12 I can get to node n2, recursively we know the best path to get to market from n2 with budget T-t12 take time T2after and has minimal cost C2after, then we have one best path candidate from n1 to n2 within time constraint T1before that actually spend time T2after + t12 with cost C2after + c12.</description>
     </item>
-    
     <item>
       <title>SPOJ Problem Set (classical) - Horrible Queries</title>
       <link>https://cshung.github.io/posts/spoj-problem-set-classical-horrible-queries/</link>
       <pubDate>Sun, 26 Oct 2014 16:44:00 -0700</pubDate>
-      
       <guid>https://cshung.github.io/posts/spoj-problem-set-classical-horrible-queries/</guid>
-      <description>Problem:
-Please find the problem here.
-Solution:
-Using the segment tree like in SPOJ_LITE_2. This time the summary is the sum instead of on light count, but it is just as easy to update those summaries.
-Code:</description>
+      <description>Problem:&#xA;Please find the problem here.&#xA;Solution:&#xA;Using the segment tree like in SPOJ_LITE_2. This time the summary is the sum instead of on light count, but it is just as easy to update those summaries.&#xA;Code:</description>
     </item>
-    
     <item>
       <title>SPOJ Problem Set (classical) - Light switching (2nd attempt)</title>
       <link>https://cshung.github.io/posts/spoj-problem-set-classical-light-switching-2nd-attempt/</link>
       <pubDate>Sun, 26 Oct 2014 08:38:00 -0700</pubDate>
-      
       <guid>https://cshung.github.io/posts/spoj-problem-set-classical-light-switching-2nd-attempt/</guid>
-      <description>Problem:
-Please find the problem here.
-Solution:
-After doing some optimization - the previous solution still cannot be accepted - need to try something else. Previously I was worried about memory consumption creating a full blown segment tree by virtualizing the segments. What if I just create it? Again, we consider this simple example of inserting the segment [1, 5] and [3, 7]
-Initially the tree is completely empty.
-00000000000000 Now we insert [1, 5]</description>
+      <description>Problem:&#xA;Please find the problem here.&#xA;Solution:&#xA;After doing some optimization - the previous solution still cannot be accepted - need to try something else. Previously I was worried about memory consumption creating a full blown segment tree by virtualizing the segments. What if I just create it? Again, we consider this simple example of inserting the segment [1, 5] and [3, 7]&#xA;Initially the tree is completely empty.&#xA;00000000000000 Now we insert [1, 5]</description>
     </item>
-    
     <item>
       <title>SPOJ Problem Set (classical) - Light switching (1st attempt)</title>
       <link>https://cshung.github.io/posts/spoj-problem-set-classical-light-switching-1st-attempt/</link>
       <pubDate>Sat, 25 Oct 2014 07:30:00 -0700</pubDate>
-      
       <guid>https://cshung.github.io/posts/spoj-problem-set-classical-light-switching-1st-attempt/</guid>
-      <description>Problem:
-Please find the problem here.
-Solution:
-This problem is really a hard nut to crack. I know there exist simpler solution, but I am going with my idea and implement that complex idea first. The goal is, really, to prove to myself that my idea works, and that to practice coding and debugging complex algorithm.
-It all started with some simple observations. Judging from the numbers, I believe we can’t allow update to take time proportional to the interval length, or otherwise one could easily construct an example to just keep flipping the whole interval and we are screwed with awful performance.</description>
+      <description>Problem:&#xA;Please find the problem here.&#xA;Solution:&#xA;This problem is really a hard nut to crack. I know there exist simpler solution, but I am going with my idea and implement that complex idea first. The goal is, really, to prove to myself that my idea works, and that to practice coding and debugging complex algorithm.&#xA;It all started with some simple observations. Judging from the numbers, I believe we can’t allow update to take time proportional to the interval length, or otherwise one could easily construct an example to just keep flipping the whole interval and we are screwed with awful performance.</description>
     </item>
-    
     <item>
       <title>SPOJ Problem Set (classical) - Life, the Universe, and Everything</title>
       <link>https://cshung.github.io/posts/spoj-problem-set-classical-life-the-universe-and-everything/</link>
       <pubDate>Thu, 16 Oct 2014 08:11:00 -0700</pubDate>
-      
       <guid>https://cshung.github.io/posts/spoj-problem-set-classical-life-the-universe-and-everything/</guid>
-      <description>Problem:
-Please find the problem here.
-Solution:
-To celebrate I have done with my 42nd problem, I decided to attempt this question. Apparently, this isn&amp;rsquo;t really a question, we can just get it accepted blindfolded - yes, it is that easy :p
-Consider this a joke in this blog!
-Code:</description>
+      <description>Problem:&#xA;Please find the problem here.&#xA;Solution:&#xA;To celebrate I have done with my 42nd problem, I decided to attempt this question. Apparently, this isn&amp;rsquo;t really a question, we can just get it accepted blindfolded - yes, it is that easy :p&#xA;Consider this a joke in this blog!&#xA;Code:</description>
     </item>
-    
     <item>
       <title>SPOJ Problem Set (classical) - The Next Palindrome</title>
       <link>https://cshung.github.io/posts/spoj-problem-set-classical-the-next-palindrome/</link>
       <pubDate>Sat, 06 Sep 2014 14:00:00 -0700</pubDate>
-      
       <guid>https://cshung.github.io/posts/spoj-problem-set-classical-the-next-palindrome/</guid>
-      <description>Problem:
-Please find the problem here.
-Solution:
-An adhoc problem. The key idea to solve this problem is to try to keep the left hand side as small as possible.
-For example, if the input is 1921, we can assert the answer is 1991. To see why, decreasing any digit on the right hand side must also decrease a digit on the left hand side, and with we decrease any digit on the left hand side, the number is less than 1900!</description>
+      <description>Problem:&#xA;Please find the problem here.&#xA;Solution:&#xA;An adhoc problem. The key idea to solve this problem is to try to keep the left hand side as small as possible.&#xA;For example, if the input is 1921, we can assert the answer is 1991. To see why, decreasing any digit on the right hand side must also decrease a digit on the left hand side, and with we decrease any digit on the left hand side, the number is less than 1900!</description>
     </item>
-    
   </channel>
 </rss>

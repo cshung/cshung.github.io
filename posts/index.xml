@@ -6,1090 +6,630 @@
     <description>Recent content in Posts on My Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 23 May 2025 17:39:02 +0000</lastBuildDate><atom:link href="https://cshung.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 23 Feb 2026 00:00:00 -0800</lastBuildDate>
+    <atom:link href="https://cshung.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Portfolio</title>
-      <link>https://cshung.github.io/posts/portfolio/</link>
-      <pubDate>Fri, 23 May 2025 17:39:02 +0000</pubDate>
-      
-      <guid>https://cshung.github.io/posts/portfolio/</guid>
-      <description>Experience with Servers Adaptive Garbage Collection (2023): Enhanced garbage collection for Azure functions, doubling capacity using a single pool of containers. Memory Management Optimization (2022): Reduced memory footprint by 50%, increasing deployment density and saving $1M monthly. Network Transport Prototype (2013): Improved application throughput by 37% in a RESTful service by bypassing HTTP/1.1 FIFO restrictions. Experience with Code Generation ekans (2025): Built a personal self-hosting Racket compiler that compiles a subset of Racket to C.</description>
+      <title>Hunting Zombie Processes: From 6,500 Zombies to a Bug in Git</title>
+      <link>https://cshung.github.io/posts/zombie-git/</link>
+      <pubDate>Mon, 23 Feb 2026 00:00:00 -0800</pubDate>
+      <guid>https://cshung.github.io/posts/zombie-git/</guid>
+      <description>The Discovery It started with an expired access token. I was trying to git fetch in one of my repos and got an authentication failure. While poking around, I noticed something odd — thousands of zombie processes on my machine:&#xA;$ ps aux | grep -w Z | wc -l 6530 Over six thousand zombies, all [git] and [ssh] defunct processes. Every single one parented by the same PID — the houndd process running inside a Docker container.</description>
     </item>
-    
     <item>
       <title>Linux Virtual Memory Mapping Debugging</title>
       <link>https://cshung.github.io/posts/linux-virtual-memory-mapping-debugging/</link>
       <pubDate>Wed, 05 Jun 2024 13:33:14 -0700</pubDate>
-      
       <guid>https://cshung.github.io/posts/linux-virtual-memory-mapping-debugging/</guid>
-      <description>In this post, I will talk an issue related to Linux virtual memory mapping exhaustion. The issue involve understanding the Linux memory management subsystem, and so it is quite interesting to look at.
-For the impatient, this blog entry described some concepts for Linux virtual memory, described the debugging process, and proposed the next steps.
-What is the problem? In this GitHub issue, customers are hitting this error.
-Fatal error. Failed to create RW mapping for RX memory.</description>
+      <description>In this post, I will talk an issue related to Linux virtual memory mapping exhaustion. The issue involve understanding the Linux memory management subsystem, and so it is quite interesting to look at.&#xA;For the impatient, this blog entry described some concepts for Linux virtual memory, described the debugging process, and proposed the next steps.&#xA;What is the problem? In this GitHub issue, customers are hitting this error.&#xA;Fatal error. Failed to create RW mapping for RX memory.</description>
     </item>
-    
-    <item>
-      <title>Here&#39;s a LibC</title>
-      <link>https://cshung.github.io/posts/here-is-a-libc/</link>
-      <pubDate>Sat, 02 Sep 2023 17:39:02 +0000</pubDate>
-      
-      <guid>https://cshung.github.io/posts/here-is-a-libc/</guid>
-      <description>Here&amp;rsquo;s a LibC Today is September 2, a long weekend in the U.S. With some time to spare, I want to see if I can tackle the third binary exploitation challenge.
-Recently, I&amp;rsquo;ve been busy, so I haven&amp;rsquo;t worked on this for two weeks. Now, I need to recap. I actually wanted to summarize and write a detailed explanation.
-Starting with the problem, we have a vuln, a libc.so.6, a Makefile, and a netcat endpoint, and the task is to pwn.</description>
-    </item>
-    
     <item>
       <title>NativeAOT Development</title>
       <link>https://cshung.github.io/posts/native-aot-development/</link>
       <pubDate>Tue, 30 May 2023 12:19:41 -0700</pubDate>
-      
       <guid>https://cshung.github.io/posts/native-aot-development/</guid>
-      <description>This post is written to document the process of development runtime or library features for NativeAOT. This is NOT meant for NativeAOT compiling your application.
-Hello Native AOT To begin with, we will start with building a HelloWorld application and then NativeAOT compile it. The application itself is unimportant, we can simply use dotnet new console to create a HelloWorld application.
-Next, we add the following MSBuild property to the project file:</description>
+      <description>This post is written to document the process of development runtime or library features for NativeAOT. This is NOT meant for NativeAOT compiling your application.&#xA;Hello Native AOT To begin with, we will start with building a HelloWorld application and then NativeAOT compile it. The application itself is unimportant, we can simply use dotnet new console to create a HelloWorld application.&#xA;Next, we add the following MSBuild property to the project file:</description>
     </item>
-    
     <item>
       <title>Memory Corruption (4)</title>
       <link>https://cshung.github.io/posts/memory-corruption-4/</link>
       <pubDate>Sun, 21 May 2023 10:01:16 -0700</pubDate>
-      
       <guid>https://cshung.github.io/posts/memory-corruption-4/</guid>
-      <description>An object reference pointing to outside of gen 1 In this post, I will talk about yet another memory corruption bug we found and fixed. Check out my previous post for more context and examples.
-Symptom As reported in this issue, we are hitting random crashes when running the FASTER database. Their developers kindly narrowed it down into a simple repro.
-A few observations It crashes quickly on some machines, but on some others, it doesn&amp;rsquo;t.</description>
+      <description>An object reference pointing to outside of gen 1 In this post, I will talk about yet another memory corruption bug we found and fixed. Check out my previous post for more context and examples.&#xA;Symptom As reported in this issue, we are hitting random crashes when running the FASTER database. Their developers kindly narrowed it down into a simple repro.&#xA;A few observations It crashes quickly on some machines, but on some others, it doesn&amp;rsquo;t.</description>
     </item>
-    
     <item>
       <title>Memory Corruption (3)</title>
       <link>https://cshung.github.io/posts/memory-corruption-3/</link>
       <pubDate>Sat, 17 Dec 2022 12:31:46 -0800</pubDate>
-      
       <guid>https://cshung.github.io/posts/memory-corruption-3/</guid>
-      <description>Another memory corruption bug In this post, I will talk about another memory corruption bug we found and fix together with Mukund. Check out my previous post for more context and examples.
-Symptom As reported in this issue, we hit an access violation while we are trying to compare objects for equality when running a test case that is doing some concurrent dictionary of buffers allocated on the POH.
-A first look When the program crashes at the object equality check.</description>
+      <description>Another memory corruption bug In this post, I will talk about another memory corruption bug we found and fix together with Mukund. Check out my previous post for more context and examples.&#xA;Symptom As reported in this issue, we hit an access violation while we are trying to compare objects for equality when running a test case that is doing some concurrent dictionary of buffers allocated on the POH.&#xA;A first look When the program crashes at the object equality check.</description>
     </item>
-    
     <item>
       <title>Watch Soccer with SOCKS</title>
       <link>https://cshung.github.io/posts/soccer-with-socks/</link>
       <pubDate>Sat, 17 Dec 2022 10:32:43 -0800</pubDate>
-      
       <guid>https://cshung.github.io/posts/soccer-with-socks/</guid>
-      <description>As of the time of writing, tomorrow is the final for World Cup 2022. It is a pity to miss it. Unfortunately, in the US, unlike most other places in the world, you can&amp;rsquo;t watch it for free, while it is available for free online in many other countries.
-To get around that restriction, I &amp;hellip;
-hosted a cheap Linux virtual machine on Azure. used SSH as a sock server. used SSH tunnel to encrypt the traffic, and made Chrome use the sock server and start watching Part 1 - hosting a Linux Virtual Machine After logging on the Azure portal, I can easily create a Linux virtual machine.</description>
+      <description>As of the time of writing, tomorrow is the final for World Cup 2022. It is a pity to miss it. Unfortunately, in the US, unlike most other places in the world, you can&amp;rsquo;t watch it for free, while it is available for free online in many other countries.&#xA;To get around that restriction, I &amp;hellip;&#xA;hosted a cheap Linux virtual machine on Azure. used SSH as a sock server. used SSH tunnel to encrypt the traffic, and made Chrome use the sock server and start watching Part 1 - hosting a Linux Virtual Machine After logging on the Azure portal, I can easily create a Linux virtual machine.</description>
     </item>
-    
     <item>
       <title>Debug MAUI Android</title>
       <link>https://cshung.github.io/posts/debug-maui-android/</link>
       <pubDate>Mon, 04 Apr 2022 08:20:54 -0700</pubDate>
-      
       <guid>https://cshung.github.io/posts/debug-maui-android/</guid>
-      <description>These days I have been helping the MAUI team to fix some bugs. I always learn something new when I work on something new, and this time is no different. Today I am going to write about how to debug the Android code running inside a MAUI app.
-Procedure Step 1: Launching the App. I start the MAUI app in Visual Studio as usual. In this post, I am going to assume that we know how to start an App in Visual Studio.</description>
+      <description>These days I have been helping the MAUI team to fix some bugs. I always learn something new when I work on something new, and this time is no different. Today I am going to write about how to debug the Android code running inside a MAUI app.&#xA;Procedure Step 1: Launching the App. I start the MAUI app in Visual Studio as usual. In this post, I am going to assume that we know how to start an App in Visual Studio.</description>
     </item>
-    
     <item>
       <title>SA-IS Algorithm</title>
       <link>https://cshung.github.io/posts/sais/</link>
       <pubDate>Sun, 26 Dec 2021 10:52:35 -0800</pubDate>
-      
       <guid>https://cshung.github.io/posts/sais/</guid>
-      <description>Today, I would like to write about my understanding of the SA-IS algorithm for constructing a suffix array.
-What is a suffix array? Consider the string &amp;ldquo;banana&amp;rdquo;, this string has 6 suffixes.
-suffix index banana 0 anana 1 nana 2 ana 3 na 4 a 5 And if we sort them, we have these:
-suffix index a 5 ana 3 anana 1 banana 0 na 4 nana 2 And therefore the suffix array is [5,3,1,0,4,2].</description>
+      <description>Today, I would like to write about my understanding of the SA-IS algorithm for constructing a suffix array.&#xA;What is a suffix array? Consider the string &amp;ldquo;banana&amp;rdquo;, this string has 6 suffixes.&#xA;suffix index banana 0 anana 1 nana 2 ana 3 na 4 a 5 And if we sort them, we have these:&#xA;suffix index a 5 ana 3 anana 1 banana 0 na 4 nana 2 And therefore the suffix array is [5,3,1,0,4,2].</description>
     </item>
-    
     <item>
       <title>Spurious Interrupts</title>
       <link>https://cshung.github.io/posts/spurious-interrupts/</link>
       <pubDate>Sat, 23 Oct 2021 16:32:21 -0700</pubDate>
-      
       <guid>https://cshung.github.io/posts/spurious-interrupts/</guid>
-      <description>Spurious interrupt In this post, we are going to talk about the spurious interrupt that we see in the console when running Xv6 on v86. I think it is a reflection of a deep problem in Xv6. To get started, let first explain what is a spurious interrupt.
-The hardware side The best way to think of spurious interrupts is to think like the programmable interrupt controller (PIC) between the devices (e.</description>
+      <description>Spurious interrupt In this post, we are going to talk about the spurious interrupt that we see in the console when running Xv6 on v86. I think it is a reflection of a deep problem in Xv6. To get started, let first explain what is a spurious interrupt.&#xA;The hardware side The best way to think of spurious interrupts is to think like the programmable interrupt controller (PIC) between the devices (e.</description>
     </item>
-    
     <item>
       <title>PS/2 and A20</title>
       <link>https://cshung.github.io/posts/ps2-and-a20/</link>
       <pubDate>Fri, 22 Oct 2021 20:15:34 -0700</pubDate>
-      
       <guid>https://cshung.github.io/posts/ps2-and-a20/</guid>
       <description>PS/2 and A20 If the title of the post doesn&amp;rsquo;t make any sense for you, you are just too young. Well, just kidding. These are really old technologies but still impacting our journey to host Xv6 on v86. In our last post, we were able to run a scenario, but it isn&amp;rsquo;t perfect, it looks like all keyboard inputs are ignored and one must input the command through the UART port.</description>
     </item>
-    
     <item>
       <title>Ready to Run Delay Load</title>
       <link>https://cshung.github.io/posts/ready-to-run-delay-load/</link>
       <pubDate>Thu, 14 Oct 2021 12:27:20 -0700</pubDate>
-      
       <guid>https://cshung.github.io/posts/ready-to-run-delay-load/</guid>
-      <description>In this series of posts, I will deep dive into ReadyToRun to understand its mechanisms. In my previous post, I briefly explained what is ReadyToRun and what problems do we need to solve. Now we will look into the exact mechanisms.
-The example We will start with this very simple example:
-using System; namespace ReadyToDebug { class Program { static void Main(string[] args) { for (int i = 0; i &amp;lt; 3; i++) { Console.</description>
+      <description>In this series of posts, I will deep dive into ReadyToRun to understand its mechanisms. In my previous post, I briefly explained what is ReadyToRun and what problems do we need to solve. Now we will look into the exact mechanisms.&#xA;The example We will start with this very simple example:&#xA;using System; namespace ReadyToDebug { class Program { static void Main(string[] args) { for (int i = 0; i &amp;lt; 3; i++) { Console.</description>
     </item>
-    
     <item>
       <title>Optimize Bricks</title>
       <link>https://cshung.github.io/posts/optimize-bricks/</link>
       <pubDate>Wed, 06 Oct 2021 16:04:13 -0700</pubDate>
-      
       <guid>https://cshung.github.io/posts/optimize-bricks/</guid>
-      <description>In this post, I am going to talk about an optimization I made in the GC to reduce tail latency.
-Scenario One of our customers reported that occassionally, they are observing gen 1 GC taking longer time than usual. Usually, their gen 1 GC takes around 4 milliseconds, but once in a while it could be as long as 15 milliseconds, and this is getting into their tail latencies measurements.</description>
+      <description>In this post, I am going to talk about an optimization I made in the GC to reduce tail latency.&#xA;Scenario One of our customers reported that occassionally, they are observing gen 1 GC taking longer time than usual. Usually, their gen 1 GC takes around 4 milliseconds, but once in a while it could be as long as 15 milliseconds, and this is getting into their tail latencies measurements.</description>
     </item>
-    
     <item>
       <title>Fake Interior Pointer</title>
       <link>https://cshung.github.io/posts/fake-interior-pointer/</link>
       <pubDate>Fri, 10 Sep 2021 09:50:21 -0700</pubDate>
-      
       <guid>https://cshung.github.io/posts/fake-interior-pointer/</guid>
-      <description>GC reporting basics When CoreCLR performs a garbage collection, the GC asks the VM where the roots are. The runtime will report to the GC the pointers to the pointers of the objects. This process is called GC reporting.
-Suppose we have a pointer on the stack pointing to an object on the GC heap, it will look like this:
-Stack: Heap 0x00001000: .......... 0x00F00000: ..........: .......... ..........: .......... ..........: .</description>
+      <description>GC reporting basics When CoreCLR performs a garbage collection, the GC asks the VM where the roots are. The runtime will report to the GC the pointers to the pointers of the objects. This process is called GC reporting.&#xA;Suppose we have a pointer on the stack pointing to an object on the GC heap, it will look like this:&#xA;Stack: Heap 0x00001000: .......... 0x00F00000: ..........: .......... ..........: .......... ..........: .</description>
     </item>
-    
     <item>
       <title>False Memory Leak</title>
       <link>https://cshung.github.io/posts/false-memory-leak/</link>
       <pubDate>Fri, 13 Aug 2021 12:18:40 -0700</pubDate>
-      
       <guid>https://cshung.github.io/posts/false-memory-leak/</guid>
-      <description>I am writing this post to share a memory leak investigation which turns out to be a false positive (i.e. we are not having a managed memory leak). This goal of this document is to share the analysis method so that it could be applied to similar situations.
-Highlights Before I go into the details, here is a one line summary of the conclusion. This case is NOT a managed memory leak, but because a compiler generated temp is considered a reference and therefore the garbage collector cannot eliminate it.</description>
+      <description>I am writing this post to share a memory leak investigation which turns out to be a false positive (i.e. we are not having a managed memory leak). This goal of this document is to share the analysis method so that it could be applied to similar situations.&#xA;Highlights Before I go into the details, here is a one line summary of the conclusion. This case is NOT a managed memory leak, but because a compiler generated temp is considered a reference and therefore the garbage collector cannot eliminate it.</description>
     </item>
-    
     <item>
       <title>Memory Corruption (2)</title>
       <link>https://cshung.github.io/posts/memory-corruption-2/</link>
       <pubDate>Fri, 02 Jul 2021 15:01:10 -0700</pubDate>
-      
       <guid>https://cshung.github.io/posts/memory-corruption-2/</guid>
-      <description>Another memory corruption bug In this post, we will talk about another memory corruption bug I found and fix. Check out my previous post for more context and examples.
-The symptom We are hitting an access violation at this location:
-inline size_t my_get_size (Object* ob) { MethodTable* mT = header(ob)-&amp;gt;GetMethodTable(); return (mT-&amp;gt;GetBaseSize() + (mT-&amp;gt;HasComponentSize() ? ((size_t)((CObjectHeader*)ob)-&amp;gt;GetNumComponents() * mT-&amp;gt;RawGetComponentSize()) : 0)); } When the access violation happens, mT is a nullptr and therefore it cannot be dereferenced.</description>
+      <description>Another memory corruption bug In this post, we will talk about another memory corruption bug I found and fix. Check out my previous post for more context and examples.&#xA;The symptom We are hitting an access violation at this location:&#xA;inline size_t my_get_size (Object* ob) { MethodTable* mT = header(ob)-&amp;gt;GetMethodTable(); return (mT-&amp;gt;GetBaseSize() + (mT-&amp;gt;HasComponentSize() ? ((size_t)((CObjectHeader*)ob)-&amp;gt;GetNumComponents() * mT-&amp;gt;RawGetComponentSize()) : 0)); } When the access violation happens, mT is a nullptr and therefore it cannot be dereferenced.</description>
     </item>
-    
     <item>
       <title>Memory Corruption (1)</title>
       <link>https://cshung.github.io/posts/memory-corruption-1/</link>
       <pubDate>Sat, 29 May 2021 11:09:44 -0700</pubDate>
-      
       <guid>https://cshung.github.io/posts/memory-corruption-1/</guid>
       <description>Debugging a memory corruption problem A memory corruption issue refers to a problem that is caused by the fact that the memory content is wrong. For example, the code is having an access violation because it tried to dereference a pointer that is not valid. Debugging a memory corruption issue is hard because we don&amp;rsquo;t know how the process get into a corrupted state to begin with. In this post, I am going to share my experience debugging a memory issue caused by the GC.</description>
     </item>
-    
     <item>
       <title>Git Merge Squash</title>
       <link>https://cshung.github.io/posts/git-merge-squash/</link>
       <pubDate>Wed, 21 Apr 2021 12:57:39 -0700</pubDate>
-      
       <guid>https://cshung.github.io/posts/git-merge-squash/</guid>
-      <description>Git Merge Squash This is a short article documenting my process of reusing someone else&amp;rsquo;s change. It is not particularly easy and therefore I would like a document to remember how I did it.
-The problem? Imagine my partner and I were working on the same repository. I am working on a feature and he is working on a fix that I need. However, for whatever reasons, my partner couldn&amp;rsquo;t merge the fix in, but I would really like to apply his change in my code base so that my scenario work (at least locally), how should I do it?</description>
+      <description>Git Merge Squash This is a short article documenting my process of reusing someone else&amp;rsquo;s change. It is not particularly easy and therefore I would like a document to remember how I did it.&#xA;The problem? Imagine my partner and I were working on the same repository. I am working on a feature and he is working on a fix that I need. However, for whatever reasons, my partner couldn&amp;rsquo;t merge the fix in, but I would really like to apply his change in my code base so that my scenario work (at least locally), how should I do it?</description>
     </item>
-    
     <item>
       <title>Understanding the brick table</title>
       <link>https://cshung.github.io/posts/brick/</link>
       <pubDate>Sat, 17 Apr 2021 00:00:00 -0800</pubDate>
-      
       <guid>https://cshung.github.io/posts/brick/</guid>
-      <description>Understanding the brick table A brick table is a data structure that helps finding an object in the heap. To begin with the discussion, it makes sense to clarify what does finding an object mean.
-What is the find object problem? There are various situation that we are given a random pointer inside the heap, and we wanted to find the pointer to the object that is using the address.</description>
+      <description>Understanding the brick table A brick table is a data structure that helps finding an object in the heap. To begin with the discussion, it makes sense to clarify what does finding an object mean.&#xA;What is the find object problem? There are various situation that we are given a random pointer inside the heap, and we wanted to find the pointer to the object that is using the address.</description>
     </item>
-    
     <item>
       <title>Understanding the card table</title>
       <link>https://cshung.github.io/posts/card/</link>
       <pubDate>Sat, 17 Apr 2021 00:00:00 -0800</pubDate>
-      
       <guid>https://cshung.github.io/posts/card/</guid>
-      <description>Understanding the card table A card table is used in a generational GC to discover cross-generational pointers. Let&amp;rsquo;s get started with the generation GC problem first.
-Generational GC It is observed allocations typically divides into two classes. Either they are short-lived or they are long lived. To efficiently use the memory, we would like to be able to reclaim the space of the short lived object relatively fast without having to worry about the long lived ones.</description>
+      <description>Understanding the card table A card table is used in a generational GC to discover cross-generational pointers. Let&amp;rsquo;s get started with the generation GC problem first.&#xA;Generational GC It is observed allocations typically divides into two classes. Either they are short-lived or they are long lived. To efficiently use the memory, we would like to be able to reclaim the space of the short lived object relatively fast without having to worry about the long lived ones.</description>
     </item>
-    
     <item>
       <title>POH Tuning (Part 5 - Preliminary results)</title>
       <link>https://cshung.github.io/posts/poh-tuning-5/</link>
       <pubDate>Mon, 08 Mar 2021 10:57:05 -0800</pubDate>
-      
       <guid>https://cshung.github.io/posts/poh-tuning-5/</guid>
-      <description>Top level result After running, we can use the Jupyter notebook to analyze the result. The result is surprising. To make the data easy to analyze, they are available as pandas data frame. For those who are unfamiliar with pandas, a data frame is really just a table.
-To use the notebook to get to the data frame, we need to run the first cell (as it required to setup the functions), and then we can run the cell calling the get_test_metrics_numbers_for_jupyter function, there should be exactly one such cell.</description>
+      <description>Top level result After running, we can use the Jupyter notebook to analyze the result. The result is surprising. To make the data easy to analyze, they are available as pandas data frame. For those who are unfamiliar with pandas, a data frame is really just a table.&#xA;To use the notebook to get to the data frame, we need to run the first cell (as it required to setup the functions), and then we can run the cell calling the get_test_metrics_numbers_for_jupyter function, there should be exactly one such cell.</description>
     </item>
-    
     <item>
       <title>POH Tuning (Part 6 - Varying the benchmark)</title>
       <link>https://cshung.github.io/posts/poh-tuning-6/</link>
       <pubDate>Mon, 08 Mar 2021 10:57:05 -0800</pubDate>
-      
       <guid>https://cshung.github.io/posts/poh-tuning-6/</guid>
-      <description>Varying the benchmark In the last post, we showed that in a particular scenario, allocating pinned objects on pinned object heap is a better choice from both the speed perspective and the heap size perspective. How about other scenarios?
-In part 4, we already discussed the criterion what is feasible to test under GCPerfSim, so we will simply generate all the possibilities here with this simple Python script
-for a in range(1, 100): if 1000 % a == 0: for b in range(1, a): if a % b == 0: if ((1000 - b) % (a - b) == 0): pin_sohsi = 1000 // a pin_sohpi = a // b poh_sohsi = (1000 - b) // (a - b) poh_pohar = b print(&amp;#34; 2gb_pin_%s_%s:&amp;#34; % (a, b)); print(&amp;#34; arguments:&amp;#34;); print(&amp;#34; tc: 6&amp;#34;); print(&amp;#34; tagb: 100&amp;#34;); print(&amp;#34; tlgb: 2&amp;#34;); print(&amp;#34; lohar: 0&amp;#34;); print(&amp;#34; pohar: 0&amp;#34;); print(&amp;#34; sohsr: 100-4000&amp;#34;); print(&amp;#34; pohsr: 100-4000&amp;#34;); print(&amp;#34; sohsi: %s&amp;#34; % pin_sohsi); print(&amp;#34; lohsi: 0&amp;#34;); print(&amp;#34; pohsi: 0&amp;#34;); print(&amp;#34; sohpi: %s&amp;#34; % pin_sohpi); print(&amp;#34; lohpi: 0&amp;#34;); print(&amp;#34; sohfi: 0&amp;#34;); print(&amp;#34; lohfi: 0&amp;#34;); print(&amp;#34; pohfi: 0&amp;#34;); print(&amp;#34; allocType: reference&amp;#34;); print(&amp;#34; testKind: time&amp;#34;); print(&amp;#34; 2gb_poh_%s_%s:&amp;#34; % (a, b)); print(&amp;#34; arguments:&amp;#34;); print(&amp;#34; tc: 6&amp;#34;); print(&amp;#34; tagb: 100&amp;#34;); print(&amp;#34; tlgb: 2&amp;#34;); print(&amp;#34; lohar: 0&amp;#34;); print(&amp;#34; pohar: %s&amp;#34; % poh_pohar); print(&amp;#34; sohsr: 100-4000&amp;#34;); print(&amp;#34; pohsr: 100-4000&amp;#34;); print(&amp;#34; sohsi: %s&amp;#34; % poh_sohsi); print(&amp;#34; lohsi: 0&amp;#34;); print(&amp;#34; pohsi: 1&amp;#34;); print(&amp;#34; sohpi: 0&amp;#34;); print(&amp;#34; lohpi: 0&amp;#34;); print(&amp;#34; sohfi: 0&amp;#34;); print(&amp;#34; lohfi: 0&amp;#34;); print(&amp;#34; pohfi: 0&amp;#34;); print(&amp;#34; allocType: reference&amp;#34;); print(&amp;#34; testKind: time&amp;#34;); Preprocessing the result As usual, we can create a pandas data frame for all the runs.</description>
+      <description>Varying the benchmark In the last post, we showed that in a particular scenario, allocating pinned objects on pinned object heap is a better choice from both the speed perspective and the heap size perspective. How about other scenarios?&#xA;In part 4, we already discussed the criterion what is feasible to test under GCPerfSim, so we will simply generate all the possibilities here with this simple Python script&#xA;for a in range(1, 100): if 1000 % a == 0: for b in range(1, a): if a % b == 0: if ((1000 - b) % (a - b) == 0): pin_sohsi = 1000 // a pin_sohpi = a // b poh_sohsi = (1000 - b) // (a - b) poh_pohar = b print(&amp;#34; 2gb_pin_%s_%s:&amp;#34; % (a, b)); print(&amp;#34; arguments:&amp;#34;); print(&amp;#34; tc: 6&amp;#34;); print(&amp;#34; tagb: 100&amp;#34;); print(&amp;#34; tlgb: 2&amp;#34;); print(&amp;#34; lohar: 0&amp;#34;); print(&amp;#34; pohar: 0&amp;#34;); print(&amp;#34; sohsr: 100-4000&amp;#34;); print(&amp;#34; pohsr: 100-4000&amp;#34;); print(&amp;#34; sohsi: %s&amp;#34; % pin_sohsi); print(&amp;#34; lohsi: 0&amp;#34;); print(&amp;#34; pohsi: 0&amp;#34;); print(&amp;#34; sohpi: %s&amp;#34; % pin_sohpi); print(&amp;#34; lohpi: 0&amp;#34;); print(&amp;#34; sohfi: 0&amp;#34;); print(&amp;#34; lohfi: 0&amp;#34;); print(&amp;#34; pohfi: 0&amp;#34;); print(&amp;#34; allocType: reference&amp;#34;); print(&amp;#34; testKind: time&amp;#34;); print(&amp;#34; 2gb_poh_%s_%s:&amp;#34; % (a, b)); print(&amp;#34; arguments:&amp;#34;); print(&amp;#34; tc: 6&amp;#34;); print(&amp;#34; tagb: 100&amp;#34;); print(&amp;#34; tlgb: 2&amp;#34;); print(&amp;#34; lohar: 0&amp;#34;); print(&amp;#34; pohar: %s&amp;#34; % poh_pohar); print(&amp;#34; sohsr: 100-4000&amp;#34;); print(&amp;#34; pohsr: 100-4000&amp;#34;); print(&amp;#34; sohsi: %s&amp;#34; % poh_sohsi); print(&amp;#34; lohsi: 0&amp;#34;); print(&amp;#34; pohsi: 1&amp;#34;); print(&amp;#34; sohpi: 0&amp;#34;); print(&amp;#34; lohpi: 0&amp;#34;); print(&amp;#34; sohfi: 0&amp;#34;); print(&amp;#34; lohfi: 0&amp;#34;); print(&amp;#34; pohfi: 0&amp;#34;); print(&amp;#34; allocType: reference&amp;#34;); print(&amp;#34; testKind: time&amp;#34;); Preprocessing the result As usual, we can create a pandas data frame for all the runs.</description>
     </item>
-    
     <item>
       <title>POH Tuning (Part 4 - Benchmark design and the performance infrastructure)</title>
       <link>https://cshung.github.io/posts/poh-tuning-4/</link>
       <pubDate>Fri, 05 Mar 2021 19:55:26 -0800</pubDate>
-      
       <guid>https://cshung.github.io/posts/poh-tuning-4/</guid>
-      <description>Benchmark design Armed with the knowledge about how the allocation ratios works in the previous post. Now we can design our benchmarks. My goal is to produce a pair of benchmarks so that I can compare pinning objects by using the old pinned handle, or by the new pinned object heap.
-In the pinned handle case, we can have a general design like this:
-Out of 1,000 objects in the SOH, \( a \) of them survives and \( b \) of them are pinned.</description>
+      <description>Benchmark design Armed with the knowledge about how the allocation ratios works in the previous post. Now we can design our benchmarks. My goal is to produce a pair of benchmarks so that I can compare pinning objects by using the old pinned handle, or by the new pinned object heap.&#xA;In the pinned handle case, we can have a general design like this:&#xA;Out of 1,000 objects in the SOH, \( a \) of them survives and \( b \) of them are pinned.</description>
     </item>
-    
     <item>
       <title>POH Tuning (Part 3 - Other statistical properties)</title>
       <link>https://cshung.github.io/posts/poh-tuning-3/</link>
       <pubDate>Mon, 01 Mar 2021 20:55:26 -0800</pubDate>
-      
       <guid>https://cshung.github.io/posts/poh-tuning-3/</guid>
-      <description>In the last post, we discussed what the benchmark does and how the weights are computed. In this post, we will talk about some other interesting statistical properties. The lesson learned here is that we know how objects behave in the benchmark, and we can use this to judge whether or not the benchmark actually matches with real-life use cases.
-Object lifetime In this previous post, we know about an object&amp;rsquo;s life cycle.</description>
+      <description>In the last post, we discussed what the benchmark does and how the weights are computed. In this post, we will talk about some other interesting statistical properties. The lesson learned here is that we know how objects behave in the benchmark, and we can use this to judge whether or not the benchmark actually matches with real-life use cases.&#xA;Object lifetime In this previous post, we know about an object&amp;rsquo;s life cycle.</description>
     </item>
-    
     <item>
       <title>POH Tuning (Part 2 - What am I running?)</title>
       <link>https://cshung.github.io/posts/poh-tuning-2/</link>
       <pubDate>Mon, 01 Mar 2021 19:55:26 -0800</pubDate>
-      
       <guid>https://cshung.github.io/posts/poh-tuning-2/</guid>
-      <description>In the last post, we talk about the event tracing infrastructure, it allows us to measure the metrics we wanted to study when we run the program. But what program do we want to run? The program that we will run is called a benchmark. In this post, I will look into the details of the benchmark program.
-Overview The program that we will run is called GCPerfSim. As its name suggests, it simulates workload for the GC to understand its performance.</description>
+      <description>In the last post, we talk about the event tracing infrastructure, it allows us to measure the metrics we wanted to study when we run the program. But what program do we want to run? The program that we will run is called a benchmark. In this post, I will look into the details of the benchmark program.&#xA;Overview The program that we will run is called GCPerfSim. As its name suggests, it simulates workload for the GC to understand its performance.</description>
     </item>
-    
     <item>
       <title>Rosalind - Ordering Strings of Varying Length Lexicographically</title>
       <link>https://cshung.github.io/posts/rosalind-ordering-strings-of-varying-length-lexicographically/</link>
       <pubDate>Sun, 14 Feb 2021 15:55:00 -0800</pubDate>
-      
       <guid>https://cshung.github.io/posts/rosalind-ordering-strings-of-varying-length-lexicographically/</guid>
-      <description>Problem:
-Please find the problem here. Solution:
-I wanted to implement a solution that is analogous to an odometer. The key thing that we wanted to understand is how we can advance from the current word to the next one. Suppose we have the next function, then we can just repeatedly use that function to produce the next one. The next function would probably not work on the last element, so that will naturally provide us with a stopping condition as well.</description>
+      <description>Problem:&#xA;Please find the problem here. Solution:&#xA;I wanted to implement a solution that is analogous to an odometer. The key thing that we wanted to understand is how we can advance from the current word to the next one. Suppose we have the next function, then we can just repeatedly use that function to produce the next one. The next function would probably not work on the last element, so that will naturally provide us with a stopping condition as well.</description>
     </item>
-    
     <item>
       <title>Rosalind - k-Mer Composition</title>
       <link>https://cshung.github.io/posts/rosalind-k-mer-composition/</link>
       <pubDate>Sat, 30 Jan 2021 15:16:00 -0800</pubDate>
-      
       <guid>https://cshung.github.io/posts/rosalind-k-mer-composition/</guid>
-      <description>Problem:
-Please find the problem here. Solution:
-To produce the array, slide a window of width 4 from the leftmost to the rightmost of the string. When processing a window, we quickly compute the k-mer index as a base 4 number. Code:</description>
+      <description>Problem:&#xA;Please find the problem here. Solution:&#xA;To produce the array, slide a window of width 4 from the leftmost to the rightmost of the string. When processing a window, we quickly compute the k-mer index as a base 4 number. Code:</description>
     </item>
-    
     <item>
       <title>Debug Info Debugging</title>
       <link>https://cshung.github.io/posts/debug-info-debugging/</link>
       <pubDate>Mon, 18 Jan 2021 13:25:05 -0800</pubDate>
-      
       <guid>https://cshung.github.io/posts/debug-info-debugging/</guid>
-      <description>Recently, I have found an anomaly in the debug info generated by the ready to run compiler. In this post, I will talk about how I found it and how I debugged it.
-Discovery In a routine update of the ILCompiler.Reflection.ReadyToRun.dll for ILSpy, I turned on the STRESS mode I introduced in a recent commit to test whether or not the new version can disassemble all the methods in System.Private.CoreLib. To my surprise, it failed with this exception.</description>
+      <description>Recently, I have found an anomaly in the debug info generated by the ready to run compiler. In this post, I will talk about how I found it and how I debugged it.&#xA;Discovery In a routine update of the ILCompiler.Reflection.ReadyToRun.dll for ILSpy, I turned on the STRESS mode I introduced in a recent commit to test whether or not the new version can disassemble all the methods in System.Private.CoreLib. To my surprise, it failed with this exception.</description>
     </item>
-    
     <item>
       <title>POH Tuning (Part 1 - What is my pinned object heap size?)</title>
       <link>https://cshung.github.io/posts/poh-tuning-1/</link>
       <pubDate>Fri, 15 Jan 2021 11:18:17 -0800</pubDate>
-      
       <guid>https://cshung.github.io/posts/poh-tuning-1/</guid>
-      <description>In this series, I am going to talk about my work to tune the pinned object heap. The first step to tuning is to understand how it performs now. Unfortunately, the tools for analyzing the performance is incomplete.
-Pinned Object Heap size (and the event tracing mechanisms) With the tools available in .NET 5 time frame, we did not know the size of the pinned object heap. We had the information in the trace, but we did not have the parser to understand them.</description>
+      <description>In this series, I am going to talk about my work to tune the pinned object heap. The first step to tuning is to understand how it performs now. Unfortunately, the tools for analyzing the performance is incomplete.&#xA;Pinned Object Heap size (and the event tracing mechanisms) With the tools available in .NET 5 time frame, we did not know the size of the pinned object heap. We had the information in the trace, but we did not have the parser to understand them.</description>
     </item>
-    
     <item>
       <title>Generation Aware Analysis</title>
       <link>https://cshung.github.io/posts/generation-aware-analysis/</link>
       <pubDate>Tue, 05 Jan 2021 14:47:10 -0800</pubDate>
-      
       <guid>https://cshung.github.io/posts/generation-aware-analysis/</guid>
       <description>The problem? The .NET GC is generational, it makes the assumption that allocations are broadly divided into two classes, either they are short-lived (e.g. temporary objects) or they are long-lived (e.g. constants, caches for repeated uses). This assumption is often true, but once in a while, that&amp;rsquo;s not true, often due to programmer mistakes. If a pile of objects meant for short-term usage is leaked into gen2, that can cost a short-term spike in ephemeral GC latency, and a long-term memory cost for storing them.</description>
     </item>
-    
     <item>
       <title>How CoreCLR GC understand objects (part 2)</title>
       <link>https://cshung.github.io/posts/gc-objects-2/</link>
       <pubDate>Mon, 04 Jan 2021 14:14:15 -0800</pubDate>
-      
       <guid>https://cshung.github.io/posts/gc-objects-2/</guid>
-      <description>In addition to size described in an earlier post, it is also important for the GC to know where the pointers are in an object. This is because in the mark phase, we need to traverse the object graph. Here is a function for the mark phase in gc.cpp line 19415-19452.
-Where is the code that perform the traversal? //this method assumes that *po is in the [low. high[ range void gc_heap::mark_object_simple (uint8_t** po THREAD_NUMBER_DCL) { uint8_t* o = *po; /* some code that does not change o or po */ if (gc_mark1 (o)) { /* some code that does not change o or po */ { go_through_object_cl (method_table(o), o, s, poo, { uint8_t* oo = *poo; /* some code to recursively mark oo */ } ); } } } Imagine this is run during the mark phase, if we discover an unmarked object, then we traverse into its pointers and recursively mark the objects it points to.</description>
+      <description>In addition to size described in an earlier post, it is also important for the GC to know where the pointers are in an object. This is because in the mark phase, we need to traverse the object graph. Here is a function for the mark phase in gc.cpp line 19415-19452.&#xA;Where is the code that perform the traversal? //this method assumes that *po is in the [low. high[ range void gc_heap::mark_object_simple (uint8_t** po THREAD_NUMBER_DCL) { uint8_t* o = *po; /* some code that does not change o or po */ if (gc_mark1 (o)) { /* some code that does not change o or po */ { go_through_object_cl (method_table(o), o, s, poo, { uint8_t* oo = *poo; /* some code to recursively mark oo */ } ); } } } Imagine this is run during the mark phase, if we discover an unmarked object, then we traverse into its pointers and recursively mark the objects it points to.</description>
     </item>
-    
     <item>
       <title>How CoreCLR GC understand objects (part 1)</title>
       <link>https://cshung.github.io/posts/gc-objects-1/</link>
       <pubDate>Mon, 04 Jan 2021 12:11:37 -0800</pubDate>
-      
       <guid>https://cshung.github.io/posts/gc-objects-1/</guid>
-      <description>In this series of posts, I am going to explain how the GC understand objects. In this part, we will focus on size.
-Why does it matter? The GC expects the heap to be tightly packed with objects. It scans the heap by starting at the beginning of the heap and walk the object one-by-one by this simple algorithm. This is real code excerpt from gc.cpp line 22972 to 23002, out of dotnet/runtime repo, tag v5.</description>
+      <description>In this series of posts, I am going to explain how the GC understand objects. In this part, we will focus on size.&#xA;Why does it matter? The GC expects the heap to be tightly packed with objects. It scans the heap by starting at the beginning of the heap and walk the object one-by-one by this simple algorithm. This is real code excerpt from gc.cpp line 22972 to 23002, out of dotnet/runtime repo, tag v5.</description>
     </item>
-    
     <item>
       <title>Rosalind - Maximum Matchings and RNA Secondary Structures</title>
       <link>https://cshung.github.io/posts/rosalind-maximum-matchings-and-rna-secondary-structures/</link>
       <pubDate>Wed, 16 Dec 2020 10:27:00 -0800</pubDate>
-      
       <guid>https://cshung.github.io/posts/rosalind-maximum-matchings-and-rna-secondary-structures/</guid>
-      <description>Problem:
-Please find the problem here. Solution:
-Suppose we have 3 A and 2 U, the first U can choose from 3 A, the second choose from 2 A, therefore, the number of matches for these 3 A and 2 U is 3 x 2 = 6. In general, the answer is the falling factorial. Code:</description>
+      <description>Problem:&#xA;Please find the problem here. Solution:&#xA;Suppose we have 3 A and 2 U, the first U can choose from 3 A, the second choose from 2 A, therefore, the number of matches for these 3 A and 2 U is 3 x 2 = 6. In general, the answer is the falling factorial. Code:</description>
     </item>
-    
     <item>
       <title>Hello Reflection</title>
       <link>https://cshung.github.io/posts/hello-reflection/</link>
       <pubDate>Sat, 05 Dec 2020 14:53:55 -0800</pubDate>
-      
       <guid>https://cshung.github.io/posts/hello-reflection/</guid>
-      <description>To get started using ILCompiler.Reflection.ReadyToRun, let&amp;rsquo;s construct a simple HelloWorld project. If you don&amp;rsquo;t know what it is, please take a look at the previous post.
-Getting started We will create a .NET Core console application. Create a folder named HelloReflection and invoke dotnet new console.
-C:\dev&amp;gt;mkdir HelloReflection C:\dev&amp;gt;cd HelloReflection C:\dev\HelloReflection&amp;gt;dotnet new console The template &amp;#34;Console Application&amp;#34; was created successfully. Processing post-creation actions... Running &amp;#39;dotnet restore&amp;#39; on C:\dev\HelloReflection\HelloReflection.csproj... Determining projects to restore.</description>
+      <description>To get started using ILCompiler.Reflection.ReadyToRun, let&amp;rsquo;s construct a simple HelloWorld project. If you don&amp;rsquo;t know what it is, please take a look at the previous post.&#xA;Getting started We will create a .NET Core console application. Create a folder named HelloReflection and invoke dotnet new console.&#xA;C:\dev&amp;gt;mkdir HelloReflection C:\dev&amp;gt;cd HelloReflection C:\dev\HelloReflection&amp;gt;dotnet new console The template &amp;#34;Console Application&amp;#34; was created successfully. Processing post-creation actions... Running &amp;#39;dotnet restore&amp;#39; on C:\dev\HelloReflection\HelloReflection.csproj... Determining projects to restore.</description>
     </item>
-    
     <item>
       <title>Debugging help for CoreCLR GC - Mono</title>
       <link>https://cshung.github.io/posts/coreclrgc-mono/</link>
       <pubDate>Fri, 04 Dec 2020 11:52:15 -0800</pubDate>
-      
       <guid>https://cshung.github.io/posts/coreclrgc-mono/</guid>
-      <description>I was invited to help with debugging an issue in the CoreCLR GC - Mono project. In this blog entry, I am planning to describe the debugging process so that it can be repeated to move the project forward.
-What is CoreCLR GC - Mono? CoreCLR GC - Mono is an attempt to use CoreCLR&amp;rsquo;s GC to replace sgen, a simple generational garbage collector for Mono. The major goal of the project is to improve performance.</description>
+      <description>I was invited to help with debugging an issue in the CoreCLR GC - Mono project. In this blog entry, I am planning to describe the debugging process so that it can be repeated to move the project forward.&#xA;What is CoreCLR GC - Mono? CoreCLR GC - Mono is an attempt to use CoreCLR&amp;rsquo;s GC to replace sgen, a simple generational garbage collector for Mono. The major goal of the project is to improve performance.</description>
     </item>
-    
     <item>
       <title>Rosalind - Counting Phylogenetic Ancestors</title>
       <link>https://cshung.github.io/posts/rosalind-counting-phylogenetic-ancestors/</link>
       <pubDate>Fri, 27 Nov 2020 12:10:00 -0800</pubDate>
-      
       <guid>https://cshung.github.io/posts/rosalind-counting-phylogenetic-ancestors/</guid>
-      <description>Problem:
-Please find the problem here. http://rosalind.info/problems/inod/
-Solution:
-We knew that a rooted binary tree with n leaves has \( n - 1 \) internal nodes. An unrooted binary tree is simply a rooted binary tree with an extra leaf attached to the root. Therefore, the number of leaves increased by \( 1 \) but the number of internal nodes left unchanged. So an unrooted binary tree with \( n + 1 \) leaves has \( n - 1 \) internal nodes.</description>
+      <description>Problem:&#xA;Please find the problem here. http://rosalind.info/problems/inod/&#xA;Solution:&#xA;We knew that a rooted binary tree with n leaves has \( n - 1 \) internal nodes. An unrooted binary tree is simply a rooted binary tree with an extra leaf attached to the root. Therefore, the number of leaves increased by \( 1 \) but the number of internal nodes left unchanged. So an unrooted binary tree with \( n + 1 \) leaves has \( n - 1 \) internal nodes.</description>
     </item>
-    
     <item>
       <title>Rosalind - Catalan Numbers and RNA Secondary Structures</title>
       <link>https://cshung.github.io/posts/rosalind-catalan-numbers-and-rna-secondary-structures/</link>
       <pubDate>Sat, 14 Nov 2020 14:49:00 -0800</pubDate>
-      
       <guid>https://cshung.github.io/posts/rosalind-catalan-numbers-and-rna-secondary-structures/</guid>
-      <description>Problem:
-Please find the problem here.
-Analysis:
-In order to produce a non-crossing matching, we need to pair the first nucleotide with a matching one, and then we match the rest. In order to be non-crossing, the one covered within the pairing must be independent of the one outside of the covering, that produces to independent sub-problems. Solution:
-That observation immediately suggests a dynamic programming approach where sub-problems are computed in a memoized fashion.</description>
+      <description>Problem:&#xA;Please find the problem here.&#xA;Analysis:&#xA;In order to produce a non-crossing matching, we need to pair the first nucleotide with a matching one, and then we match the rest. In order to be non-crossing, the one covered within the pairing must be independent of the one outside of the covering, that produces to independent sub-problems. Solution:&#xA;That observation immediately suggests a dynamic programming approach where sub-problems are computed in a memoized fashion.</description>
     </item>
-    
     <item>
       <title>Rosalind - Sorting by Reversals</title>
       <link>https://cshung.github.io/posts/rosalind-sorting-by-reversals/</link>
       <pubDate>Sat, 26 Sep 2020 16:58:00 -0700</pubDate>
-      
       <guid>https://cshung.github.io/posts/rosalind-sorting-by-reversals/</guid>
-      <description>Problem:
-Please find the problem here.
-Solution:
-As we have already pre-computed the shortest path in the previous problem, all we have to present the shortest path.
-Code:</description>
+      <description>Problem:&#xA;Please find the problem here.&#xA;Solution:&#xA;As we have already pre-computed the shortest path in the previous problem, all we have to present the shortest path.&#xA;Code:</description>
     </item>
-    
     <item>
       <title>Rosalind - Reversal Distance</title>
       <link>https://cshung.github.io/posts/rosalind-reversal-distance/</link>
       <pubDate>Sat, 26 Sep 2020 16:23:00 -0700</pubDate>
-      
       <guid>https://cshung.github.io/posts/rosalind-reversal-distance/</guid>
-      <description>Problem:
-Please find the problem here.
-Solution:
-This is a tough problem, I handled it using a few techniques.
-The problem hinted on brute force, in order to make sure it runs within the allocated time, it is easy to just pre-compute the solutions.
-The set of all solutions is daunting (10!) squared. I make one observation to make it simple - the symbol themselves does not matter, we could rename all the symbols consistently and we will get exactly the same reversal distance.</description>
+      <description>Problem:&#xA;Please find the problem here.&#xA;Solution:&#xA;This is a tough problem, I handled it using a few techniques.&#xA;The problem hinted on brute force, in order to make sure it runs within the allocated time, it is easy to just pre-compute the solutions.&#xA;The set of all solutions is daunting (10!) squared. I make one observation to make it simple - the symbol themselves does not matter, we could rename all the symbols consistently and we will get exactly the same reversal distance.</description>
     </item>
-    
     <item>
       <title>Rosalind - Creating a Distance Matrix</title>
       <link>https://cshung.github.io/posts/rosalind-creating-a-distance-matrix/</link>
       <pubDate>Sat, 26 Sep 2020 15:43:00 -0700</pubDate>
-      
       <guid>https://cshung.github.io/posts/rosalind-creating-a-distance-matrix/</guid>
-      <description>Problem:
-Please find the problem here.
-Solution:
-This is just calculating the pairwise hamming distance as required.
-Code:</description>
+      <description>Problem:&#xA;Please find the problem here.&#xA;Solution:&#xA;This is just calculating the pairwise hamming distance as required.&#xA;Code:</description>
     </item>
-    
     <item>
       <title>Rosalind - Speeding Up Motif Finding</title>
       <link>https://cshung.github.io/posts/rosalind-speeding-up-motif-finding/</link>
       <pubDate>Fri, 18 Sep 2020 19:36:00 -0700</pubDate>
-      
       <guid>https://cshung.github.io/posts/rosalind-speeding-up-motif-finding/</guid>
-      <description>Problem:
-Please find the problem here.
-Solution:
-The z array generated in the advanced version of KMP can be used to recover the standard failure array.
-This analysis look a bit weird because this description is written way after the code is written. I have a significant debt of documenting my code.
-Recall that the z array tell us the length of the z-box at the beginning of the z-box, but the failure array, wants us to report the length of a matching string at the end, therefore, we can use a simple walk to solve this problem.</description>
+      <description>Problem:&#xA;Please find the problem here.&#xA;Solution:&#xA;The z array generated in the advanced version of KMP can be used to recover the standard failure array.&#xA;This analysis look a bit weird because this description is written way after the code is written. I have a significant debt of documenting my code.&#xA;Recall that the z array tell us the length of the z-box at the beginning of the z-box, but the failure array, wants us to report the length of a matching string at the end, therefore, we can use a simple walk to solve this problem.</description>
     </item>
-    
     <item>
       <title>Automate WinDBG</title>
       <link>https://cshung.github.io/posts/automate-windbg/</link>
       <pubDate>Mon, 31 Aug 2020 17:01:33 -0700</pubDate>
-      
       <guid>https://cshung.github.io/posts/automate-windbg/</guid>
       <description>Automate WinDBG WinDBG is a very convenient debugger, but typing the same command again and again is tiresome, especially during startup. GDB provided a mechanism to run some commands on startup through gdbinit. WinDBG has the equivalent, although it is not as clear. In this blog post, I am going to share how I automated WinDBG to run some commands on startup. For the impatient, just rush to the summary to get the commands.</description>
     </item>
-    
     <item>
       <title>Rosalind - Perfect Matchings and RNA Secondary Structures</title>
       <link>https://cshung.github.io/posts/rosalind-perfect-matchings-and-rna-secondary-structures/</link>
       <pubDate>Sun, 30 Aug 2020 14:10:00 -0700</pubDate>
-      
       <guid>https://cshung.github.io/posts/rosalind-perfect-matchings-and-rna-secondary-structures/</guid>
-      <description>Problem:
-Please find the problem here.
-Solution:
-Denote the number of &amp;lsquo;A&amp;rsquo; to be x. Fixing a U, there are x choices. Once an A is used, it cannot be used anymore. Therefore, there are x! way to bond the A and U pairs. Similarly, we have y! way to bond the C and G pairs (where y is the number of &amp;lsquo;C&amp;rsquo;). Therefore the total number of ways to bond these pairs is x!</description>
+      <description>Problem:&#xA;Please find the problem here.&#xA;Solution:&#xA;Denote the number of &amp;lsquo;A&amp;rsquo; to be x. Fixing a U, there are x choices. Once an A is used, it cannot be used anymore. Therefore, there are x! way to bond the A and U pairs. Similarly, we have y! way to bond the C and G pairs (where y is the number of &amp;lsquo;C&amp;rsquo;). Therefore the total number of ways to bond these pairs is x!</description>
     </item>
-    
     <item>
       <title>Rosalind - Open Reading Frames</title>
       <link>https://cshung.github.io/posts/rosalind-open-reading-frames/</link>
       <pubDate>Thu, 20 Aug 2020 13:20:00 -0700</pubDate>
-      
       <guid>https://cshung.github.io/posts/rosalind-open-reading-frames/</guid>
-      <description>Problem:
-Please find the problem here.
-Solution:
-There are two parts to this problem. We need to find all the start and stop codons, and we need to pair them up so that we know where to start and stop decoding.
-The former is performed using the Aho Corasick algorithm, by using a trie, we can match all codons in a single pass.
-Imagine we are walking from left to right, whenever we see a stop codon, we want all the start codon before it that is after the last stop codon.</description>
+      <description>Problem:&#xA;Please find the problem here.&#xA;Solution:&#xA;There are two parts to this problem. We need to find all the start and stop codons, and we need to pair them up so that we know where to start and stop decoding.&#xA;The former is performed using the Aho Corasick algorithm, by using a trie, we can match all codons in a single pass.&#xA;Imagine we are walking from left to right, whenever we see a stop codon, we want all the start codon before it that is after the last stop codon.</description>
     </item>
-    
     <item>
       <title>Rosalind - Transitions and Transversions</title>
       <link>https://cshung.github.io/posts/rosalind-transitions-and-transversions/</link>
       <pubDate>Mon, 03 Aug 2020 10:48:00 -0700</pubDate>
-      
       <guid>https://cshung.github.io/posts/rosalind-transitions-and-transversions/</guid>
-      <description>Problem:
-Please find the problem here.
-Solution:
-This is just a counting exercise
-Code:</description>
+      <description>Problem:&#xA;Please find the problem here.&#xA;Solution:&#xA;This is just a counting exercise&#xA;Code:</description>
     </item>
-    
     <item>
       <title>ILSpy.ReadyToRun</title>
       <link>https://cshung.github.io/posts/ilspy-readytorun/</link>
       <pubDate>Sat, 25 Jul 2020 19:50:22 -0700</pubDate>
-      
       <guid>https://cshung.github.io/posts/ilspy-readytorun/</guid>
-      <description>Introduction ILSpy.ReadyToRun is my side project. It is a plugin in ILSpy that allow us to inspect the precompiled code in a ReadyToRun image. My vision is to make all information available in a ready to run image to be displayed in a human readable manner.
-What can it do? If you open a ReadyToRun image in ILSpy, it will show up exactly as it was. You can see all the types, the methods, and the decompiled C# code, as usual.</description>
+      <description>Introduction ILSpy.ReadyToRun is my side project. It is a plugin in ILSpy that allow us to inspect the precompiled code in a ReadyToRun image. My vision is to make all information available in a ready to run image to be displayed in a human readable manner.&#xA;What can it do? If you open a ReadyToRun image in ILSpy, it will show up exactly as it was. You can see all the types, the methods, and the decompiled C# code, as usual.</description>
     </item>
-    
     <item>
       <title>Rosalind - Enumerating Oriented Gene Orderings</title>
       <link>https://cshung.github.io/posts/rosalind-enumerating-oriented-gene-orderings/</link>
       <pubDate>Fri, 24 Jul 2020 12:41:00 -0700</pubDate>
-      
       <guid>https://cshung.github.io/posts/rosalind-enumerating-oriented-gene-orderings/</guid>
-      <description>Problem:
-Please find the problem here.
-Solution:
-Like the previous problem, we use a recursive routine to generate all permutations. For each permutation, we will use another recursion to give each element a sign.
-Code:</description>
+      <description>Problem:&#xA;Please find the problem here.&#xA;Solution:&#xA;Like the previous problem, we use a recursive routine to generate all permutations. For each permutation, we will use another recursion to give each element a sign.&#xA;Code:</description>
     </item>
-    
     <item>
       <title>Rosalind - Interleaving Two Motifs</title>
       <link>https://cshung.github.io/posts/rosalind-interleaving-two-motifs/</link>
       <pubDate>Sat, 11 Jul 2020 12:09:00 -0700</pubDate>
-      
       <guid>https://cshung.github.io/posts/rosalind-interleaving-two-motifs/</guid>
-      <description>Problem:
-Please find the problem here.
-Solution:
-Again, using the matrix generated by the Levenshtein&amp;rsquo;s edit distance algorithm, we can compute the shortest common super sequence.
-Code:</description>
+      <description>Problem:&#xA;Please find the problem here.&#xA;Solution:&#xA;Again, using the matrix generated by the Levenshtein&amp;rsquo;s edit distance algorithm, we can compute the shortest common super sequence.&#xA;Code:</description>
     </item>
-    
     <item>
       <title>Xv6 on v86</title>
       <link>https://cshung.github.io/posts/xv6-on-v86/</link>
       <pubDate>Sun, 28 Jun 2020 09:27:30 -0700</pubDate>
-      
       <guid>https://cshung.github.io/posts/xv6-on-v86/</guid>
-      <description>Xv6 on v86 In this post, I will talk about my journey to get Xv6 running on v86. Xv6 is a unix-like teaching OS developed by MIT. v86 is an x86 virtual machine running on the browser developed by Fabian.
-The key characteristic of these two systems is that they are simple compared to their industrial-strength counterparts (compared to the Linux kernel or the QEMU emulator). Being simple, it is easy to understand.</description>
+      <description>Xv6 on v86 In this post, I will talk about my journey to get Xv6 running on v86. Xv6 is a unix-like teaching OS developed by MIT. v86 is an x86 virtual machine running on the browser developed by Fabian.&#xA;The key characteristic of these two systems is that they are simple compared to their industrial-strength counterparts (compared to the Linux kernel or the QEMU emulator). Being simple, it is easy to understand.</description>
     </item>
-    
     <item>
       <title>Rosalind - Edit Distance Alignment</title>
       <link>https://cshung.github.io/posts/rosalind-edit-distance-alignment/</link>
       <pubDate>Sat, 27 Jun 2020 10:01:00 -0700</pubDate>
-      
       <guid>https://cshung.github.io/posts/rosalind-edit-distance-alignment/</guid>
-      <description>Problem:
-Please find the problem here.
-Solution:
-Again, using the matrix generated by the Levenshtein&amp;rsquo;s edit distance algorithm, we can compute the alignment.
-Code:</description>
+      <description>Problem:&#xA;Please find the problem here.&#xA;Solution:&#xA;Again, using the matrix generated by the Levenshtein&amp;rsquo;s edit distance algorithm, we can compute the alignment.&#xA;Code:</description>
     </item>
-    
     <item>
       <title>Introduction to ILCompiler.Reflection.ReadyToRun</title>
       <link>https://cshung.github.io/posts/introduction-to-ilcompiler-reflection-readytorun/</link>
       <pubDate>Thu, 25 Jun 2020 08:08:17 -0700</pubDate>
-      
       <guid>https://cshung.github.io/posts/introduction-to-ilcompiler-reflection-readytorun/</guid>
-      <description>Introduction ILCompiler.Reflection.ReadyToRun.dll is a new library I introduced in late 2019. It is meant to make the data embedded in a ReadyToRun binary available for access.
-Background What is ReadyToRun? ReadyToRun is a new native compilation technology for .NET Core. For people who know about NGEN, it can be roughly thought as the .NET Core version of NGEN.
-What is native compilation? When a managed language (such as C#) is compiled, it is compiled into an intermediate language named MSIL.</description>
+      <description>Introduction ILCompiler.Reflection.ReadyToRun.dll is a new library I introduced in late 2019. It is meant to make the data embedded in a ReadyToRun binary available for access.&#xA;Background What is ReadyToRun? ReadyToRun is a new native compilation technology for .NET Core. For people who know about NGEN, it can be roughly thought as the .NET Core version of NGEN.&#xA;What is native compilation? When a managed language (such as C#) is compiled, it is compiled into an intermediate language named MSIL.</description>
     </item>
-    
     <item>
       <title>Rosalind - Edit Distance</title>
       <link>https://cshung.github.io/posts/rosalind-edit-distance/</link>
       <pubDate>Sun, 08 Sep 2019 14:01:00 -0700</pubDate>
-      
       <guid>https://cshung.github.io/posts/rosalind-edit-distance/</guid>
-      <description>Problem:
-Please find the problem here.
-Solution:
-After implementing the Levenshtein&amp;rsquo;s edit distance algorithm, it is time to use it :)
-Code:</description>
+      <description>Problem:&#xA;Please find the problem here.&#xA;Solution:&#xA;After implementing the Levenshtein&amp;rsquo;s edit distance algorithm, it is time to use it :)&#xA;Code:</description>
     </item>
-    
     <item>
       <title>Rosalind - Finding a Shared Spliced Motif</title>
       <link>https://cshung.github.io/posts/rosalind-finding-a-shared-spliced-motif/</link>
       <pubDate>Sun, 08 Sep 2019 13:59:00 -0700</pubDate>
-      
       <guid>https://cshung.github.io/posts/rosalind-finding-a-shared-spliced-motif/</guid>
-      <description>Problem:
-Please find the problem here.
-Solution:
-This is the classic longest common subsequence problem, it can be solved using the Levenshtein edit distance algorithm.
-If we disallow replacing characters, then the edit can be visualized as an alignment of two strings as follow:
-A A C C T T G G A C A C T G T G A When the first string has a gap, this is an insertion operation.</description>
+      <description>Problem:&#xA;Please find the problem here.&#xA;Solution:&#xA;This is the classic longest common subsequence problem, it can be solved using the Levenshtein edit distance algorithm.&#xA;If we disallow replacing characters, then the edit can be visualized as an alignment of two strings as follow:&#xA;A A C C T T G G A C A C T G T G A When the first string has a gap, this is an insertion operation.</description>
     </item>
-    
     <item>
       <title>Rosalind - Introduction to Set Operations</title>
       <link>https://cshung.github.io/posts/rosalind-introduction-to-set-operations/</link>
       <pubDate>Sun, 08 Sep 2019 13:45:00 -0700</pubDate>
-      
       <guid>https://cshung.github.io/posts/rosalind-introduction-to-set-operations/</guid>
-      <description>Problem:
-Please find the problem here.
-Solution:
-This is rather straightforward. By making the input sets hash tables, we can do these set operations fast.
-Code:</description>
+      <description>Problem:&#xA;Please find the problem here.&#xA;Solution:&#xA;This is rather straightforward. By making the input sets hash tables, we can do these set operations fast.&#xA;Code:</description>
     </item>
-    
     <item>
       <title>Rosalind - Finding a Spliced Motif</title>
       <link>https://cshung.github.io/posts/rosalind-finding-a-spliced-motif/</link>
       <pubDate>Sun, 08 Sep 2019 13:42:00 -0700</pubDate>
-      
       <guid>https://cshung.github.io/posts/rosalind-finding-a-spliced-motif/</guid>
-      <description>Problem:
-Please find the problem here.
-Solution:
-To find the corresponding indexes, we initialize two pointers to the beginning of both strings. Walk the sequence pointer one by one, and walk the subsequence pointer only when there is a match. This way we will find all the indexes.
-Code:</description>
+      <description>Problem:&#xA;Please find the problem here.&#xA;Solution:&#xA;To find the corresponding indexes, we initialize two pointers to the beginning of both strings. Walk the sequence pointer one by one, and walk the subsequence pointer only when there is a match. This way we will find all the indexes.&#xA;Code:</description>
     </item>
-    
     <item>
       <title>Rosalind - Counting Subsets</title>
       <link>https://cshung.github.io/posts/rosalind-counting-subsets/</link>
       <pubDate>Sun, 08 Sep 2019 13:39:00 -0700</pubDate>
-      
       <guid>https://cshung.github.io/posts/rosalind-counting-subsets/</guid>
-      <description>Problem:
-Please find the problem here.
-Solution:
-The number of subsets of a set of size \( n \) is \( 2^n \). The following code implements the repeated squaring algorithm. The numbers are computed modulo \( 1000000 \) as soon as we are done with multiplying. This is done to keep the number small, and so that the multiplications are quick.
-Code:</description>
+      <description>Problem:&#xA;Please find the problem here.&#xA;Solution:&#xA;The number of subsets of a set of size \( n \) is \( 2^n \). The following code implements the repeated squaring algorithm. The numbers are computed modulo \( 1000000 \) as soon as we are done with multiplying. This is done to keep the number small, and so that the multiplications are quick.&#xA;Code:</description>
     </item>
-    
     <item>
       <title>Rosalind - Introduction to Random Strings</title>
       <link>https://cshung.github.io/posts/rosalind-introduction-to-random-strings/</link>
       <pubDate>Sun, 08 Sep 2019 13:28:00 -0700</pubDate>
-      
       <guid>https://cshung.github.io/posts/rosalind-introduction-to-random-strings/</guid>
-      <description>Problem:
-Please find the problem here.
-Solution:
-As we were told in the description, the probability of getting &amp;lsquo;A&amp;rsquo; or &amp;lsquo;T&amp;rsquo; is \( \frac{1-x}{2} \) and the probability of getting &amp;lsquo;G&amp;rsquo; or &amp;lsquo;C&amp;rsquo; is \( \frac{x}{2} \). Assuming independence (sadly the problem does not mention that), the probability of the whole string is the product of these probabilities.
-To make it numerically stable, instead of computing the product and then compute the logarithm, it is better to compute the logarithm and sum them up.</description>
+      <description>Problem:&#xA;Please find the problem here.&#xA;Solution:&#xA;As we were told in the description, the probability of getting &amp;lsquo;A&amp;rsquo; or &amp;lsquo;T&amp;rsquo; is \( \frac{1-x}{2} \) and the probability of getting &amp;lsquo;G&amp;rsquo; or &amp;lsquo;C&amp;rsquo; is \( \frac{x}{2} \). Assuming independence (sadly the problem does not mention that), the probability of the whole string is the product of these probabilities.&#xA;To make it numerically stable, instead of computing the product and then compute the logarithm, it is better to compute the logarithm and sum them up.</description>
     </item>
-    
     <item>
       <title>Rosalind - Genome Assembly as Shortest Superstring</title>
       <link>https://cshung.github.io/posts/rosalind-genome-assembly-as-shortest-superstring/</link>
       <pubDate>Thu, 05 Sep 2019 23:12:00 -0700</pubDate>
-      
       <guid>https://cshung.github.io/posts/rosalind-genome-assembly-as-shortest-superstring/</guid>
-      <description>Problem:
-Please find the problem here.
-Solution:
-The condition that there exists a unique path in the overlap graph is super important. Once we have the overlap graph, the topological sort would be the right answer, because the path would guarantee there is a single answer.
-Unlike the earlier problem Overlap Graphs, we do not know how long is the overlap. Therefore we need to be smart. We could try the overlap value, but that would lead to a quadratic algorithm.</description>
+      <description>Problem:&#xA;Please find the problem here.&#xA;Solution:&#xA;The condition that there exists a unique path in the overlap graph is super important. Once we have the overlap graph, the topological sort would be the right answer, because the path would guarantee there is a single answer.&#xA;Unlike the earlier problem Overlap Graphs, we do not know how long is the overlap. Therefore we need to be smart. We could try the overlap value, but that would lead to a quadratic algorithm.</description>
     </item>
-    
     <item>
       <title>Rosalind - Completing a Tree</title>
       <link>https://cshung.github.io/posts/rosalind-completing-a-tree/</link>
       <pubDate>Sun, 01 Sep 2019 16:37:00 -0700</pubDate>
-      
       <guid>https://cshung.github.io/posts/rosalind-completing-a-tree/</guid>
-      <description>Problem:
-Please find the problem here.
-Solution:
-By iteratively eliminating leaves, it is easy to see that a tree of \( n \) nodes has \( n - 1 \) edges. Therefore the solution is simply computing \( (n - 1) \) - number of edges, which is also equal to \( n \) - number of lines. Remember the first line is the number of nodes :)
-Code:</description>
+      <description>Problem:&#xA;Please find the problem here.&#xA;Solution:&#xA;By iteratively eliminating leaves, it is easy to see that a tree of \( n \) nodes has \( n - 1 \) edges. Therefore the solution is simply computing \( (n - 1) \) - number of edges, which is also equal to \( n \) - number of lines. Remember the first line is the number of nodes :)&#xA;Code:</description>
     </item>
-    
     <item>
       <title>Rosalind - Partial Permutations</title>
       <link>https://cshung.github.io/posts/rosalind-partial-permutations/</link>
       <pubDate>Sun, 01 Sep 2019 16:33:00 -0700</pubDate>
-      
       <guid>https://cshung.github.io/posts/rosalind-partial-permutations/</guid>
-      <description>Problem:
-Please find the problem here.
-Solution:
-This is simply the permutation coefficient. All we need to do is to compute it.
-Code:</description>
+      <description>Problem:&#xA;Please find the problem here.&#xA;Solution:&#xA;This is simply the permutation coefficient. All we need to do is to compute it.&#xA;Code:</description>
     </item>
-    
     <item>
       <title>Rosalind - Longest Increasing Subsequence</title>
       <link>https://cshung.github.io/posts/rosalind-longest-increasing-subsequence/</link>
       <pubDate>Sun, 01 Sep 2019 16:28:00 -0700</pubDate>
-      
       <guid>https://cshung.github.io/posts/rosalind-longest-increasing-subsequence/</guid>
-      <description>Problem:
-Please find the problem here.
-Solution:
-This solution is based on dynamic programming, in particular, patience sorting. The code should explain in details how its work.
-Code:</description>
+      <description>Problem:&#xA;Please find the problem here.&#xA;Solution:&#xA;This solution is based on dynamic programming, in particular, patience sorting. The code should explain in details how its work.&#xA;Code:</description>
     </item>
-    
     <item>
       <title>Rosalind - Enumerating k-mers Lexicographically</title>
       <link>https://cshung.github.io/posts/rosalind-enumerating-k-mers-lexicographically/</link>
       <pubDate>Sun, 01 Sep 2019 16:26:00 -0700</pubDate>
-      
       <guid>https://cshung.github.io/posts/rosalind-enumerating-k-mers-lexicographically/</guid>
-      <description>Problem:
-Please find the problem here.
-Solution:
-The key to do this problem is to interpret these k-mers as an integer with the number of alphabets as a base. That way enumerating them lexicographically is simply looping.
-Code:</description>
+      <description>Problem:&#xA;Please find the problem here.&#xA;Solution:&#xA;The key to do this problem is to interpret these k-mers as an integer with the number of alphabets as a base. That way enumerating them lexicographically is simply looping.&#xA;Code:</description>
     </item>
-    
     <item>
       <title>Rosalind - RNA Splicing</title>
       <link>https://cshung.github.io/posts/rosalind-rna-splicing/</link>
       <pubDate>Sun, 01 Sep 2019 16:19:00 -0700</pubDate>
-      
       <guid>https://cshung.github.io/posts/rosalind-rna-splicing/</guid>
-      <description>Problem:
-Please find the problem here.
-Solution:
-I am lazy with this one. I could try my hands on the rope data structure, but I didn&amp;rsquo;t. I simply reconstructed the string again and again on the splicing.
-To implement this properly with the rope data structure is going to be challenging. In particular, I need to implement my own version of fast substring search on the rope data structure.
-Code:</description>
+      <description>Problem:&#xA;Please find the problem here.&#xA;Solution:&#xA;I am lazy with this one. I could try my hands on the rope data structure, but I didn&amp;rsquo;t. I simply reconstructed the string again and again on the splicing.&#xA;To implement this properly with the rope data structure is going to be challenging. In particular, I need to implement my own version of fast substring search on the rope data structure.&#xA;Code:</description>
     </item>
-    
     <item>
       <title>Rosalind - Locating Restriction Sites</title>
       <link>https://cshung.github.io/posts/rosalind-locating-restriction-sites/</link>
       <pubDate>Sun, 01 Sep 2019 16:15:00 -0700</pubDate>
-      
       <guid>https://cshung.github.io/posts/rosalind-locating-restriction-sites/</guid>
-      <description>Problem:
-Please find the problem here.
-Solution:
-A restriction site is basically a palindrome (with the complement twist). I modified the Manacher&amp;rsquo;s algorithm to solve this problem.
-First, when trying to expand to find palindrome half-length, I apply the complement rule.
-Second, I skipped the &amp;lsquo;#&amp;rsquo; sign thing because we knew all palindromes will be of even length.
-Code:</description>
+      <description>Problem:&#xA;Please find the problem here.&#xA;Solution:&#xA;A restriction site is basically a palindrome (with the complement twist). I modified the Manacher&amp;rsquo;s algorithm to solve this problem.&#xA;First, when trying to expand to find palindrome half-length, I apply the complement rule.&#xA;Second, I skipped the &amp;lsquo;#&amp;rsquo; sign thing because we knew all palindromes will be of even length.&#xA;Code:</description>
     </item>
-    
     <item>
       <title>Rosalind - Calculating Protein Mass</title>
       <link>https://cshung.github.io/posts/rosalind-calculating-protein-mass/</link>
       <pubDate>Sun, 01 Sep 2019 16:08:00 -0700</pubDate>
-      
       <guid>https://cshung.github.io/posts/rosalind-calculating-protein-mass/</guid>
-      <description>Problem:
-Please find the problem here.
-Solution:
-This is simply mapping from protein to their mass and then sum it up
-Code:</description>
+      <description>Problem:&#xA;Please find the problem here.&#xA;Solution:&#xA;This is simply mapping from protein to their mass and then sum it up&#xA;Code:</description>
     </item>
-    
     <item>
       <title>Rosalind - Finding a Protein Motif</title>
       <link>https://cshung.github.io/posts/rosalind-finding-a-protein-motif/</link>
       <pubDate>Sun, 11 Aug 2019 10:18:00 -0700</pubDate>
-      
       <guid>https://cshung.github.io/posts/rosalind-finding-a-protein-motif/</guid>
-      <description>Problem:
-Please find the problem here.
-Solution:
-I attempted to create a solution that processes each character exactly once, and I succeed, here is the state machine that works.
-The diagram should be self-evident - the code is a just a faithful implementation of the diagram.
-Code:</description>
+      <description>Problem:&#xA;Please find the problem here.&#xA;Solution:&#xA;I attempted to create a solution that processes each character exactly once, and I succeed, here is the state machine that works.&#xA;The diagram should be self-evident - the code is a just a faithful implementation of the diagram.&#xA;Code:</description>
     </item>
-    
     <item>
       <title>Rosalind - Enumerating Gene Orders</title>
       <link>https://cshung.github.io/posts/rosalind-enumerating-gene-orders/</link>
       <pubDate>Sat, 10 Aug 2019 14:28:00 -0700</pubDate>
-      
       <guid>https://cshung.github.io/posts/rosalind-enumerating-gene-orders/</guid>
-      <description>Problem:
-Please find the problem here.
-Solution:
-A simple recursive solution is to pick one out of the list, and compute the permutation of the rest. The problem is, how do we represent &amp;rsquo;the rest&amp;rsquo;? My approach is that we make sure the suffix of the list is &amp;rsquo;the rest&amp;rsquo;, and therefore we can simply use an integer to represent the rest.
-Code:</description>
+      <description>Problem:&#xA;Please find the problem here.&#xA;Solution:&#xA;A simple recursive solution is to pick one out of the list, and compute the permutation of the rest. The problem is, how do we represent &amp;rsquo;the rest&amp;rsquo;? My approach is that we make sure the suffix of the list is &amp;rsquo;the rest&amp;rsquo;, and therefore we can simply use an integer to represent the rest.&#xA;Code:</description>
     </item>
-    
     <item>
       <title>Rosalind - Inferring mRNA from Protein</title>
       <link>https://cshung.github.io/posts/rosalind-inferring-mrna-from-protein/</link>
       <pubDate>Sat, 10 Aug 2019 14:24:00 -0700</pubDate>
-      
       <guid>https://cshung.github.io/posts/rosalind-inferring-mrna-from-protein/</guid>
-      <description>Problem:
-Please find the problem here.
-Solution:
-To figure out how many RNA is possible, we simply multiply all possibilities. Note that we also make sure the protein ends with a stop codon.
-Code:</description>
+      <description>Problem:&#xA;Please find the problem here.&#xA;Solution:&#xA;To figure out how many RNA is possible, we simply multiply all possibilities. Note that we also make sure the protein ends with a stop codon.&#xA;Code:</description>
     </item>
-    
     <item>
       <title>Rosalind - Independent Alleles</title>
       <link>https://cshung.github.io/posts/rosalind-independent-alleles/</link>
       <pubDate>Sat, 10 Aug 2019 13:05:00 -0700</pubDate>
-      
       <guid>https://cshung.github.io/posts/rosalind-independent-alleles/</guid>
-      <description>Problem:
-Please find the problem here.
-Analysis:
-The code is deceptively simple. Let&amp;rsquo;s not read the code and understand the problem first. Because A and B are independent, we can consider them separately.
-Tom&amp;rsquo;s offspring has the following distribution:
-AA - 0.25 Aa - 0.5 aa - 0.25 To consider the next generation, let&amp;rsquo;s generalize and consider the next generation of an arbitrary distribution. Let&amp;rsquo;s say the current distribution is</description>
+      <description>Problem:&#xA;Please find the problem here.&#xA;Analysis:&#xA;The code is deceptively simple. Let&amp;rsquo;s not read the code and understand the problem first. Because A and B are independent, we can consider them separately.&#xA;Tom&amp;rsquo;s offspring has the following distribution:&#xA;AA - 0.25 Aa - 0.5 aa - 0.25 To consider the next generation, let&amp;rsquo;s generalize and consider the next generation of an arbitrary distribution. Let&amp;rsquo;s say the current distribution is</description>
     </item>
-    
     <item>
       <title>Rosalind - Calculating Expected Offspring</title>
       <link>https://cshung.github.io/posts/rosalind-calculating-expected-offspring/</link>
       <pubDate>Sat, 10 Aug 2019 11:29:00 -0700</pubDate>
-      
       <guid>https://cshung.github.io/posts/rosalind-calculating-expected-offspring/</guid>
-      <description>Problem:
-Please find the problem here.
-Solution:
-The probability for AA-AA to produce an offspring with a dominant phenotype offspring is 1.
-The probability for AA-Aa to produce an offspring with a dominant phenotype offspring is 1.
-The probability for AA-aa to produce an offspring with a dominant phenotype offspring is 1.
-The probability for Aa-Aa to produce an offspring with a dominant phenotype offspring is 0.75.
-The probability for Aa-aa to produce an offspring with a dominant phenotype offspring is 0.</description>
+      <description>Problem:&#xA;Please find the problem here.&#xA;Solution:&#xA;The probability for AA-AA to produce an offspring with a dominant phenotype offspring is 1.&#xA;The probability for AA-Aa to produce an offspring with a dominant phenotype offspring is 1.&#xA;The probability for AA-aa to produce an offspring with a dominant phenotype offspring is 1.&#xA;The probability for Aa-Aa to produce an offspring with a dominant phenotype offspring is 0.75.&#xA;The probability for Aa-aa to produce an offspring with a dominant phenotype offspring is 0.</description>
     </item>
-    
     <item>
       <title>Rosalind - Overlap Graphs</title>
       <link>https://cshung.github.io/posts/rosalind-overlap-graphs/</link>
       <pubDate>Sat, 10 Aug 2019 11:11:00 -0700</pubDate>
-      
       <guid>https://cshung.github.io/posts/rosalind-overlap-graphs/</guid>
-      <description>Problem:
-Please find the problem here.
-Solution:
-To construct the graph, we go through every pair, excluding self-loops, and output an edge when the suffix matches the prefix. Care is taken to make sure the string actually has at least 3 characters.
-Code:</description>
+      <description>Problem:&#xA;Please find the problem here.&#xA;Solution:&#xA;To construct the graph, we go through every pair, excluding self-loops, and output an edge when the suffix matches the prefix. Care is taken to make sure the string actually has at least 3 characters.&#xA;Code:</description>
     </item>
-    
     <item>
       <title>Rosalind - Finding a Shared Motif</title>
       <link>https://cshung.github.io/posts/rosalind-finding-a-shared-motif/</link>
       <pubDate>Mon, 05 Aug 2019 23:00:00 -0700</pubDate>
-      
       <guid>https://cshung.github.io/posts/rosalind-finding-a-shared-motif/</guid>
-      <description>Problem:
-Please find the problem here.
-Solution:
-This is a complicated solution. I spent almost a week on it. It is based on a suffix tree. Suffix tree itself is a complicated beast. I described it earlier in this series of posts, please check it out if you have no idea what is a suffix tree.
-In the sequel, I assumed the suffix tree is built on a string built on the DNAs concatenated and separated by unique characters.</description>
+      <description>Problem:&#xA;Please find the problem here.&#xA;Solution:&#xA;This is a complicated solution. I spent almost a week on it. It is based on a suffix tree. Suffix tree itself is a complicated beast. I described it earlier in this series of posts, please check it out if you have no idea what is a suffix tree.&#xA;In the sequel, I assumed the suffix tree is built on a string built on the DNAs concatenated and separated by unique characters.</description>
     </item>
-    
     <item>
       <title>Rosalind - Mortal Fibonacci Rabbits</title>
       <link>https://cshung.github.io/posts/rosalind-mortal-fibonacci-rabbits/</link>
       <pubDate>Mon, 05 Aug 2019 22:45:00 -0700</pubDate>
-      
       <guid>https://cshung.github.io/posts/rosalind-mortal-fibonacci-rabbits/</guid>
-      <description>Problem:
-Please find the problem here.
-Solution:
-The matrix solution I used in my previous solution is still applicable, but it is cumbersome to implement. It is time to actually use dynamic programming.
-Conceptually, it is easy. We know rabbits can have life from \( 0 \) to \( m - 1 \) month, so we keep an array to see how many pairs of rabbits are there at that age.</description>
+      <description>Problem:&#xA;Please find the problem here.&#xA;Solution:&#xA;The matrix solution I used in my previous solution is still applicable, but it is cumbersome to implement. It is time to actually use dynamic programming.&#xA;Conceptually, it is easy. We know rabbits can have life from \( 0 \) to \( m - 1 \) month, so we keep an array to see how many pairs of rabbits are there at that age.</description>
     </item>
-    
     <item>
       <title>Rosalind - Consensus and Profile</title>
       <link>https://cshung.github.io/posts/rosalind-consensus-and-profile/</link>
       <pubDate>Mon, 05 Aug 2019 18:47:00 -0700</pubDate>
-      
       <guid>https://cshung.github.io/posts/rosalind-consensus-and-profile/</guid>
-      <description>Problem:
-Please find the problem here.
-Solution:
-Because we need to output the whole matrix, we just simply have to compute it.
-Code:</description>
+      <description>Problem:&#xA;Please find the problem here.&#xA;Solution:&#xA;Because we need to output the whole matrix, we just simply have to compute it.&#xA;Code:</description>
     </item>
-    
     <item>
       <title>Rosalind - Finding a Motif in DNA</title>
       <link>https://cshung.github.io/posts/rosalind-finding-a-motif-in-dna/</link>
       <pubDate>Sat, 03 Aug 2019 21:01:00 -0700</pubDate>
-      
       <guid>https://cshung.github.io/posts/rosalind-finding-a-motif-in-dna/</guid>
-      <description>Problem:
-Please find the problem here.
-Solution:
-This feels like cheating. The problem is obviously asking for implementing a substring search, and I am using the Python builtin.
-I have implemented Boyer Moore in C#, so I don&amp;rsquo;t feel bad. In fact, I validated my implementation using the Rosalind test cases, and it passed there as well.
-Code:</description>
+      <description>Problem:&#xA;Please find the problem here.&#xA;Solution:&#xA;This feels like cheating. The problem is obviously asking for implementing a substring search, and I am using the Python builtin.&#xA;I have implemented Boyer Moore in C#, so I don&amp;rsquo;t feel bad. In fact, I validated my implementation using the Rosalind test cases, and it passed there as well.&#xA;Code:</description>
     </item>
-    
     <item>
       <title>Rosalind - Translating RNA into Protein</title>
       <link>https://cshung.github.io/posts/rosalind-translating-rna-into-protein/</link>
       <pubDate>Sat, 03 Aug 2019 20:55:00 -0700</pubDate>
-      
       <guid>https://cshung.github.io/posts/rosalind-translating-rna-into-protein/</guid>
-      <description>Problem:
-Please find the problem here.
-Solution:
-To perform the translation, we used a lookup table.
-Code:</description>
+      <description>Problem:&#xA;Please find the problem here.&#xA;Solution:&#xA;To perform the translation, we used a lookup table.&#xA;Code:</description>
     </item>
-    
     <item>
       <title>Rosalind - Mendel&#39;s First Law</title>
       <link>https://cshung.github.io/posts/rosalind-mendels-first-law/</link>
       <pubDate>Sat, 03 Aug 2019 20:47:00 -0700</pubDate>
-      
       <guid>https://cshung.github.io/posts/rosalind-mendels-first-law/</guid>
-      <description>Problem:
-Please find the problem here.
-Solution:
-When two heterozygous organisms mate, the offspring have \( \frac{1}{4} \) chance to be homozygous recessive.
-When a heterozygous organism and a homozygous organism mate, the offspring have \( \frac{1}{2} \) chance to be homozygous recessive.
-When two homozygous recessive organisms mate, their offspring must be homozygous recessive.
-There are no other ways to produce a homozygous recessive offspring.
-The probability of getting a homozygous recessive is therefore:</description>
+      <description>Problem:&#xA;Please find the problem here.&#xA;Solution:&#xA;When two heterozygous organisms mate, the offspring have \( \frac{1}{4} \) chance to be homozygous recessive.&#xA;When a heterozygous organism and a homozygous organism mate, the offspring have \( \frac{1}{2} \) chance to be homozygous recessive.&#xA;When two homozygous recessive organisms mate, their offspring must be homozygous recessive.&#xA;There are no other ways to produce a homozygous recessive offspring.&#xA;The probability of getting a homozygous recessive is therefore:</description>
     </item>
-    
     <item>
       <title>Rosalind - Counting Point Mutations</title>
       <link>https://cshung.github.io/posts/rosalind-counting-point-mutations/</link>
       <pubDate>Sat, 03 Aug 2019 17:19:00 -0700</pubDate>
-      
       <guid>https://cshung.github.io/posts/rosalind-counting-point-mutations/</guid>
-      <description>Problem:
-Please find the problem here.
-Solution:
-To compute the Hamming distance, we walk the strings together and count the number of differences.
-Code:</description>
+      <description>Problem:&#xA;Please find the problem here.&#xA;Solution:&#xA;To compute the Hamming distance, we walk the strings together and count the number of differences.&#xA;Code:</description>
     </item>
-    
     <item>
       <title>Rosalind - Computing GC Content</title>
       <link>https://cshung.github.io/posts/rosalind-computing-gc-content/</link>
       <pubDate>Sun, 28 Jul 2019 20:28:00 -0700</pubDate>
-      
       <guid>https://cshung.github.io/posts/rosalind-computing-gc-content/</guid>
-      <description>Problem:
-Please find the problem here.
-Solution:
-The only challenge for this problem is to parse the FASTA format. To make life easy, I added a &amp;lsquo;&amp;gt;&amp;rsquo; sign at the end of all the inputs - now every DNA is simply a &amp;lsquo;&amp;gt;&amp;rsquo; terminating string. Therefore a simple scan of the file parses all the input correctly.
-Code:</description>
+      <description>Problem:&#xA;Please find the problem here.&#xA;Solution:&#xA;The only challenge for this problem is to parse the FASTA format. To make life easy, I added a &amp;lsquo;&amp;gt;&amp;rsquo; sign at the end of all the inputs - now every DNA is simply a &amp;lsquo;&amp;gt;&amp;rsquo; terminating string. Therefore a simple scan of the file parses all the input correctly.&#xA;Code:</description>
     </item>
-    
     <item>
       <title>Rosalind - Rabbits and Recurrence Relations</title>
       <link>https://cshung.github.io/posts/rosalind-rabbits-and-recurrence-relations/</link>
       <pubDate>Sun, 28 Jul 2019 15:25:00 -0700</pubDate>
-      
       <guid>https://cshung.github.io/posts/rosalind-rabbits-and-recurrence-relations/</guid>
-      <description>Problem:
-Please find the problem here.
-Analysis:
-It is long known to me that the Fibonacci numbers are the solution to the rabbit&amp;rsquo;s problem. I never really bothered to understand why that is the case. It feels natural to me. In order to solve this problem, I need to understand it in more depth.
-Here is the problem description in its own words:
-The population begins in the first month with a pair of newborn rabbits.</description>
+      <description>Problem:&#xA;Please find the problem here.&#xA;Analysis:&#xA;It is long known to me that the Fibonacci numbers are the solution to the rabbit&amp;rsquo;s problem. I never really bothered to understand why that is the case. It feels natural to me. In order to solve this problem, I need to understand it in more depth.&#xA;Here is the problem description in its own words:&#xA;The population begins in the first month with a pair of newborn rabbits.</description>
     </item>
-    
     <item>
       <title>Rosalind - Complementing a Strand of DNA</title>
       <link>https://cshung.github.io/posts/rosalind-complementing-a-strand-of-dna/</link>
       <pubDate>Sun, 28 Jul 2019 14:53:00 -0700</pubDate>
-      
       <guid>https://cshung.github.io/posts/rosalind-complementing-a-strand-of-dna/</guid>
-      <description>Problem:
-Please find the problem here.
-Solution:
-This problem has an in-place solution. We can walk the string from two ways and swap and map at the same time. However, Python strings are immutable. We have to create new strings.
-To build a string, I was thinking about something like a StringBuilder, but there is no such thing in Python. It is reported that doing repeated string concatenation is the fastest way.</description>
+      <description>Problem:&#xA;Please find the problem here.&#xA;Solution:&#xA;This problem has an in-place solution. We can walk the string from two ways and swap and map at the same time. However, Python strings are immutable. We have to create new strings.&#xA;To build a string, I was thinking about something like a StringBuilder, but there is no such thing in Python. It is reported that doing repeated string concatenation is the fastest way.</description>
     </item>
-    
     <item>
       <title>Rosalind - Transcribing DNA into RNA</title>
       <link>https://cshung.github.io/posts/rosalind-transcribing-dna-into-rna/</link>
       <pubDate>Sun, 21 Jul 2019 19:24:00 -0700</pubDate>
-      
       <guid>https://cshung.github.io/posts/rosalind-transcribing-dna-into-rna/</guid>
-      <description>Problem:
-Please find the problem here.
-Solution:
-This one is even simpler than the one before, this is just replacing a single character.
-Code:</description>
+      <description>Problem:&#xA;Please find the problem here.&#xA;Solution:&#xA;This one is even simpler than the one before, this is just replacing a single character.&#xA;Code:</description>
     </item>
-    
     <item>
       <title>Rosalind - Counting DNA Nucleotides</title>
       <link>https://cshung.github.io/posts/rosalind-counting-dna-nucleotides/</link>
       <pubDate>Sun, 21 Jul 2019 19:10:00 -0700</pubDate>
-      
       <guid>https://cshung.github.io/posts/rosalind-counting-dna-nucleotides/</guid>
-      <description>Problem:
-Please find the problem here.
-Solution:
-The problem is very simple, just counting the number of alphabets.
-Code:</description>
+      <description>Problem:&#xA;Please find the problem here.&#xA;Solution:&#xA;The problem is very simple, just counting the number of alphabets.&#xA;Code:</description>
     </item>
-    
     <item>
       <title>SPOJ Problem Set (classical) - Candy I</title>
       <link>https://cshung.github.io/posts/spoj-problem-set-classical-candy-i/</link>
       <pubDate>Sun, 02 Sep 2018 18:49:00 -0700</pubDate>
-      
       <guid>https://cshung.github.io/posts/spoj-problem-set-classical-candy-i/</guid>
-      <description>Problem:
-Please find the problem here.
-Solution:
-A necessary condition is that the total number of candies can be distributed evenly, therefore we check if sum % N == 0. In that case, all bags with less candies must get filled, and there must be one available. So we sum the total number of candies needed to fill and that&amp;rsquo;s the answer.
-Code:</description>
+      <description>Problem:&#xA;Please find the problem here.&#xA;Solution:&#xA;A necessary condition is that the total number of candies can be distributed evenly, therefore we check if sum % N == 0. In that case, all bags with less candies must get filled, and there must be one available. So we sum the total number of candies needed to fill and that&amp;rsquo;s the answer.&#xA;Code:</description>
     </item>
-    
     <item>
       <title>SPOJ Problem Set (classical) - Fishmonger</title>
       <link>https://cshung.github.io/posts/spoj-problem-set-classical-fishmonger/</link>
       <pubDate>Thu, 06 Nov 2014 06:00:00 -0800</pubDate>
-      
       <guid>https://cshung.github.io/posts/spoj-problem-set-classical-fishmonger/</guid>
-      <description>Problem:
-Please find the problem here.
-Solution:
-I started the problem using the a simple complete search of all path. Of course, we are not going to be able to enumerate through all the paths. But fortunately we don&amp;rsquo;t have to, once we have tried a path we can memoize the result as follow.
-If I am at a certain node n1 with certain an initial time constraint T1before, and with time t12 I can get to node n2, recursively we know the best path to get to market from n2 with budget T-t12 take time T2after and has minimal cost C2after, then we have one best path candidate from n1 to n2 within time constraint T1before that actually spend time T2after + t12 with cost C2after + c12.</description>
+      <description>Problem:&#xA;Please find the problem here.&#xA;Solution:&#xA;I started the problem using the a simple complete search of all path. Of course, we are not going to be able to enumerate through all the paths. But fortunately we don&amp;rsquo;t have to, once we have tried a path we can memoize the result as follow.&#xA;If I am at a certain node n1 with certain an initial time constraint T1before, and with time t12 I can get to node n2, recursively we know the best path to get to market from n2 with budget T-t12 take time T2after and has minimal cost C2after, then we have one best path candidate from n1 to n2 within time constraint T1before that actually spend time T2after + t12 with cost C2after + c12.</description>
     </item>
-    
     <item>
       <title>SPOJ Problem Set (classical) - Horrible Queries</title>
       <link>https://cshung.github.io/posts/spoj-problem-set-classical-horrible-queries/</link>
       <pubDate>Sun, 26 Oct 2014 16:44:00 -0700</pubDate>
-      
       <guid>https://cshung.github.io/posts/spoj-problem-set-classical-horrible-queries/</guid>
-      <description>Problem:
-Please find the problem here.
-Solution:
-Using the segment tree like in SPOJ_LITE_2. This time the summary is the sum instead of on light count, but it is just as easy to update those summaries.
-Code:</description>
+      <description>Problem:&#xA;Please find the problem here.&#xA;Solution:&#xA;Using the segment tree like in SPOJ_LITE_2. This time the summary is the sum instead of on light count, but it is just as easy to update those summaries.&#xA;Code:</description>
     </item>
-    
     <item>
       <title>SPOJ Problem Set (classical) - Light switching (2nd attempt)</title>
       <link>https://cshung.github.io/posts/spoj-problem-set-classical-light-switching-2nd-attempt/</link>
       <pubDate>Sun, 26 Oct 2014 08:38:00 -0700</pubDate>
-      
       <guid>https://cshung.github.io/posts/spoj-problem-set-classical-light-switching-2nd-attempt/</guid>
-      <description>Problem:
-Please find the problem here.
-Solution:
-After doing some optimization - the previous solution still cannot be accepted - need to try something else. Previously I was worried about memory consumption creating a full blown segment tree by virtualizing the segments. What if I just create it? Again, we consider this simple example of inserting the segment [1, 5] and [3, 7]
-Initially the tree is completely empty.
-00000000000000 Now we insert [1, 5]</description>
+      <description>Problem:&#xA;Please find the problem here.&#xA;Solution:&#xA;After doing some optimization - the previous solution still cannot be accepted - need to try something else. Previously I was worried about memory consumption creating a full blown segment tree by virtualizing the segments. What if I just create it? Again, we consider this simple example of inserting the segment [1, 5] and [3, 7]&#xA;Initially the tree is completely empty.&#xA;00000000000000 Now we insert [1, 5]</description>
     </item>
-    
     <item>
       <title>SPOJ Problem Set (classical) - Light switching (1st attempt)</title>
       <link>https://cshung.github.io/posts/spoj-problem-set-classical-light-switching-1st-attempt/</link>
       <pubDate>Sat, 25 Oct 2014 07:30:00 -0700</pubDate>
-      
       <guid>https://cshung.github.io/posts/spoj-problem-set-classical-light-switching-1st-attempt/</guid>
-      <description>Problem:
-Please find the problem here.
-Solution:
-This problem is really a hard nut to crack. I know there exist simpler solution, but I am going with my idea and implement that complex idea first. The goal is, really, to prove to myself that my idea works, and that to practice coding and debugging complex algorithm.
-It all started with some simple observations. Judging from the numbers, I believe we can’t allow update to take time proportional to the interval length, or otherwise one could easily construct an example to just keep flipping the whole interval and we are screwed with awful performance.</description>
+      <description>Problem:&#xA;Please find the problem here.&#xA;Solution:&#xA;This problem is really a hard nut to crack. I know there exist simpler solution, but I am going with my idea and implement that complex idea first. The goal is, really, to prove to myself that my idea works, and that to practice coding and debugging complex algorithm.&#xA;It all started with some simple observations. Judging from the numbers, I believe we can’t allow update to take time proportional to the interval length, or otherwise one could easily construct an example to just keep flipping the whole interval and we are screwed with awful performance.</description>
     </item>
-    
     <item>
       <title>SPOJ Problem Set (classical) - Life, the Universe, and Everything</title>
       <link>https://cshung.github.io/posts/spoj-problem-set-classical-life-the-universe-and-everything/</link>
       <pubDate>Thu, 16 Oct 2014 08:11:00 -0700</pubDate>
-      
       <guid>https://cshung.github.io/posts/spoj-problem-set-classical-life-the-universe-and-everything/</guid>
-      <description>Problem:
-Please find the problem here.
-Solution:
-To celebrate I have done with my 42nd problem, I decided to attempt this question. Apparently, this isn&amp;rsquo;t really a question, we can just get it accepted blindfolded - yes, it is that easy :p
-Consider this a joke in this blog!
-Code:</description>
+      <description>Problem:&#xA;Please find the problem here.&#xA;Solution:&#xA;To celebrate I have done with my 42nd problem, I decided to attempt this question. Apparently, this isn&amp;rsquo;t really a question, we can just get it accepted blindfolded - yes, it is that easy :p&#xA;Consider this a joke in this blog!&#xA;Code:</description>
     </item>
-    
     <item>
       <title>SPOJ Problem Set (classical) - The Next Palindrome</title>
       <link>https://cshung.github.io/posts/spoj-problem-set-classical-the-next-palindrome/</link>
       <pubDate>Sat, 06 Sep 2014 14:00:00 -0700</pubDate>
-      
       <guid>https://cshung.github.io/posts/spoj-problem-set-classical-the-next-palindrome/</guid>
-      <description>Problem:
-Please find the problem here.
-Solution:
-An adhoc problem. The key idea to solve this problem is to try to keep the left hand side as small as possible.
-For example, if the input is 1921, we can assert the answer is 1991. To see why, decreasing any digit on the right hand side must also decrease a digit on the left hand side, and with we decrease any digit on the left hand side, the number is less than 1900!</description>
+      <description>Problem:&#xA;Please find the problem here.&#xA;Solution:&#xA;An adhoc problem. The key idea to solve this problem is to try to keep the left hand side as small as possible.&#xA;For example, if the input is 1921, we can assert the answer is 1991. To see why, decreasing any digit on the right hand side must also decrease a digit on the left hand side, and with we decrease any digit on the left hand side, the number is less than 1900!</description>
     </item>
-    
   </channel>
 </rss>

@@ -1,24 +1,19 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>adhoc on My Blog</title>
+    <title>Adhoc on My Blog</title>
     <link>https://cshung.github.io/tags/adhoc/</link>
-    <description>Recent content in adhoc on My Blog</description>
+    <description>Recent content in Adhoc on My Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 06 Sep 2014 14:00:00 -0700</lastBuildDate><atom:link href="https://cshung.github.io/tags/adhoc/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 06 Sep 2014 14:00:00 -0700</lastBuildDate>
+    <atom:link href="https://cshung.github.io/tags/adhoc/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>SPOJ Problem Set (classical) - The Next Palindrome</title>
       <link>https://cshung.github.io/posts/spoj-problem-set-classical-the-next-palindrome/</link>
       <pubDate>Sat, 06 Sep 2014 14:00:00 -0700</pubDate>
-      
       <guid>https://cshung.github.io/posts/spoj-problem-set-classical-the-next-palindrome/</guid>
-      <description>Problem:
-Please find the problem here.
-Solution:
-An adhoc problem. The key idea to solve this problem is to try to keep the left hand side as small as possible.
-For example, if the input is 1921, we can assert the answer is 1991. To see why, decreasing any digit on the right hand side must also decrease a digit on the left hand side, and with we decrease any digit on the left hand side, the number is less than 1900!</description>
+      <description>Problem:&#xA;Please find the problem here.&#xA;Solution:&#xA;An adhoc problem. The key idea to solve this problem is to try to keep the left hand side as small as possible.&#xA;For example, if the input is 1921, we can assert the answer is 1991. To see why, decreasing any digit on the right hand side must also decrease a digit on the left hand side, and with we decrease any digit on the left hand side, the number is less than 1900!</description>
     </item>
-    
   </channel>
 </rss>

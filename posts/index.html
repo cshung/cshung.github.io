@@ -38,14 +38,15 @@
 <h1>Posts</h1>
 
 <p>
-    <h3><a class="title" href="/posts/portfolio/">Portfolio</a></h3>
+    <h3><a class="title" href="/posts/zombie-git/">Hunting Zombie Processes: From 6,500 Zombies to a Bug in Git</a></h3>
     
 
 <i data-feather="calendar"></i>
-<time datetime="2025-05-23">May 23, 2025</time>
+<time datetime="2026-02-23">Feb 23, 2026</time>
 
-    <a class="summary" href="/posts/portfolio/">
-        <p>Experience with Servers Adaptive Garbage Collection (2023): Enhanced garbage collection for Azure functions, doubling capacity using a single pool of containers. Memory Management Optimization (2022): Reduced memory footprint by 50%, increasing deployment density and saving $1M monthly. Network Transport Prototype (2013): Improved application throughput by 37% in a RESTful service by bypassing HTTP/1.1 FIFO restrictions. Experience with Code Generation ekans (2025): Built a personal self-hosting Racket compiler that compiles a subset of Racket to C.</p>
+    <a class="summary" href="/posts/zombie-git/">
+        <p>The Discovery It started with an expired access token. I was trying to git fetch in one of my repos and got an authentication failure. While poking around, I noticed something odd — thousands of zombie processes on my machine:
+$ ps aux | grep -w Z | wc -l 6530 Over six thousand zombies, all [git] and [ssh] defunct processes. Every single one parented by the same PID — the houndd process running inside a Docker container.</p>
     </a>
 </p>
 
@@ -61,20 +62,6 @@
 For the impatient, this blog entry described some concepts for Linux virtual memory, described the debugging process, and proposed the next steps.
 What is the problem? In this GitHub issue, customers are hitting this error.
 Fatal error. Failed to create RW mapping for RX memory.</p>
-    </a>
-</p>
-
-<p>
-    <h3><a class="title" href="/posts/here-is-a-libc/">Here&#39;s a LibC</a></h3>
-    
-
-<i data-feather="calendar"></i>
-<time datetime="2023-09-02">Sep 2, 2023</time>
-
-    <a class="summary" href="/posts/here-is-a-libc/">
-        <p>Here&rsquo;s a LibC Today is September 2, a long weekend in the U.S. With some time to spare, I want to see if I can tackle the third binary exploitation challenge.
-Recently, I&rsquo;ve been busy, so I haven&rsquo;t worked on this for two weeks. Now, I need to recap. I actually wanted to summarize and write a detailed explanation.
-Starting with the problem, we have a vuln, a libc.so.6, a Makefile, and a netcat endpoint, and the task is to pwn.</p>
     </a>
 </p>
 
@@ -175,6 +162,18 @@ The hardware side The best way to think of spurious interrupts is to think like 
     </a>
 </p>
 
+<p>
+    <h3><a class="title" href="/posts/ps2-and-a20/">PS/2 and A20</a></h3>
+    
+
+<i data-feather="calendar"></i>
+<time datetime="2021-10-22">Oct 22, 2021</time>
+
+    <a class="summary" href="/posts/ps2-and-a20/">
+        <p>PS/2 and A20 If the title of the post doesn&rsquo;t make any sense for you, you are just too young. Well, just kidding. These are really old technologies but still impacting our journey to host Xv6 on v86. In our last post, we were able to run a scenario, but it isn&rsquo;t perfect, it looks like all keyboard inputs are ignored and one must input the command through the UART port.</p>
+    </a>
+</p>
+
     <ul class="pagination pagination-default">
       <li class="page-item disabled">
         <a aria-disabled="true" aria-label="First" class="page-link" role="button" tabindex="-1"><span aria-hidden="true">&laquo;&laquo;</span></a>
@@ -204,7 +203,7 @@ The hardware side The best way to think of spurious interrupts is to think like 
         <a href="/posts/page/9/" aria-label="Last" class="page-link" role="button"><span aria-hidden="true">&raquo;&raquo;</span></a>
       </li>
     </ul>
-        </div><p class="footer text-center">Copyright (c) 2025 Andrew Au</p><script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
+        </div><p class="footer text-center">Copyright (c) 2026 Andrew Au</p><script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
 <script>mermaid.initialize({ startOnLoad: true });</script>
 <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
