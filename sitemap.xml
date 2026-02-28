@@ -11,8 +11,14 @@
     <loc>https://cshung.github.io/posts/</loc>
     <lastmod>2026-02-23T00:00:00-08:00</lastmod>
   </url><url>
+    <loc>https://cshung.github.io/posts/portfolio/</loc>
+    <lastmod>2025-05-23T17:39:02+00:00</lastmod>
+  </url><url>
     <loc>https://cshung.github.io/posts/linux-virtual-memory-mapping-debugging/</loc>
     <lastmod>2024-06-05T13:33:14-07:00</lastmod>
+  </url><url>
+    <loc>https://cshung.github.io/posts/here-is-a-libc/</loc>
+    <lastmod>2023-09-02T17:39:02+00:00</lastmod>
   </url><url>
     <loc>https://cshung.github.io/posts/native-aot-development/</loc>
     <lastmod>2023-05-30T12:19:41-07:00</lastmod>

@@ -16,11 +16,25 @@
       <description>The Discovery It started with an expired access token. I was trying to git fetch in one of my repos and got an authentication failure. While poking around, I noticed something odd — thousands of zombie processes on my machine:&#xA;$ ps aux | grep -w Z | wc -l 6530 Over six thousand zombies, all [git] and [ssh] defunct processes. Every single one parented by the same PID — the houndd process running inside a Docker container.</description>
     </item>
     <item>
+      <title>Portfolio</title>
+      <link>https://cshung.github.io/posts/portfolio/</link>
+      <pubDate>Fri, 23 May 2025 17:39:02 +0000</pubDate>
+      <guid>https://cshung.github.io/posts/portfolio/</guid>
+      <description>Senior Software Engineer at Microsoft with 20+ years of experience. Currently working on Azure Container Registry. Specializing in runtime internals, compilers, and diagnostics. 6 US patents. Published researcher in algorithm complexity.&#xA;Runtime &amp;amp; Performance Engineering Adaptive Garbage Collection (2023): Enhanced garbage collection for Azure functions, doubling capacity using a single pool of containers. Memory Management Optimization (2022): Reduced memory footprint by 50%, increasing deployment density and saving $1M monthly. Network Transport Prototype (2013): Improved application throughput by 37% by bypassing HTTP/1.</description>
+    </item>
+    <item>
       <title>Linux Virtual Memory Mapping Debugging</title>
       <link>https://cshung.github.io/posts/linux-virtual-memory-mapping-debugging/</link>
       <pubDate>Wed, 05 Jun 2024 13:33:14 -0700</pubDate>
       <guid>https://cshung.github.io/posts/linux-virtual-memory-mapping-debugging/</guid>
       <description>In this post, I will talk an issue related to Linux virtual memory mapping exhaustion. The issue involve understanding the Linux memory management subsystem, and so it is quite interesting to look at.&#xA;For the impatient, this blog entry described some concepts for Linux virtual memory, described the debugging process, and proposed the next steps.&#xA;What is the problem? In this GitHub issue, customers are hitting this error.&#xA;Fatal error. Failed to create RW mapping for RX memory.</description>
+    </item>
+    <item>
+      <title>Here&#39;s a LibC</title>
+      <link>https://cshung.github.io/posts/here-is-a-libc/</link>
+      <pubDate>Sat, 02 Sep 2023 17:39:02 +0000</pubDate>
+      <guid>https://cshung.github.io/posts/here-is-a-libc/</guid>
+      <description>Here&amp;rsquo;s a LibC Today is September 2, a long weekend in the U.S. With some time to spare, I want to see if I can tackle the third binary exploitation challenge.&#xA;Recently, I&amp;rsquo;ve been busy, so I haven&amp;rsquo;t worked on this for two weeks. Now, I need to recap. I actually wanted to summarize and write a detailed explanation.&#xA;Starting with the problem, we have a vuln, a libc.so.6, a Makefile, and a netcat endpoint, and the task is to pwn.</description>
     </item>
     <item>
       <title>NativeAOT Development</title>

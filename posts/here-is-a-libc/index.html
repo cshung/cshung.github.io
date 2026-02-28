@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/style.css">
+    <link rel="stylesheet" type="text/css" href="/css/syntax.css">
+    
+    
+    <title>My Blog | Here&#39;s a LibC</title>
+
+
+</head><body class="light-theme"><div id="nav-border" class="container">
+    <nav id="nav" class="nav justify-content-center">
+        
+        <a class="nav-link" href="/">
+        
+        
+        <i data-feather="home"></i> 
+        
+        
+        Home
+        </a>
+        
+        <a class="nav-link" href="/tags/">
+        
+        
+        <i data-feather="tag"></i> 
+        
+        
+        Tags
+        </a>
+        
+        <a class="nav-link" href="#" id="toggleDarkModeButton"><i data-feather="sun"></i></a>
+        <span style="padding:5px"><input type="text" id="queryTextField"></span><a class="nav-link" href="#" id="searchButton"><i data-feather="search"></i></a>
+    </nav>
+</div><div id="content" style="margin:20px">
+<h1>Here&#39;s a LibC</h1>
+
+
+<i data-feather="calendar"></i>
+<time datetime="2023-09-02">Sep 2, 2023</time>
+
+<br><br>
+<h1 id="heres-a-libc">Here&rsquo;s a LibC</h1>
+<p>Today is September 2, a long weekend in the U.S. With some time to spare, I want to see if I can tackle the third binary exploitation challenge.</p>
+<p>Recently, I&rsquo;ve been busy, so I haven&rsquo;t worked on this for two weeks. Now, I need to recap. I actually wanted to summarize and write a detailed explanation.</p>
+<p>Starting with the problem, we have a <code>vuln</code>, a <code>libc.so.6</code>, a Makefile, and a netcat endpoint, and the task is to pwn.</p>
+<p>Pwn means to own the computer, usually referring to gaining access to a shell.</p>
+<p>First, we need to understand what the <code>vuln</code> does, so let&rsquo;s check it out using Ghidra.</p>
+<p>The program primarily uses the unsafe <code>scanf</code> to take input, modifies it slightly, and then outputs it in a loop. Clearly, it exploits the danger of <code>scanf</code> to overflow the stack.</p>
+<p>After a few attempts, I found that the stack return address can be controlled using the 136th character of the input. So, I started trying to place instructions after the return address and set the return address for testing.</p>
+<p>Here’s a related question: how to send arbitrary bytes to stdin? The return address is 64 bits, and since it&rsquo;s little-endian encoding, we need to send 8 bytes in reverse order.</p>
+<p>This <code>scanf</code> uses the format string <code>&quot;%[^\n]&quot;</code>, which is beneficial because it only cares about <code>\n</code> and ignores other characters. This allows us to send arbitrary non-0x10 bytes using <code>scanf</code>.</p>
+<p>However, some bytes in the return address are clearly not characters that can be typed from a keyboard, so I can only generate them using the program. Since I&rsquo;m just writing to it, I can create a file and pipe it in.</p>
+<p>After many attempts, it crashed; I failed! Debugging revealed that the stack is marked as non-executable. The <code>-fno-stack-protector</code> in the Makefile and this stack protection are two different things!</p>
+<p>The stack protector is a special value placed in the stack by the compiler. This value is random but will be checked before returning. If you overwrite this value with a stack overflow, the check will likely fail. The <code>-fno-stack-protector</code> flag disables these checks to facilitate stack overflow exploits.</p>
+<p>However, a non-executable stack is another matter! When the OS allocates memory for the stack, it sets a restriction in the memory map to prevent execution. Therefore, even if you successfully overwrite the return address with a stack overflow, the OS will not allow you to execute code on the stack.</p>
+<p>This is reasonable; allowing execution on the stack would be unusual. However, some older code does execute stack code, so this feature can be disabled, but this binary hasn’t done that.</p>
+<p>You can check this flag using <code>checksec.sh</code>. You can download it [here].</p>
+<p>If you really want to execute code on the stack, you can use <code>execstack</code> to turn it on. But even if you manage to make the stack executable locally, it won&rsquo;t help remotely, so I need to think of other methods.</p>
+<p>To confirm that the stack is indeed non-executable, it&rsquo;s easy. You can find the permissions of a page using <code>cat /proc/pid/map</code>.</p>
+<p>After researching how to bypass the NX restriction online, I found a technique called return-to-libc, which uses the stack return address to call a function in libc since libc is not on the stack and can be called.</p>
+<p>The standard approach would be to call <code>system</code>, which would already solve the pwn.</p>
+<p>However, following the return-to-libc tutorial closely, I first tried calling <code>exit</code>.</p>
+<p>The advantage of <code>exit</code> is that it has no parameters (it does, but passing them randomly works the same; no one cares about the exit code).</p>
+<p>I debugged the <code>exit</code> function, and it was always at different locations—oh, ASLR!</p>
+<p>ASLR stands for Address Space Layout Randomization. Honestly, I&rsquo;m not very clear about this feature, but it seems that every time a process is loaded, the location of libc changes.</p>
+<p>At this point, I noticed there&rsquo;s an option in the Makefile called <code>-no-pie</code>. What does this flag mean?</p>
+<p>PIE stands for Position Independent Executable, a compiler flag that instructs the compiler to generate code that can operate correctly when loaded at any position, i.e., it doesn’t assume any fixed address.</p>
+<p>PIE is a prerequisite for ASLR. If the code is not PIE, it cannot be loaded at any address, meaning ASLR cannot be applied.</p>
+<p>Since ASLR is not applicable, I looked for a way to disable it. I found that this command would work:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">setarch `uname -m` -R /bin/bash
+</span></span></code></pre></div><p>This command opens a new bash shell, and all processes under it will not have ASLR enabled.</p>
+<p>Sure enough, the address of <code>exit</code> does not change. Great, I can write an exploit that can exit the program.</p>
+<p>The next step is to call <code>system</code>, which requires an argument. Many online resources mislead you, suggesting the argument should be on the stack; this is only true for 32-bit systems. For x64, the first argument is in <code>rdi</code>.</p>
+<p>This seems problematic. We can manipulate the stack, but how do we get something into <code>rdi</code>?</p>
+<p>After some research, I found the idea of gadgets, specifically looking for these two instructions:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">pop rdi
+</span></span><span class="line"><span class="cl">ret
+</span></span></code></pre></div><p>If they exist, these two instructions will achieve the desired effect.</p>
+<p>The plan is to place these instructions on the stack, then put the desired <code>rdi</code> value on the stack, followed by the address of <code>system</code>. The execution will return to these two instructions, popping the desired value into <code>rdi</code>, and then returning to <code>system</code>, allowing the call.</p>
+<p>This technique is called Return-Oriented Programming (ROP), using returns to jump to the desired actions.</p>
+<p>Where can we find these two instructions? There’s a tool called ROPgadget that can locate all gadgets in a binary.</p>
+<p><a href="https://github.com/JonathanSalwan/ROPgadget">https://github.com/JonathanSalwan/ROPgadget</a></p>
+<p>Looking at the Ghidra disassembly, I couldn’t find <code>pop rdi</code>, but <code>ROPgadget</code> found it, which is quite tricky in this case.</p>
+<p>The instruction is actually:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">        00400912 41 5f           POP        R15
+</span></span><span class="line"><span class="cl">        00400914 c3              RET
+</span></span></code></pre></div><p>But if it points to 0x400913, it becomes:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">        00400913 5f              POP        RDI
+</span></span><span class="line"><span class="cl">        00400914 c3              RET
+</span></span></code></pre></div><p>Great, I can call <code>system</code>.</p>
+<p>Knowing how to call <code>system</code>, what argument should I provide? To keep it simple, I’ll directly launch a shell, which can do everything. Launching a shell has a convenient input: a hardcoded string in libc, <code>/bin/sh</code>.</p>
+<p>Using the <code>strings</code> program makes it easy to find this string, but I don’t know the address. I’ll write a <code>test.c</code> to use <code>system</code> to run the program, then break on <code>system</code> in <code>gdb</code> to see the value of <code>rdi</code> when it calls <code>execve</code>, revealing the address of the string.</p>
+<p>With ASLR disabled, the address of this string is constant every time. So, I can hardcode it onto the stack.</p>
+<p>However, there&rsquo;s a problem: no matter how I call it, it crashes. The issue is at this instruction: SEGSEGV ⋯</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">0x7ffff7a31396  movaps %xmm0,0x40(%rsp)
+</span></span></code></pre></div><p>I’m not sure what it does, but <code>rsp + 0x40</code> is accessible in memory. After a while, I remembered that the <code>movaps</code> instruction requires inputs to be 16 bytes aligned, so I need to adjust the stack to be 16 bytes aligned first.</p>
+<p>How do I do this? Just pop one more word; I already have a <code>pop</code> gadget available.</p>
+<p>After completing this part, the only thing left is to pipe the commands to run the shell, but the final process crashes. This happens because when <code>system</code> returns, the return address is garbage, so it’s unclear what will happen. To avoid crashing, I just need to return to <code>exit</code>.</p>
+<p>It works locally, but not remotely. What’s the issue?</p>
+<p>One aspect worth questioning is ASLR. Since the binary used <code>-no-pie</code>, why do I still need to disable ASLR myself?</p>
+<p>This is because ASLR is a kernel flag that defaults to being turned on. Even if a process uses <code>-no-pie</code>, the other shared libraries it uses will still have random load addresses, so you cannot assume ASLR is turned off.</p>
+<p>This means my exploit works, but only with ASLR disabled. I need to create an exploit that works regardless of whether ASLR is on or off.</p>
+<p>Challenge accepted! I googled how to defeat ASLR and found out about using plt/got.</p>
+<p>No matter how libc randomizes, the program must call a libc function. This means the program will always interact with libc, so finding this point is crucial, specifically the plt/got.</p>
+<p>When the program calls <code>puts</code>, it will invoke a function called <code>puts@plt</code>, which performs a redirect jump to read memory, and the address of that memory cell is fixed. Thus, if we know the location of <code>puts</code>, we can determine the address of the <code>puts</code> function. Fortunately, this location can be used as a string for printing, and it will have a <code>\0</code> at the end, perfect!</p>
+<p>However, we don’t know the address of libc, so how do we call <code>puts</code>? We call <code>puts@plt</code> :)</p>
+<p>The plt stands for Procedure Linkage Table, and the got is the Global Offset Table for addresses. This kind of redirect jump linking is quite common.</p>
+<p>At this point, it’s clear that if <code>vuln</code> didn’t use <code>-no-pie</code>, we wouldn’t even have access to the <code>plt/got</code>, which is why <code>-no-pie</code> is important.</p>
+<p>Having the location of <code>puts</code> is sufficient. It turns out all other addresses we depended on in libc have a fixed relative offset from <code>puts</code>, which resolves the ASLR issue.</p>
+<p>Here, I glossed over an important point: the exploit needs to read <code>puts</code>&rsquo;s output and send input, but the input/output is in binary bytes, which cannot use shell or pipe. Python is too cumbersome for this, so I’ll use C. I’ll open two pipes, use <code>dup</code> to link stdin and stdout, and then use <code>read</code> and <code>write</code> for reading and writing.</p>
+<p>Finally, the netcat endpoint and local program differ slightly. Sometimes, netcat fails to read all the bytes, so I used a loop to read enough bytes based on the pattern to resolve this issue.</p>
+
+
+        </div><p class="footer text-center">Copyright (c) 2026 Andrew Au</p><script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true });</script>
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/prettify.js"></script>
+<script src="/js/feather.min.js"></script>
+<script src="/index.js"></script>
+<script>
+
+  function getCookie(cname) {
+    let name = cname + "=";
+    let ca = document.cookie.split(';');
+    for (let i = 0; i < ca.length; i++) {
+      let c = ca[i];
+      while (c.charAt(0) == ' ') {
+        c = c.substring(1);
+      }
+      if (c.indexOf(name) == 0) {
+        return c.substring(name.length, c.length);
+      }
+    }
+    return "";
+  }
+
+  function setCookie(cname, cvalue, exdays) {
+    const d = new Date();
+    d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+    let expires = "expires=" + d.toUTCString();
+    document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+  }
+
+  function ensureIcon() {
+    if (document.body.classList.contains("dark-theme")) {
+      toggleDarkModeButton.innerHTML = '<i data-feather="sun"></i>';
+    } else {
+      toggleDarkModeButton.innerHTML = '<i data-feather="moon"></i>';
+    }
+    feather.replace();
+  }
+  function saveCookie() {
+    if (document.body.classList.contains("dark-theme")) {
+      setCookie("darkMode", "true", 365);
+    } else {
+      setCookie("darkMode", "false", 365);
+    }
+  }
+
+  function load(pre) {
+    link = pre.getAttribute("data-code-link");
+    const xhr = new XMLHttpRequest();
+    xhr.onload = () => {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        pre.className = "prettyprint";
+        pre.textContent = xhr.responseText;
+      }
+      prettyPrint();
+    };
+    xhr.open('GET', link);
+    xhr.send();
+  }
+
+  function onSearchButtonClicked(e) {
+    e.preventDefault();
+    var query = $("#queryTextField").val();
+    var terms = query.split(' ');
+    
+    var result = {};
+    for (var i = 0; i < terms.length; ++i) {
+      var term = terms[i].toLowerCase();
+      if (term in index.Terms)
+      {
+        for (i = 0; i < index.Terms[term].length; i += 2) {
+          var doc = index.Terms[term][i];
+          var count = index.Terms[term][i + 1];
+          if (doc in result) {
+            result[doc] += count;
+          } else {
+            result[doc] = count;
+          }
+        }
+      }
+    }
+    
+    $("#content").empty();
+    for (var key in result) {
+      $("#content").append($('<a>', {
+        href: index.Documents[key].replace("../../content","").replace(".md",""),
+        text: index.Titles[key]
+      }));
+      $("#content").append($('<br>'));
+    }
+  }
+
+  $(document).ready(function () {
+    var darkMode = getCookie("darkMode");
+    if (darkMode == "true") {
+      document.body.classList.add("dark-theme");
+      document.body.classList.remove("light-theme");
+    }
+    ensureIcon();
+
+    $("#toggleDarkModeButton").click(function (e) {
+      e.preventDefault();
+      document.body.classList.toggle("dark-theme");
+      document.body.classList.toggle("light-theme");
+      saveCookie();
+      ensureIcon();
+    });
+
+    $("#searchButton").click(onSearchButtonClicked);
+
+    var pres = document.getElementsByTagName("pre");
+    for (var i = 0; i < pres.length; ++i) {
+      var pre = pres[i];
+      if (pre.classList.contains("pretty-github-code")) {
+        load(pre);
+      }
+    }
+  });
+
+  $(window).on("load", function () {
+    $("body").show();
+  });
+</script></body>
+</html>
