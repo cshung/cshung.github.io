@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/style.css">
+    <link rel="stylesheet" type="text/css" href="/css/syntax.css">
+    
+    
+    <title>My Blog | Memory Corruption (5)</title>
+
+
+</head><body class="light-theme"><div id="nav-border" class="container">
+    <nav id="nav" class="nav justify-content-center">
+        
+        <a class="nav-link" href="/">
+        
+        
+        <i data-feather="home"></i> 
+        
+        
+        Home
+        </a>
+        
+        <a class="nav-link" href="/tags/">
+        
+        
+        <i data-feather="tag"></i> 
+        
+        
+        Tags
+        </a>
+        
+        <a class="nav-link" href="#" id="toggleDarkModeButton"><i data-feather="sun"></i></a>
+        <span style="padding:5px"><input type="text" id="queryTextField"></span><a class="nav-link" href="#" id="searchButton"><i data-feather="search"></i></a>
+    </nav>
+</div><div id="content" style="margin:20px">
+<h1>Memory Corruption (5)</h1>
+
+
+<i data-feather="calendar"></i>
+<time datetime="2026-05-10">May 10, 2026</time>
+
+<br><br>
+<h1 id="diagnosing-gc-heap-corruption-with-large-pages">Diagnosing GC Heap Corruption with Large Pages</h1>
+<p>In this post, I will talk about yet another memory corruption bug we found and fixed. Check out my <a href="/posts/memory-corruption-4">previous post</a> for more context and examples.</p>
+<h2 id="backstory-part-1--dotnetruntime126903">Backstory: Part 1 — dotnet/runtime#126903</h2>
+<p>A customer (<a href="https://github.com/dotnet/runtime/issues/126903">dotnet/runtime#126903</a>) reported heap corruption when using <code>GCLargePages=1</code> with <code>GCCollectionMode.Aggressive</code>. The crashes manifested as <code>NullReferenceException</code> and <code>AccessViolationException</code> inside <code>ConcurrentDictionary</code> internals, with multiple threads faulting simultaneously — characteristic of a single GC event corrupting a heap region.</p>
+<p>The root cause was that when large pages are enabled, <code>VirtualDecommit</code> is a no-op (huge pages cannot be partially decommitted), but the GC&rsquo;s bookkeeping still updated committed/used pointers as if memory had been returned to the OS. When regions were later reused, stale data survived because the OS never had a chance to zero the pages.</p>
+<p>The initial fix (<a href="https://github.com/dotnet/runtime/pull/126929">PR #126929</a>) added <code>memclr</code> in <code>virtual_decommit</code> for large pages. I then wrote a more comprehensive follow-up (<a href="https://github.com/dotnet/runtime/pull/127290">PR #127290</a>) that skipped decommit entirely for large pages in <code>distribute_free_regions</code> (the aggressive tail-region decommit) and <code>decommit_heap_segment</code> (whole-segment decommit for hoarding and BGC deletion). For <code>decommit_region</code>, instead of skipping it, the fix bypassed <code>virtual_decommit</code> and called <code>reduce_committed_bytes</code> directly — letting <code>decommit_region</code> continue to handle memory clearing itself. The PR also added a <code>GCLargePages=2</code> fake large pages test mode to enable CI testing without requiring OS large page setup.</p>
+<p>The customer deployed the patched GC — and several weeks later, the corruption came back in production.</p>
+<h2 id="part-2-dotnetruntime127892">Part 2: dotnet/runtime#127892</h2>
+<h3 id="the-problem">The Problem</h3>
+<p>The customer reported (<a href="https://github.com/dotnet/runtime/issues/127892">dotnet/runtime#127892</a>) that even with the Part 1 fixes applied, heap corruption still occurred — this time without <code>GCCollectionMode.Aggressive</code>. The crashes happened during normal GC operation under memory pressure, with the same symptoms: corrupted managed objects, <code>ConcurrentDictionary+Node</code> with invalid <code>_next</code> pointers, intermittent timing anywhere from 30 seconds to 12 minutes into the workload.</p>
+<h3 id="reproduction">Reproduction</h3>
+<p>The customer provided a <a href="https://github.com/dotnet/runtime/issues/127892">minimal reproduction project</a> with a Docker-based environment that combined several ingredients:</p>
+<ul>
+<li><strong>Real large pages</strong>: 2048 huge pages (4GB) pre-allocated on the host via <code>vm.nr_hugepages</code>, container running with <code>--privileged</code></li>
+<li><strong>Memory pressure</strong>: Container cgroup limited to ~2.9GB, below the huge pages pool, with <code>GCHighMemPercent=0x26</code> (38%) to force aggressive region recycling</li>
+<li><strong>Allocation churn</strong>: A pure safe C# application that continuously grows and replaces <code>ConcurrentDictionary</code> instances with multiple reader and writer threads, driving GC activity</li>
+</ul>
+<p>The reproduction was a pure managed application with no unsafe code — ruling out application-level memory corruption.</p>
+<p>A key practical technique was overlaying a custom-built <code>libcoreclr.so</code> into the container without rebuilding the entire runtime image. I copied the Checked-build binary and used the container&rsquo;s entrypoint script to overlay it at startup. This gave a fast iteration cycle: edit GC source → incremental build (~50 seconds) → copy binary → restart container.</p>
+<h3 id="phase-1-where-is-the-corruption-consumed">Phase 1: Where Is the Corruption Consumed?</h3>
+<p>After the Part 1 fixes were deployed, Ben (<a href="https://github.com/dotnet/runtime/issues/127892">comment on the issue</a>) noticed that changing <code>decommit_region</code> to clear the entire committed range instead of just up to <code>used</code> made the corruption disappear. His patch survived a 4-hour test run on two machines. This was a strong signal: our assumption that memory between <code>used</code> and <code>committed</code> is clean was wrong.</p>
+<p>To confirm, I added an assertion in <code>decommit_region</code> to verify that memory between <code>heap_segment_used</code> and <code>heap_segment_committed</code> was zero before clearing. The assertion fired immediately — the memory contained stale managed object data (UTF-16 strings), not zeros. I <a href="https://github.com/dotnet/runtime/issues/127892">replied to Ben on the issue</a> confirming the same observation.</p>
+<p>Now the question was: how does that stale data cause corruption? The GC allocation path in <code>adjust_limit_clr</code> has a critical optimization. When handing out memory to a thread&rsquo;s allocation context, it checks whether the memory is &ldquo;fresh&rdquo; (above <code>heap_segment_used</code>) or &ldquo;recycled&rdquo; (below <code>used</code>):</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="line"><span class="cl"><span class="k">if</span> <span class="p">(</span><span class="n">clear_limit</span> <span class="o">&lt;=</span> <span class="n">used</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// Memory was previously used — clear everything
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">memclr</span><span class="p">(</span><span class="n">clear_start</span><span class="p">,</span> <span class="n">clear_limit</span> <span class="o">-</span> <span class="n">clear_start</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="k">else</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// Memory is above used — trust it&#39;s already zero
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">// Only clear [clear_start, old_used), skip [old_used, clear_limit)
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">heap_segment_used</span> <span class="o">=</span> <span class="n">clear_limit</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">memclr</span><span class="p">(</span><span class="n">clear_start</span><span class="p">,</span> <span class="n">used</span> <span class="o">-</span> <span class="n">clear_start</span><span class="p">);</span>  <span class="c1">// partial clear
+</span></span></span></code></pre></div><p>The ELSE branch trusts that memory above <code>used</code> is zero. I knew we depended on this invariant for the allocator to give out clean memory, so I uncommented the existing verification code at the allocation path. It fired immediately — the allocator was indeed handing out dirty memory.</p>
+<p><strong>Lesson: Start at the point where the invariant is consumed, not where you think the bug originates.</strong></p>
+<h3 id="phase-2-when-does-the-data-become-stale">Phase 2: When Does the Data Become Stale?</h3>
+<p>Knowing WHERE the bad data is consumed doesn&rsquo;t tell us WHEN it got there. I used <strong>temporal bracketing</strong> — checking the same invariant at two points in time to narrow the window.</p>
+<p>Initially, I checked whether all regions had clean memory between <code>used</code> and <code>committed</code>. The assertion fired almost immediately — but for frozen regions and gen 1 regions, not the ones I expected. This was a detour: not all regions need to maintain this invariant. Only allocating regions (the ephemeral segments where <code>adjust_limit_clr</code> runs) depend on the &ldquo;above used is clean&rdquo; property. I narrowed the scan accordingly.</p>
+<p>I added a dirty-memory scan at both GC start and GC end, targeting only allocating regions:</p>
+<ul>
+<li><strong>GC-start check</strong>: After <code>fix_allocation_contexts</code>, scan allocating regions. Is memory between <code>used</code> and <code>committed</code> clean?</li>
+<li><strong>GC-end check</strong>: After <code>distribute_free_regions</code>, scan allocating regions. Clean?</li>
+</ul>
+<p>Results:</p>
+<ul>
+<li>GC-START found dirty data ✓</li>
+<li>GC-END also found dirty data — but this was the same data persisting, not new</li>
+</ul>
+<p>The key insight came from the next question: was the dirty region the ephemeral segment at the <em>previous</em> GC end? No — it was a different region.</p>
+<p><strong>Lesson: Checking at two time points is more powerful than one. It narrows the window and reveals transitions.</strong></p>
+<h3 id="phase-3-always-on-state-logging">Phase 3: Always-On State Logging</h3>
+<p>To understand what changed between GCs, I needed to see the normal state, not just the error state. I added a <code>GC-END-STATE</code> printf for every heap at every GC end, logging the ephemeral segment&rsquo;s <code>mem/allocated/used/committed</code>.</p>
+<p>This created a timeline I could cross-reference:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="cl">GC-END-STATE: gc=286 heap=0 eph_seg=A mem=... used=... committed=...
+</span></span><span class="line"><span class="cl">GC-START-DIRTY: gc=287 heap=0 region=B ...
+</span></span></code></pre></div><p>Region B (dirty) was not region A (the previous ephemeral segment). Region B was recycled from the free pool and became the new ephemeral segment between GCs.</p>
+<p><strong>Lesson: Log normal state, not just errors. A baseline lets you spot transitions that error-only logging misses.</strong></p>
+<h3 id="phase-4-checking-the-transition-point">Phase 4: Checking the Transition Point</h3>
+<p>I knew the region arrived dirty from the free pool. But at what exact moment? I added a memory scan right at the point where a region becomes the ephemeral segment (<code>ephemeral_heap_segment = next_seg</code> in the allocation overflow path):</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="cl">EPH-SWITCH alloc h0 gc=4 region=0x... used=0x... committed=0x... new_seg=1 dirty=1
+</span></span></code></pre></div><p><code>dirty=1</code> — the region was dirty the instant it left the free pool. Not corrupted by allocation, not corrupted by GC. It entered the free pool dirty and came out dirty.</p>
+<p><strong>Lesson: Check invariants at transition boundaries. The boundary between &ldquo;free pool&rdquo; and &ldquo;active region&rdquo; is where the bug becomes visible.</strong></p>
+<h3 id="phase-5-understanding-the-invariant">Phase 5: Understanding the Invariant</h3>
+<p>At this point I had a mechanical understanding: regions come out of the free pool with stale data above <code>used</code>. But I needed to understand the <em>design intent</em> to know where the fix belongs.</p>
+<p>The critical question: <strong>Is &ldquo;memory above <code>used</code> is clean&rdquo; an invariant for all regions, or only for the ephemeral segment?</strong></p>
+<p>This matters because it determines two different fixes:</p>
+<ul>
+<li><strong>Case 1 (invariant for all regions)</strong>: Something violates the invariant during the region&rsquo;s active lifetime. Fix the violator.</li>
+<li><strong>Case 2 (invariant only for ephemeral)</strong>: The invariant doesn&rsquo;t apply to free pool regions. Fix the transition point where a region becomes ephemeral.</li>
+</ul>
+<p>I examined the code:</p>
+<ol>
+<li>
+<p><code>adjust_limit_clr</code> depends on the invariant — but only runs on the ephemeral segment (the allocation segment). Only the consumer cares.</p>
+</li>
+<li>
+<p><code>decommit_region</code> for non-large-pages calls <code>virtual_decommit</code>, which returns pages to the OS. The OS zeros them on recommit. The invariant is maintained by the OS, not by GC code.</p>
+</li>
+<li>
+<p><code>decommit_region</code> for large pages can&rsquo;t decommit (huge pages can&rsquo;t be decommitted). So it manually <code>memclr</code>s — but only up to <code>used</code>, not <code>committed</code>.</p>
+</li>
+<li>
+<p><code>used</code> is only actively maintained as a high watermark on the ephemeral segment. After compaction, <code>plan_allocated</code> can be lower than the old <code>used</code>, and the compact code only advances <code>used</code> upward, never lowers it. But data was written up to the old high watermark.</p>
+</li>
+<li>
+<p>Plan phase code (<code>plan_phase.cpp:7317</code>) already sets <code>used = committed</code> when creating a new ephemeral segment — but only in the non-USE_REGIONS path. Under USE_REGIONS, no such protection exists.</p>
+</li>
+</ol>
+<p>This confirmed <strong>Case 2</strong>: the GC never intended to maintain the invariant for all regions. The non-large-pages path just happened to work because the OS handles cleanup. The large pages <code>memclr</code> path was an optimization that assumed <code>used</code> was a reliable high watermark — but it&rsquo;s only reliable for the ephemeral segment.</p>
+<p><strong>Lesson: Before fixing a bug, understand the design intent. The same symptom can have two very different correct fixes depending on which invariant was supposed to hold.</strong></p>
+<h3 id="phase-6-git-archaeology">Phase 6: Git Archaeology</h3>
+<p>I traced the buggy conditional to its origin:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">git log -S <span class="s2">&#34;use_large_pages_p ? heap_segment_used&#34;</span> -- src/coreclr/gc/gc.cpp
+</span></span></code></pre></div><p>It was introduced in August 2021, PR #56314 (&ldquo;Improve region free list handling&rdquo;), which added <code>decommit_region</code> for the first time. The <code>used</code>-based clear limit was there from day one — not a regression from a later change.</p>
+<p>The bug survived for nearly 5 years because it requires a specific combination: large pages + memory pressure + region recycling + the stale data landing in the ELSE branch of <code>adjust_limit_clr</code>. Without large pages, the OS zeroing on recommit masks the issue entirely.</p>
+<p><strong>Lesson: <code>git log -S</code> (pickaxe search) finds when a specific expression was introduced. Understanding the original context explains why a bug survived.</strong></p>
+<h3 id="the-root-cause">The Root Cause</h3>
+<p>In <code>memory.cpp</code>, <code>decommit_region</code>:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="line"><span class="cl"><span class="kt">uint8_t</span><span class="o">*</span> <span class="n">clear_end</span> <span class="o">=</span> <span class="n">use_large_pages_p</span>
+</span></span><span class="line"><span class="cl">    <span class="o">?</span> <span class="n">heap_segment_used</span><span class="p">(</span><span class="n">region</span><span class="p">)</span>      <span class="c1">// BUG: used is not a reliable high watermark
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="o">:</span> <span class="n">heap_segment_committed</span><span class="p">(</span><span class="n">region</span><span class="p">);</span>
+</span></span></code></pre></div><p>For large pages, <code>memclr</code> only clears up to <code>used</code>. But <code>used</code> doesn&rsquo;t track all writes — it&rsquo;s only maintained for the ephemeral segment. After compaction or replanning, a region can have data above <code>used</code> from its previous role as an allocation target. When the region is recycled, that stale data survives into the free pool.</p>
+<p>The fix: clear to <code>committed</code> instead of <code>used</code> for large pages.</p>
+<h3 id="diagnostic-techniques-summary">Diagnostic Techniques Summary</h3>
+<table>
+<thead>
+<tr>
+<th>Technique</th>
+<th>What It Revealed</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Assertion at decommit point</td>
+<td>Memory above <code>used</code> contains stale data</td>
+</tr>
+<tr>
+<td>Verification at allocation path</td>
+<td>Allocator hands out dirty memory</td>
+</tr>
+<tr>
+<td>Temporal bracketing (GC start + end)</td>
+<td>Dirty data exists before GC runs</td>
+</tr>
+<tr>
+<td>Always-on state logging</td>
+<td>Region identity changes between GCs</td>
+</tr>
+<tr>
+<td>Dirty check at transition point</td>
+<td>Region arrives dirty from free pool</td>
+</tr>
+<tr>
+<td>Invariant analysis (code reading)</td>
+<td><code>used</code> is only reliable for ephemeral</td>
+</tr>
+<tr>
+<td>Git archaeology (<code>git log -S</code>)</td>
+<td>Bug introduced in 2021, masked by OS zeroing</td>
+</tr>
+</tbody>
+</table>
+
+
+        </div><p class="footer text-center">Copyright (c) 2026 Andrew Au</p><script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true });</script>
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/prettify.js"></script>
+<script src="/js/feather.min.js"></script>
+<script src="/index.js"></script>
+<script>
+
+  function getCookie(cname) {
+    let name = cname + "=";
+    let ca = document.cookie.split(';');
+    for (let i = 0; i < ca.length; i++) {
+      let c = ca[i];
+      while (c.charAt(0) == ' ') {
+        c = c.substring(1);
+      }
+      if (c.indexOf(name) == 0) {
+        return c.substring(name.length, c.length);
+      }
+    }
+    return "";
+  }
+
+  function setCookie(cname, cvalue, exdays) {
+    const d = new Date();
+    d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+    let expires = "expires=" + d.toUTCString();
+    document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+  }
+
+  function ensureIcon() {
+    if (document.body.classList.contains("dark-theme")) {
+      toggleDarkModeButton.innerHTML = '<i data-feather="sun"></i>';
+    } else {
+      toggleDarkModeButton.innerHTML = '<i data-feather="moon"></i>';
+    }
+    feather.replace();
+  }
+  function saveCookie() {
+    if (document.body.classList.contains("dark-theme")) {
+      setCookie("darkMode", "true", 365);
+    } else {
+      setCookie("darkMode", "false", 365);
+    }
+  }
+
+  function load(pre) {
+    link = pre.getAttribute("data-code-link");
+    const xhr = new XMLHttpRequest();
+    xhr.onload = () => {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        pre.className = "prettyprint";
+        pre.textContent = xhr.responseText;
+      }
+      prettyPrint();
+    };
+    xhr.open('GET', link);
+    xhr.send();
+  }
+
+  function onSearchButtonClicked(e) {
+    e.preventDefault();
+    var query = $("#queryTextField").val();
+    var terms = query.split(' ');
+    
+    var result = {};
+    for (var i = 0; i < terms.length; ++i) {
+      var term = terms[i].toLowerCase();
+      if (term in index.Terms)
+      {
+        for (i = 0; i < index.Terms[term].length; i += 2) {
+          var doc = index.Terms[term][i];
+          var count = index.Terms[term][i + 1];
+          if (doc in result) {
+            result[doc] += count;
+          } else {
+            result[doc] = count;
+          }
+        }
+      }
+    }
+    
+    $("#content").empty();
+    for (var key in result) {
+      $("#content").append($('<a>', {
+        href: index.Documents[key].replace("../../content","").replace(".md",""),
+        text: index.Titles[key]
+      }));
+      $("#content").append($('<br>'));
+    }
+  }
+
+  $(document).ready(function () {
+    var darkMode = getCookie("darkMode");
+    if (darkMode == "true") {
+      document.body.classList.add("dark-theme");
+      document.body.classList.remove("light-theme");
+    }
+    ensureIcon();
+
+    $("#toggleDarkModeButton").click(function (e) {
+      e.preventDefault();
+      document.body.classList.toggle("dark-theme");
+      document.body.classList.toggle("light-theme");
+      saveCookie();
+      ensureIcon();
+    });
+
+    $("#searchButton").click(onSearchButtonClicked);
+
+    var pres = document.getElementsByTagName("pre");
+    for (var i = 0; i < pres.length; ++i) {
+      var pre = pres[i];
+      if (pre.classList.contains("pretty-github-code")) {
+        load(pre);
+      }
+    }
+  });
+
+  $(window).on("load", function () {
+    $("body").show();
+  });
+</script></body>
+</html>

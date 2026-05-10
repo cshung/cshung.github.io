@@ -38,6 +38,19 @@
 <h1>Posts</h1>
 
 <p>
+    <h3><a class="title" href="/posts/poh-tuning-1/">POH Tuning (Part 1 - What is my pinned object heap size?)</a></h3>
+    
+
+<i data-feather="calendar"></i>
+<time datetime="2021-01-15">Jan 15, 2021</time>
+
+    <a class="summary" href="/posts/poh-tuning-1/">
+        <p>In this series, I am going to talk about my work to tune the pinned object heap. The first step to tuning is to understand how it performs now. Unfortunately, the tools for analyzing the performance is incomplete.
+Pinned Object Heap size (and the event tracing mechanisms) With the tools available in .NET 5 time frame, we did not know the size of the pinned object heap. We had the information in the trace, but we did not have the parser to understand them.</p>
+    </a>
+</p>
+
+<p>
     <h3><a class="title" href="/posts/generation-aware-analysis/">Generation Aware Analysis</a></h3>
     
 
@@ -178,29 +191,6 @@ Please find the problem here.
 Solution:
 As we have already pre-computed the shortest path in the previous problem, all we have to present the shortest path.
 Code:</p>
-    </a>
-</p>
-
-<p>
-    <h3><a class="title" href="/posts/rosalind-reversal-distance/">Rosalind - Reversal Distance</a></h3>
-    
-
-<i data-feather="calendar"></i>
-<time datetime="2020-09-26">Sep 26, 2020</time>
-
-<i data-feather="tag"></i>
-
-
-<a class="btn btn-sm btn-outline-dark tag-btn" href="https://cshung.github.io/tags/rosalind">rosalind</a>
-
-
-    <a class="summary" href="/posts/rosalind-reversal-distance/">
-        <p>Problem:
-Please find the problem here.
-Solution:
-This is a tough problem, I handled it using a few techniques.
-The problem hinted on brute force, in order to make sure it runs within the allocated time, it is easy to just pre-compute the solutions.
-The set of all solutions is daunting (10!) squared. I make one observation to make it simple - the symbol themselves does not matter, we could rename all the symbols consistently and we will get exactly the same reversal distance.</p>
     </a>
 </p>
 

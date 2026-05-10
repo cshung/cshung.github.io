@@ -6,8 +6,15 @@
     <description>Recent content on My Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 23 Feb 2026 00:00:00 -0800</lastBuildDate>
+    <lastBuildDate>Sun, 10 May 2026 10:01:16 -0700</lastBuildDate>
     <atom:link href="https://cshung.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Memory Corruption (5)</title>
+      <link>https://cshung.github.io/posts/memory-corruption-5/</link>
+      <pubDate>Sun, 10 May 2026 10:01:16 -0700</pubDate>
+      <guid>https://cshung.github.io/posts/memory-corruption-5/</guid>
+      <description>Diagnosing GC Heap Corruption with Large Pages In this post, I will talk about yet another memory corruption bug we found and fixed. Check out my previous post for more context and examples.&#xA;Backstory: Part 1 — dotnet/runtime#126903 A customer (dotnet/runtime#126903) reported heap corruption when using GCLargePages=1 with GCCollectionMode.Aggressive. The crashes manifested as NullReferenceException and AccessViolationException inside ConcurrentDictionary internals, with multiple threads faulting simultaneously — characteristic of a single GC event corrupting a heap region.</description>
+    </item>
     <item>
       <title>Hunting Zombie Processes: From 6,500 Zombies to a Bug in Git</title>
       <link>https://cshung.github.io/posts/zombie-git/</link>

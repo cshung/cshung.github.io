@@ -38,6 +38,19 @@
 <h1>Posts</h1>
 
 <p>
+    <h3><a class="title" href="/posts/memory-corruption-5/">Memory Corruption (5)</a></h3>
+    
+
+<i data-feather="calendar"></i>
+<time datetime="2026-05-10">May 10, 2026</time>
+
+    <a class="summary" href="/posts/memory-corruption-5/">
+        <p>Diagnosing GC Heap Corruption with Large Pages In this post, I will talk about yet another memory corruption bug we found and fixed. Check out my previous post for more context and examples.
+Backstory: Part 1 — dotnet/runtime#126903 A customer (dotnet/runtime#126903) reported heap corruption when using GCLargePages=1 with GCCollectionMode.Aggressive. The crashes manifested as NullReferenceException and AccessViolationException inside ConcurrentDictionary internals, with multiple threads faulting simultaneously — characteristic of a single GC event corrupting a heap region.</p>
+    </a>
+</p>
+
+<p>
     <h3><a class="title" href="/posts/zombie-git/">Hunting Zombie Processes: From 6,500 Zombies to a Bug in Git</a></h3>
     
 
@@ -158,21 +171,6 @@ hosted a cheap Linux virtual machine on Azure. used SSH as a sock server. used S
     <a class="summary" href="/posts/debug-maui-android/">
         <p>These days I have been helping the MAUI team to fix some bugs. I always learn something new when I work on something new, and this time is no different. Today I am going to write about how to debug the Android code running inside a MAUI app.
 Procedure Step 1: Launching the App. I start the MAUI app in Visual Studio as usual. In this post, I am going to assume that we know how to start an App in Visual Studio.</p>
-    </a>
-</p>
-
-<p>
-    <h3><a class="title" href="/posts/sais/">SA-IS Algorithm</a></h3>
-    
-
-<i data-feather="calendar"></i>
-<time datetime="2021-12-26">Dec 26, 2021</time>
-
-    <a class="summary" href="/posts/sais/">
-        <p>Today, I would like to write about my understanding of the SA-IS algorithm for constructing a suffix array.
-What is a suffix array? Consider the string &ldquo;banana&rdquo;, this string has 6 suffixes.
-suffix index banana 0 anana 1 nana 2 ana 3 na 4 a 5 And if we sort them, we have these:
-suffix index a 5 ana 3 anana 1 banana 0 na 4 nana 2 And therefore the suffix array is [5,3,1,0,4,2].</p>
     </a>
 </p>
 

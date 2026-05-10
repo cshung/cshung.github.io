@@ -38,6 +38,21 @@
 <h1>Posts</h1>
 
 <p>
+    <h3><a class="title" href="/posts/sais/">SA-IS Algorithm</a></h3>
+    
+
+<i data-feather="calendar"></i>
+<time datetime="2021-12-26">Dec 26, 2021</time>
+
+    <a class="summary" href="/posts/sais/">
+        <p>Today, I would like to write about my understanding of the SA-IS algorithm for constructing a suffix array.
+What is a suffix array? Consider the string &ldquo;banana&rdquo;, this string has 6 suffixes.
+suffix index banana 0 anana 1 nana 2 ana 3 na 4 a 5 And if we sort them, we have these:
+suffix index a 5 ana 3 anana 1 banana 0 na 4 nana 2 And therefore the suffix array is [5,3,1,0,4,2].</p>
+    </a>
+</p>
+
+<p>
     <h3><a class="title" href="/posts/spurious-interrupts/">Spurious Interrupts</a></h3>
     
 
@@ -152,19 +167,6 @@ inline size_t my_get_size (Object* ob) { MethodTable* mT = header(ob)-&gt;GetMet
     <a class="summary" href="/posts/git-merge-squash/">
         <p>Git Merge Squash This is a short article documenting my process of reusing someone else&rsquo;s change. It is not particularly easy and therefore I would like a document to remember how I did it.
 The problem? Imagine my partner and I were working on the same repository. I am working on a feature and he is working on a fix that I need. However, for whatever reasons, my partner couldn&rsquo;t merge the fix in, but I would really like to apply his change in my code base so that my scenario work (at least locally), how should I do it?</p>
-    </a>
-</p>
-
-<p>
-    <h3><a class="title" href="/posts/brick/">Understanding the brick table</a></h3>
-    
-
-<i data-feather="calendar"></i>
-<time datetime="2021-04-17">Apr 17, 2021</time>
-
-    <a class="summary" href="/posts/brick/">
-        <p>Understanding the brick table A brick table is a data structure that helps finding an object in the heap. To begin with the discussion, it makes sense to clarify what does finding an object mean.
-What is the find object problem? There are various situation that we are given a random pointer inside the heap, and we wanted to find the pointer to the object that is using the address.</p>
     </a>
 </p>
 
