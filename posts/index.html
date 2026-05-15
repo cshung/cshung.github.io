@@ -38,6 +38,20 @@
 <h1>Posts</h1>
 
 <p>
+    <h3><a class="title" href="/posts/one-byte-story/">A Story of One Byte</a></h3>
+    
+
+<i data-feather="calendar"></i>
+<time datetime="2026-05-15">May 15, 2026</time>
+
+    <a class="summary" href="/posts/one-byte-story/">
+        <p>I spent a week deleting one byte.
+It started with a debugger test failure. The test compares stack frames, and one frame was missing. No crash, no corruption — just one frame quietly absent from the call stack. Everything else looked fine.
+The callstack command returns a managed stack trace, and that trace was one frame short. Stepping in, I found it was returning a cached value — an incorrect one.</p>
+    </a>
+</p>
+
+<p>
     <h3><a class="title" href="/posts/memory-corruption-5/">Memory Corruption (5)</a></h3>
     
 
@@ -158,19 +172,6 @@ A first look When the program crashes at the object equality check.</p>
         <p>As of the time of writing, tomorrow is the final for World Cup 2022. It is a pity to miss it. Unfortunately, in the US, unlike most other places in the world, you can&rsquo;t watch it for free, while it is available for free online in many other countries.
 To get around that restriction, I &hellip;
 hosted a cheap Linux virtual machine on Azure. used SSH as a sock server. used SSH tunnel to encrypt the traffic, and made Chrome use the sock server and start watching Part 1 - hosting a Linux Virtual Machine After logging on the Azure portal, I can easily create a Linux virtual machine.</p>
-    </a>
-</p>
-
-<p>
-    <h3><a class="title" href="/posts/debug-maui-android/">Debug MAUI Android</a></h3>
-    
-
-<i data-feather="calendar"></i>
-<time datetime="2022-04-04">Apr 4, 2022</time>
-
-    <a class="summary" href="/posts/debug-maui-android/">
-        <p>These days I have been helping the MAUI team to fix some bugs. I always learn something new when I work on something new, and this time is no different. Today I am going to write about how to debug the Android code running inside a MAUI app.
-Procedure Step 1: Launching the App. I start the MAUI app in Visual Studio as usual. In this post, I am going to assume that we know how to start an App in Visual Studio.</p>
     </a>
 </p>
 

@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/style.css">
+    <link rel="stylesheet" type="text/css" href="/css/syntax.css">
+    
+    
+    <title>My Blog | A Story of One Byte</title>
+
+
+</head><body class="light-theme"><div id="nav-border" class="container">
+    <nav id="nav" class="nav justify-content-center">
+        
+        <a class="nav-link" href="/">
+        
+        
+        <i data-feather="home"></i> 
+        
+        
+        Home
+        </a>
+        
+        <a class="nav-link" href="/tags/">
+        
+        
+        <i data-feather="tag"></i> 
+        
+        
+        Tags
+        </a>
+        
+        <a class="nav-link" href="#" id="toggleDarkModeButton"><i data-feather="sun"></i></a>
+        <span style="padding:5px"><input type="text" id="queryTextField"></span><a class="nav-link" href="#" id="searchButton"><i data-feather="search"></i></a>
+    </nav>
+</div><div id="content" style="margin:20px">
+<h1>A Story of One Byte</h1>
+
+
+<i data-feather="calendar"></i>
+<time datetime="2026-05-15">May 15, 2026</time>
+
+<br><br>
+<p>I spent a week deleting one byte.</p>
+<p>It started with a debugger test failure. The test compares stack frames, and one frame was missing. No crash, no corruption — just one frame quietly absent from the call stack. Everything else looked fine.</p>
+<p>The <code>callstack</code> command returns a managed stack trace, and that trace was one frame short. Stepping in, I found it was returning a cached value — an incorrect one. So the real question became: when was that cache populated with the wrong data?</p>
+<p>Two things made this tractable: the bug was deterministic, and I had compilable source. Those two together open a door — a technique I reach for whenever I need to find the origin of a bad object.</p>
+<p>The idea: give every stack trace object a birthday. Add a field initialized from a global counter:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="line"><span class="cl"><span class="k">static</span> <span class="kt">int</span> <span class="n">stack_trace</span><span class="o">::</span><span class="n">s_counter</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">stack_trace</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl"><span class="k">public</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">    <span class="n">stack_trace</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">this</span><span class="o">-&gt;</span><span class="n">m_birthday</span> <span class="o">=</span> <span class="o">++</span><span class="n">s_counter</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="k">private</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">m_birthday</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">static</span> <span class="kt">int</span> <span class="n">s_counter</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span></code></pre></div><p><em>(The actual code is closed source — this is illustrative, but the method is real.)</em></p>
+<p>First run: observe the birthday of the incorrect object. Second run: set a conditional breakpoint in the constructor, triggering only when the counter reaches that birthday. Now you&rsquo;re standing at the exact moment the wrong value is born.</p>
+<p>The constructor fired during the <strong>Exception Caught Debug Event</strong>.</p>
+<h2 id="why-catching-an-exception-walks-the-stack">Why catching an exception walks the stack</h2>
+<p>I needed to understand why catching an exception would trigger a stack walk at all.</p>
+<p>When a debuggee catches an exception, it signals the debugger through an SEH exception — in .NET Native, this is <a href="https://github.com/dotnet/corert/blob/81c8ab7520d425f45c69c12477c69fa920cf6982/src/Native/Runtime/DebugEventSource.cpp#L77">SendRawEvent</a>. The debugger receives the event, and while it processes, the debuggee is frozen.</p>
+<p>The debugger needs to place a hidden breakpoint at the catch handler so execution can resume there when the user single-steps. To find the catch handler, it must walk the stack. That&rsquo;s where my missing frame was being lost.</p>
+<p>But knowing <em>why</em> a stack walk happens didn&rsquo;t explain why the walk was <em>wrong</em>. I had to follow the data down.</p>
+<h2 id="one-layer-at-a-time">One layer at a time</h2>
+<p>The managed stack comes through a chain of abstractions: <code>ICorDebugStackWalk</code> calls into <code>ICorDebugVirtualUnwinder</code>, which uses <code>IDiaStackWalker</code>, which reads exception unwind data from the binary&rsquo;s <code>.pdata</code> section.</p>
+<p>I checked each layer. Every one was faithfully returning what the layer below gave it. The error wasn&rsquo;t in any of the interfaces — it was at the bottom, in how the unwind data was being interpreted.</p>
+<h2 id="virtual-unwinding">Virtual unwinding</h2>
+<p>Stack unwinding reverses the effect of function calls — restoring register state to what it was before the call. <em>Real</em> unwinding actually changes process state; exception handling uses it to jump execution back to a catch frame. <em>Virtual</em> unwinding just simulates that process, reading saved register values off the stack to reconstruct what the state <em>would</em> be. This is what debuggers do.</p>
+<p>The key data structure is a <code>RegisterDisplay</code> — a struct of pointers that initially reference the current thread context, then shift to point at saved values on the stack as the virtual unwind progresses frame by frame.</p>
+<p>Why are register values on the stack? Because the ABI requires it. Callee-save registers must be preserved across function calls, and compilers do this by pushing them onto the stack in the prologue.</p>
+<h2 id="the-dead-end-that-taught-me-something">The dead end that taught me something</h2>
+<p>Looking at the virtual unwind implementation, one instruction&rsquo;s handling seemed wrong:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-asm" data-lang="asm"><span class="line"><span class="cl"><span class="nf">stp</span>   <span class="no">x1</span><span class="p">,</span> <span class="no">x2</span><span class="p">,</span> <span class="p">[</span><span class="no">sp</span><span class="p">,</span> <span class="c1">#-16]!
+</span></span></span></code></pre></div><p><code>stp</code> is Store Pair — writes two registers to memory. But the unwinder was <em>modifying the stack pointer</em> while processing this instruction, which felt suspicious.</p>
+<p>Turns out the unwinder was correct. The <code>!</code> at the end is ARM64 pre-index addressing mode: <code>sp</code> is decremented by 16 <em>before</em> the store happens. The instruction itself changes <code>sp</code>, so the unwinder is right to add 16 back.</p>
+<p>Dead end. But now I understood exactly how each instruction&rsquo;s unwind was supposed to behave. Keep going.</p>
+<h2 id="the-frame-that-had-no-return-address">The frame that had no return address</h2>
+<p>With no clear suspect in the unwind logic, I tried a different approach: follow the frame pointer chain. ARM64 doesn&rsquo;t mandate frame pointers, but they&rsquo;re common enough. The chain led me to <code>RhpThrowHwEx</code> — and that&rsquo;s where the unwind went wrong.</p>
+<p><code>RhpThrowHwEx</code> is an assembly routine with an unusual property. When a hardware exception fires — division by zero, access violation — a Vectored Exception Handler intercepts it, sets <code>PC</code> to <code>RhpThrowHwEx</code>, and returns <code>EXCEPTION_CONTINUE_EXECUTION</code>. Execution jumps there without a conventional call. There&rsquo;s no return address on the stack for a stack walker to follow.</p>
+<p>To handle this, the prologue uses a macro called <code>PROLOG_PUSH_MACHINE_FRAME</code>. It&rsquo;s a Windows construct that generates <strong>no instructions</strong> — only unwind opcodes. It tells the stack walker: &ldquo;the return address and stack pointer are saved at known offsets in this frame.&rdquo; That&rsquo;s how the walker recovers <code>PC</code> and <code>SP</code> for frames that were entered without a call.</p>
+<p>Now look at the prologue <em>before</em> my fix:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-asm" data-lang="asm"><span class="line"><span class="cl"><span class="nf">PROLOG_STACK_ALLOC</span> <span class="mi">0x50</span>
+</span></span><span class="line"><span class="cl"><span class="nf">PROLOG_PUSH_MACHINE_FRAME</span>
+</span></span></code></pre></div><p><code>PROLOG_STACK_ALLOC 0x50</code> does two things: it emits an instruction (<code>sub sp, sp, #0x50</code>) and an unwind opcode (<code>SP += 0x50</code>). But <code>PROLOG_PUSH_MACHINE_FRAME</code> already restores <code>SP</code> to its correct value as part of its own unwind. The <code>PROLOG_STACK_ALLOC</code> opcode then adds <em>another</em> <code>0x50</code> on top of the already-correct <code>SP</code> — pushing it too high by <code>0x50</code> bytes. That&rsquo;s enough to skip past one frame on the stack. One frame disappears.</p>
+<h2 id="one-byte">One byte</h2>
+<p>The fix: replace <code>PROLOG_STACK_ALLOC 0x50</code> with <code>PROLOG_NOP sub sp, sp, #0x50</code>. The machine instruction is identical — the stack still gets allocated. But <code>PROLOG_NOP</code> doesn&rsquo;t emit an unwind opcode. The redundant <code>SP += 0x50</code> is gone. The stack pointer unwinds to the right place. The missing frame comes back.</p>
+<p>A week of chasing through debug events, stack walkers, register displays, unwind opcodes, and ARM64 addressing modes. The fix was deleting one unwind opcode — one byte.</p>
+<p>This entire investigation depended on one luxury: determinism. The bug reproduced the same way every time, which made the birthday trick possible — run once to observe, run again to catch. Without determinism, none of that works. You can&rsquo;t set a conditional breakpoint for a birthday that changes between runs.</p>
+<hr>
+<p><em>Originally written in Cantonese for a forum in April 2018. Translated and adapted here for preservation.</em></p>
+<p>Looking back, this was comfortable ground. Deterministic bugs are hard, but they play fair — you can always rewind and try again. The real growth came later, when I started working on the garbage collector. Nothing was reproducible. Heap corruption surfaced in different places every run. The birthday trick was useless. Every technique I&rsquo;d relied on had to be replaced with something that could cope with randomness. That transition — from deterministic debugging to non-deterministic heap corruption — was one of the hardest and most important leaps in my career. The <a href="/posts/memory-corruption-1">memory corruption series</a> is about that world.</p>
+
+
+        </div><p class="footer text-center">Copyright (c) 2026 Andrew Au</p><script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true });</script>
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/prettify.js"></script>
+<script src="/js/feather.min.js"></script>
+<script src="/index.js"></script>
+<script>
+
+  function getCookie(cname) {
+    let name = cname + "=";
+    let ca = document.cookie.split(';');
+    for (let i = 0; i < ca.length; i++) {
+      let c = ca[i];
+      while (c.charAt(0) == ' ') {
+        c = c.substring(1);
+      }
+      if (c.indexOf(name) == 0) {
+        return c.substring(name.length, c.length);
+      }
+    }
+    return "";
+  }
+
+  function setCookie(cname, cvalue, exdays) {
+    const d = new Date();
+    d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+    let expires = "expires=" + d.toUTCString();
+    document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+  }
+
+  function ensureIcon() {
+    if (document.body.classList.contains("dark-theme")) {
+      toggleDarkModeButton.innerHTML = '<i data-feather="sun"></i>';
+    } else {
+      toggleDarkModeButton.innerHTML = '<i data-feather="moon"></i>';
+    }
+    feather.replace();
+  }
+  function saveCookie() {
+    if (document.body.classList.contains("dark-theme")) {
+      setCookie("darkMode", "true", 365);
+    } else {
+      setCookie("darkMode", "false", 365);
+    }
+  }
+
+  function load(pre) {
+    link = pre.getAttribute("data-code-link");
+    const xhr = new XMLHttpRequest();
+    xhr.onload = () => {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        pre.className = "prettyprint";
+        pre.textContent = xhr.responseText;
+      }
+      prettyPrint();
+    };
+    xhr.open('GET', link);
+    xhr.send();
+  }
+
+  function onSearchButtonClicked(e) {
+    e.preventDefault();
+    var query = $("#queryTextField").val();
+    var terms = query.split(' ');
+    
+    var result = {};
+    for (var i = 0; i < terms.length; ++i) {
+      var term = terms[i].toLowerCase();
+      if (term in index.Terms)
+      {
+        for (i = 0; i < index.Terms[term].length; i += 2) {
+          var doc = index.Terms[term][i];
+          var count = index.Terms[term][i + 1];
+          if (doc in result) {
+            result[doc] += count;
+          } else {
+            result[doc] = count;
+          }
+        }
+      }
+    }
+    
+    $("#content").empty();
+    for (var key in result) {
+      $("#content").append($('<a>', {
+        href: index.Documents[key].replace("../../content","").replace(".md",""),
+        text: index.Titles[key]
+      }));
+      $("#content").append($('<br>'));
+    }
+  }
+
+  $(document).ready(function () {
+    var darkMode = getCookie("darkMode");
+    if (darkMode == "true") {
+      document.body.classList.add("dark-theme");
+      document.body.classList.remove("light-theme");
+    }
+    ensureIcon();
+
+    $("#toggleDarkModeButton").click(function (e) {
+      e.preventDefault();
+      document.body.classList.toggle("dark-theme");
+      document.body.classList.toggle("light-theme");
+      saveCookie();
+      ensureIcon();
+    });
+
+    $("#searchButton").click(onSearchButtonClicked);
+
+    var pres = document.getElementsByTagName("pre");
+    for (var i = 0; i < pres.length; ++i) {
+      var pre = pres[i];
+      if (pre.classList.contains("pretty-github-code")) {
+        load(pre);
+      }
+    }
+  });
+
+  $(window).on("load", function () {
+    $("body").show();
+  });
+</script></body>
+</html>

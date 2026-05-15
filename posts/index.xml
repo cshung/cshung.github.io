@@ -6,8 +6,15 @@
     <description>Recent content in Posts on My Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 10 May 2026 10:01:16 -0700</lastBuildDate>
+    <lastBuildDate>Fri, 15 May 2026 00:00:00 -0800</lastBuildDate>
     <atom:link href="https://cshung.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>A Story of One Byte</title>
+      <link>https://cshung.github.io/posts/one-byte-story/</link>
+      <pubDate>Fri, 15 May 2026 00:00:00 -0800</pubDate>
+      <guid>https://cshung.github.io/posts/one-byte-story/</guid>
+      <description>I spent a week deleting one byte.&#xA;It started with a debugger test failure. The test compares stack frames, and one frame was missing. No crash, no corruption — just one frame quietly absent from the call stack. Everything else looked fine.&#xA;The callstack command returns a managed stack trace, and that trace was one frame short. Stepping in, I found it was returning a cached value — an incorrect one.</description>
+    </item>
     <item>
       <title>Memory Corruption (5)</title>
       <link>https://cshung.github.io/posts/memory-corruption-5/</link>
