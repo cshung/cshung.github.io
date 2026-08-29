@@ -6,7 +6,7 @@
     <description>Recent content on My Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 15 May 2026 00:00:00 -0800</lastBuildDate>
+    <lastBuildDate>Fri, 28 Aug 2026 15:13:57 -0700</lastBuildDate>
     <atom:link href="https://cshung.github.io/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>A Story of One Byte</title>
@@ -90,7 +90,7 @@
       <link>https://cshung.github.io/posts/sais/</link>
       <pubDate>Sun, 26 Dec 2021 10:52:35 -0800</pubDate>
       <guid>https://cshung.github.io/posts/sais/</guid>
-      <description>Today, I would like to write about my understanding of the SA-IS algorithm for constructing a suffix array.&#xA;What is a suffix array? Consider the string &amp;ldquo;banana&amp;rdquo;, this string has 6 suffixes.&#xA;suffix index banana 0 anana 1 nana 2 ana 3 na 4 a 5 And if we sort them, we have these:&#xA;suffix index a 5 ana 3 anana 1 banana 0 na 4 nana 2 And therefore the suffix array is [5,3,1,0,4,2].</description>
+      <description>Today, I would like to write about my understanding of the SA-IS algorithm for constructing a suffix array. The algorithm was introduced by Ge Nong, Sen Zhang, and Wai Hong Chan in their 2009 paper, Linear Suffix Array Construction by Almost Pure Induced-Sorting.&#xA;What is a suffix array? Consider the string &amp;ldquo;banana&amp;rdquo;, this string has 6 suffixes.&#xA;suffix index banana 0 anana 1 nana 2 ana 3 na 4 a 5 And if we sort them, we have these:</description>
     </item>
     <item>
       <title>Spurious Interrupts</title>

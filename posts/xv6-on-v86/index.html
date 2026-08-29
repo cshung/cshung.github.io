@@ -3,7 +3,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="/css/style.css">
+    <link rel="stylesheet" type="text/css" href="/css/style.css?v=20260828">
     <link rel="stylesheet" type="text/css" href="/css/syntax.css">
     
     
@@ -42,6 +42,7 @@
 <time datetime="2020-06-28">Jun 28, 2020</time>
 
 <br><br>
+<article class="post-content">
 <h1 id="xv6-on-v86">Xv6 on v86</h1>
 <p>In this post, I will talk about my journey to get <a href="https://github.com/mit-pdos/xv6-public">Xv6</a> running on <a href="https://copy.sh/v86/">v86</a>. Xv6 is a unix-like teaching OS developed by <a href="https://web.mit.edu/">MIT</a>. v86 is an x86 virtual machine running on the browser developed by <a href="https://github.com/copy">Fabian</a>.</p>
 <p>The key characteristic of these two systems is that they are <strong>simple</strong> compared to their industrial-strength counterparts (compared to the Linux kernel or the QEMU emulator). Being simple, it is easy to <strong>understand</strong>. My goal is to build an understanding of the operating systems and virtual machine internals, and they give us an excellent opportunity.</p>
@@ -344,6 +345,7 @@ Now we have some context, 0x801024EB, which is <code>kfree</code>. Further ahead
 </span></span><span class="line"><span class="cl"> 80102374 80100191 80101529 801015a7 8010376c 8010578a 0 0 0 0_
 </span></span></code></pre></div><p>This is an obvious error, that we need a separate disk. It could be a hard task, but turn out the code is mostly already available on v86. All I did in <a href="https://github.com/copy/v86/commit/6ab0fa85a985743ac35c2b470dc4ecafdad6889e">this commit</a> is to configure it and surface it to the web frontend. With the slave hard disk connected to <code>fs.img</code>, the system booted successfully!.</p>
 
+</article>
 
         </div><p class="footer text-center">Copyright (c) 2026 Andrew Au</p><script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
@@ -406,33 +408,215 @@ Now we have some context, 0x801024EB, which is <code>kfree</code>. Further ahead
     xhr.send();
   }
 
-  function onSearchButtonClicked(e) {
-    e.preventDefault();
-    var query = $("#queryTextField").val();
-    var terms = query.split(' ');
-    
-    var result = {};
-    for (var i = 0; i < terms.length; ++i) {
-      var term = terms[i].toLowerCase();
-      if (term in index.Terms)
-      {
-        for (i = 0; i < index.Terms[term].length; i += 2) {
-          var doc = index.Terms[term][i];
-          var count = index.Terms[term][i + 1];
-          if (doc in result) {
-            result[doc] += count;
-          } else {
-            result[doc] = count;
+  function levenshteinDistance(left, right) {
+    var previous = Array.from(
+      { length: right.length + 1 },
+      (_, index) => index
+    );
+
+    for (var leftIndex = 0; leftIndex < left.length; leftIndex++) {
+      var current = [leftIndex + 1];
+
+      for (var rightIndex = 0; rightIndex < right.length; rightIndex++) {
+        var replacementCost = left[leftIndex] === right[rightIndex] ? 0 : 1;
+        current.push(Math.min(
+          current[rightIndex] + 1,
+          previous[rightIndex + 1] + 1,
+          previous[rightIndex] + replacementCost
+        ));
+      }
+
+      previous = current;
+    }
+
+    return previous[right.length];
+  }
+
+  class BkTreeNode {
+    constructor(word) {
+      this.word = word;
+      this.children = new Map();
+    }
+  }
+
+  class BkTree {
+    constructor(words) {
+      this.root = null;
+
+      for (const word of words) {
+        this.insert(word);
+      }
+    }
+
+    insert(word) {
+      if (this.root === null) {
+        this.root = new BkTreeNode(word);
+        return;
+      }
+
+      var current = this.root;
+
+      while (true) {
+        var distance = levenshteinDistance(word, current.word);
+        var child = current.children.get(distance);
+
+        if (child === undefined) {
+          current.children.set(distance, new BkTreeNode(word));
+          return;
+        }
+
+        current = child;
+      }
+    }
+
+    query(word, maximumDistance) {
+      if (this.root === null) {
+        return [];
+      }
+
+      var results = [];
+      var pending = [this.root];
+
+      while (pending.length > 0) {
+        var node = pending.pop();
+        var distance = levenshteinDistance(word, node.word);
+
+        if (distance <= maximumDistance) {
+          results.push({ word: node.word, distance: distance });
+        }
+
+        var minimumChildDistance = distance - maximumDistance;
+        var maximumChildDistance = distance + maximumDistance;
+
+        for (const [childDistance, child] of node.children) {
+          if (
+            minimumChildDistance <= childDistance &&
+            childDistance <= maximumChildDistance
+          ) {
+            pending.push(child);
           }
         }
       }
+
+      return results;
     }
-    
+  }
+
+  var correctionTree = null;
+
+  function correctQueryTerm(term) {
+    if (Object.prototype.hasOwnProperty.call(index.Terms, term)) {
+      return term;
+    }
+
+    if (correctionTree === null) {
+      correctionTree = new BkTree(Object.keys(index.Terms));
+    }
+
+    for (const maximumDistance of [1, 2]) {
+      var corrections = correctionTree.query(term, maximumDistance);
+
+      if (corrections.length > 0) {
+        corrections.sort((left, right) =>
+          left.distance - right.distance ||
+          index.Terms[right.word].length - index.Terms[left.word].length ||
+          left.word.localeCompare(right.word)
+        );
+        return corrections[0].word;
+      }
+    }
+
+    return null;
+  }
+
+  function onSearchButtonClicked(e) {
+    e.preventDefault();
+    const query = $("#queryTextField").val().trim();
+    const terms = query.toLowerCase().match(/\p{L}+/gu) || [];
+    const queryTermFrequencies = Object.create(null);
+    const correctedTerms = [];
+    const droppedTerms = [];
+
+    for (const term of terms) {
+      const correctedTerm = correctQueryTerm(term);
+
+      if (correctedTerm === null) {
+        droppedTerms.push(term);
+        continue;
+      }
+
+      if (correctedTerm !== term) {
+        correctedTerms.push({ original: term, corrected: correctedTerm });
+      }
+
+      queryTermFrequencies[correctedTerm] =
+        (queryTermFrequencies[correctedTerm] || 0) + 1;
+    }
+
+    const documentNumerators = Object.create(null);
+    let queryLengthSquared = 0;
+
+    for (const [term, queryFrequency] of Object.entries(queryTermFrequencies)) {
+      if (!Object.prototype.hasOwnProperty.call(index.Terms, term)) {
+        continue;
+      }
+
+      queryLengthSquared += queryFrequency * queryFrequency;
+      const postings = index.Terms[term];
+
+      for (let postingIndex = 0; postingIndex < postings.length; postingIndex += 2) {
+        const documentId = postings[postingIndex];
+        const documentFrequency = postings[postingIndex + 1];
+        const contribution = documentFrequency * queryFrequency;
+
+        if (Object.prototype.hasOwnProperty.call(documentNumerators, documentId)) {
+          documentNumerators[documentId] += contribution;
+        } else {
+          documentNumerators[documentId] = contribution;
+        }
+      }
+    }
+
+    const queryLength = Math.sqrt(queryLengthSquared);
+    const results = Object.entries(documentNumerators)
+      .map(([documentId, numerator]) => {
+        const documentLength = Math.sqrt(index.DocumentLength[documentId]);
+        return {
+          documentId,
+          score: numerator / documentLength / queryLength
+        };
+      })
+      .sort((left, right) =>
+        right.score - left.score ||
+        index.Titles[left.documentId].localeCompare(index.Titles[right.documentId])
+      );
+
     $("#content").empty();
-    for (var key in result) {
+
+    if (correctedTerms.length > 0) {
+      $("#content").append($("<p>").text(
+        "Corrected: " + correctedTerms
+          .map(term => `${term.original} → ${term.corrected}`)
+          .join(", ")
+      ));
+    }
+
+    if (droppedTerms.length > 0) {
+      $("#content").append($("<p>").text(
+        "Ignored unknown terms: " + droppedTerms.join(", ")
+      ));
+    }
+
+    if (results.length === 0) {
+      $("#content").append($("<p>").text("No matching posts found."));
+      return;
+    }
+
+    for (const result of results) {
+      const documentId = result.documentId;
       $("#content").append($('<a>', {
-        href: index.Documents[key].replace("../../content","").replace(".md",""),
-        text: index.Titles[key]
+        href: index.Documents[documentId].replace("../../content","").replace(".md",""),
+        text: index.Titles[documentId]
       }));
       $("#content").append($('<br>'));
     }
@@ -455,6 +639,11 @@ Now we have some context, 0x801024EB, which is <code>kfree</code>. Further ahead
     });
 
     $("#searchButton").click(onSearchButtonClicked);
+    $("#queryTextField").keydown(function (e) {
+      if (e.key === "Enter") {
+        onSearchButtonClicked(e);
+      }
+    });
 
     var pres = document.getElementsByTagName("pre");
     for (var i = 0; i < pres.length; ++i) {

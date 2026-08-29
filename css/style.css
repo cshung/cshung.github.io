@@ -2,4 +2,25 @@
     background-color: black;
     color: white;
 }
+
+.post-content table:not(.lntable) {
+    border-collapse: collapse;
+    margin: 1rem 0;
+}
+
+.post-content table:not(.lntable) th,
+.post-content table:not(.lntable) td {
+    border: 1px solid #6c757d;
+    padding: 0.4rem 0.65rem;
+    vertical-align: top;
+}
+
+.post-content table:not(.lntable) th {
+    background-color: #e9ecef;
+}
+
+.dark-theme .post-content table:not(.lntable) th {
+    background-color: #343a40;
+}
+
 body { display:none; }

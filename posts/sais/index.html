@@ -3,7 +3,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="/css/style.css">
+    <link rel="stylesheet" type="text/css" href="/css/style.css?v=20260828">
     <link rel="stylesheet" type="text/css" href="/css/syntax.css">
     
     
@@ -42,7 +42,8 @@
 <time datetime="2021-12-26">Dec 26, 2021</time>
 
 <br><br>
-<p>Today, I would like to write about my understanding of the SA-IS algorithm for constructing a suffix array.</p>
+<article class="post-content">
+<p>Today, I would like to write about my understanding of the SA-IS algorithm for constructing a suffix array. The algorithm was introduced by Ge Nong, Sen Zhang, and Wai Hong Chan in their 2009 paper, <a href="https://doi.org/10.1109/DCC.2009.12"><em>Linear Suffix Array Construction by Almost Pure Induced-Sorting</em></a>.</p>
 <h1 id="what-is-a-suffix-array">What is a suffix array?</h1>
 <p>Consider the string &ldquo;banana&rdquo;, this string has 6 suffixes.</p>
 <table>
@@ -147,6 +148,37 @@ Determining that &lsquo;a$&rsquo; is L type is trivial, all we need to do is to 
 </span></span><span class="line"><span class="cl"> ?SLS
 </span></span></code></pre></div><p>To determine the type of <code>aab$</code>, we claim that since &lsquo;a&rsquo; = &lsquo;a&rsquo;, therefore, the type of <code>aab$</code> is simply the same as the type of <code>ab$</code>, which is S.</p>
 <p>If we think about it, this is exactly leveraging our observation that string comparisons are overlapping. The string comparison is simply comparing the first letter and then compare the rest, but the rest is already computed, so we just use what we already have!</p>
+<p>The implementation starts by replacing the input alphabet with positive integers and appending <code>0</code> as the unique sentinel:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">suffix_array</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">trace</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verify</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">alphabet</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">ch</span><span class="p">:</span> <span class="n">rank</span> <span class="o">+</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl">        <span class="k">for</span> <span class="n">rank</span><span class="p">,</span> <span class="n">ch</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">text</span><span class="p">)))</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="n">encoded</span> <span class="o">=</span> <span class="p">[</span><span class="n">alphabet</span><span class="p">[</span><span class="n">ch</span><span class="p">]</span> <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="n">text</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">sa</span> <span class="o">=</span> <span class="n">_sais</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="n">encoded</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">alphabet_size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">alphabet</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">trace</span><span class="o">=</span><span class="n">trace</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">verify</span><span class="o">=</span><span class="n">verify</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">verify_limit</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">depth</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">sa</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>  <span class="c1"># Remove the sentinel-only suffix.</span>
+</span></span></code></pre></div><p>SA-IS only needs an ordered integer alphabet; it does not need to know whether the original symbols were characters, bytes, or something else. Reserving <code>0</code> for the sentinel makes <code>$</code> smaller than every real symbol.</p>
+<p>The S/L classification then translates almost directly from the definition:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">is_s</span> <span class="o">=</span> <span class="p">[</span><span class="kc">False</span><span class="p">]</span> <span class="o">*</span> <span class="n">n</span>
+</span></span><span class="line"><span class="cl"><span class="n">is_s</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">is_s</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">s</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="ow">or</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="n">s</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="n">s</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="ow">and</span> <span class="n">is_s</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">    <span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">is_lms</span><span class="p">(</span><span class="n">i</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">is_s</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">is_s</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+</span></span></code></pre></div><p>The equality case is exactly the overlapping-comparison idea above: when the first symbols are equal, the comparison has already been computed one position to the right.</p>
 <h1 id="why-bother-with-l-and-s">Why bother with L and S?</h1>
 <p>If we look at the suffix array with the L and S attached, we will find something interesting.</p>
 <table>
@@ -239,6 +271,23 @@ Determining that &lsquo;a$&rsquo; is L type is trivial, all we need to do is to 
 </tbody>
 </table>
 <p>Although we display that as a table, in code we will simply represent it as an array together with an auxillary array that tell us where the bucket starts and ends.</p>
+<p>L suffixes are inserted from the head of a bucket, while S suffixes are inserted from its tail:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">bucket_heads</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">    <span class="n">heads</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">alphabet_size</span>
+</span></span><span class="line"><span class="cl">    <span class="n">total</span> <span class="o">=</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">symbol</span><span class="p">,</span> <span class="n">count</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">counts</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="n">heads</span><span class="p">[</span><span class="n">symbol</span><span class="p">]</span> <span class="o">=</span> <span class="n">total</span>
+</span></span><span class="line"><span class="cl">        <span class="n">total</span> <span class="o">+=</span> <span class="n">count</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">heads</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">bucket_tails</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">    <span class="n">tails</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">alphabet_size</span>
+</span></span><span class="line"><span class="cl">    <span class="n">total</span> <span class="o">=</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">symbol</span><span class="p">,</span> <span class="n">count</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">counts</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="n">total</span> <span class="o">+=</span> <span class="n">count</span>
+</span></span><span class="line"><span class="cl">        <span class="n">tails</span><span class="p">[</span><span class="n">symbol</span><span class="p">]</span> <span class="o">=</span> <span class="n">total</span> <span class="o">-</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">tails</span>
+</span></span></code></pre></div><p>These functions return fresh arrays because the insertion pointers move during each pass.</p>
 <h1 id="sorting-the-l-type-suffixes-given-the-s-types-are-sorted">Sorting the L type suffixes given the S types are sorted</h1>
 <p>Suppose we have the S type suffixes sorted (i.e. they are placed in the right positions in the suffix array), we can easily get the fully sorted suffix array using this surprising algorithm.</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="cl">Scan the array from left to right
@@ -500,6 +549,36 @@ Determining that &lsquo;a$&rsquo; is L type is trivial, all we need to do is to 
 </li>
 </ol>
 <p>See, this is completely symmetric.</p>
+<p>The implementation packages the forward and backward passes into one function:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">induced_sort</span><span class="p">(</span><span class="n">lms_order</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">sa</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">n</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">tails</span> <span class="o">=</span> <span class="n">bucket_tails</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">pos</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">lms_order</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="n">symbol</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="n">pos</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">        <span class="n">sa</span><span class="p">[</span><span class="n">tails</span><span class="p">[</span><span class="n">symbol</span><span class="p">]]</span> <span class="o">=</span> <span class="n">pos</span>
+</span></span><span class="line"><span class="cl">        <span class="n">tails</span><span class="p">[</span><span class="n">symbol</span><span class="p">]</span> <span class="o">-=</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">heads</span> <span class="o">=</span> <span class="n">bucket_heads</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">slot</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="n">pos</span> <span class="o">=</span> <span class="n">sa</span><span class="p">[</span><span class="n">slot</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="n">pos</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">is_s</span><span class="p">[</span><span class="n">pos</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">predecessor</span> <span class="o">=</span> <span class="n">pos</span> <span class="o">-</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl">            <span class="n">symbol</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="n">predecessor</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">            <span class="n">sa</span><span class="p">[</span><span class="n">heads</span><span class="p">[</span><span class="n">symbol</span><span class="p">]]</span> <span class="o">=</span> <span class="n">predecessor</span>
+</span></span><span class="line"><span class="cl">            <span class="n">heads</span><span class="p">[</span><span class="n">symbol</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">tails</span> <span class="o">=</span> <span class="n">bucket_tails</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">slot</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="n">pos</span> <span class="o">=</span> <span class="n">sa</span><span class="p">[</span><span class="n">slot</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="n">pos</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">is_s</span><span class="p">[</span><span class="n">pos</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">predecessor</span> <span class="o">=</span> <span class="n">pos</span> <span class="o">-</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl">            <span class="n">symbol</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="n">predecessor</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">            <span class="n">sa</span><span class="p">[</span><span class="n">tails</span><span class="p">[</span><span class="n">symbol</span><span class="p">]]</span> <span class="o">=</span> <span class="n">predecessor</span>
+</span></span><span class="line"><span class="cl">            <span class="n">tails</span><span class="p">[</span><span class="n">symbol</span><span class="p">]</span> <span class="o">-=</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">sa</span>
+</span></span></code></pre></div><p>There are two calls to this function. The first starts with the LMS positions in text order and sorts the LMS substrings for naming. The final call starts with the LMS suffixes in their true sorted order and induces the complete suffix array.</p>
 <h1 id="sorting-the-lms-suffixes">Sorting the LMS suffixes</h1>
 <p>The problem of producing the suffix array is now reduced to sorting the LMS suffixes. We have a good news, because a LMS suffix must have a L right next to a S, at most half of the suffixes can be LMS.</p>
 <p>Suppose we can recursively solve the problem of sorting the LMS suffixes, then we are done. Because \( T(n) = T(n/2) + O(n) \implies T(n) = O(n) \).</p>
@@ -515,12 +594,32 @@ Determining that &lsquo;a$&rsquo; is L type is trivial, all we need to do is to 
 </span></span><span class="line"><span class="cl">q$
 </span></span><span class="line"><span class="cl">$
 </span></span></code></pre></div><p>And therefore, what we are really solving is the suffix array problem for the string <code>pq$</code>.</p>
-<p>To do this trick, we need to know the substring <code>an</code> should map to <code>p</code> and the substring <code>ana</code> should map to <code>q</code>. But how exactly do we find this renaming scheme?</p>
+<p>For <code>banana$</code>, the LMS substrings are <code>ana</code>, <code>ana$</code>, and <code>$</code>. To do the recursion trick, we need to assign integer names that preserve their lexicographic order. But how exactly do we find this renaming scheme?</p>
 <h1 id="renaming-the-strings">Renaming the strings</h1>
-<p>The strings to be renamed has a very special property. It starts with a LMS character, and ends before the next. We will call these strings LMS substrings. Finding the set of all LMS substrings is not difficult, but what should we rename them to?</p>
+<p>The strings to be renamed have a very special property. Each starts at an LMS character and ends <strong>at the next LMS character, including that final character</strong>. We will call these strings LMS substrings. Finding the set of all LMS substrings is not difficult, but what should we rename them to?</p>
 <p>The naive approach is to map each LMS substring to a different name, but it won&rsquo;t work since we basically forgot the original problem and solved the trivial problem of finding the suffix array of <code>123456$</code> with all distinct names. That won&rsquo;t solve our problem.</p>
 <p>This tell us the renaming must respect the original problem. In particular, it must be mapped to alphabets where it respect the comparison of the LMS substrings.</p>
 <p>If we could sort the LMS substrings and do the obvious renaming, then we can build the new string for the recursive call!</p>
+<p>The exact comparison is:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">same_lms_substring</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">offset</span> <span class="o">=</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">a_pos</span> <span class="o">=</span> <span class="n">a</span> <span class="o">+</span> <span class="n">offset</span>
+</span></span><span class="line"><span class="cl">        <span class="n">b_pos</span> <span class="o">=</span> <span class="n">b</span> <span class="o">+</span> <span class="n">offset</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="n">s</span><span class="p">[</span><span class="n">a_pos</span><span class="p">]</span> <span class="o">!=</span> <span class="n">s</span><span class="p">[</span><span class="n">b_pos</span><span class="p">]</span> <span class="ow">or</span> <span class="n">is_s</span><span class="p">[</span><span class="n">a_pos</span><span class="p">]</span> <span class="o">!=</span> <span class="n">is_s</span><span class="p">[</span><span class="n">b_pos</span><span class="p">]:</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="kc">False</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="n">offset</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">a_at_end</span> <span class="o">=</span> <span class="n">is_lms</span><span class="p">(</span><span class="n">a_pos</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="n">b_at_end</span> <span class="o">=</span> <span class="n">is_lms</span><span class="p">(</span><span class="n">b_pos</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="n">a_at_end</span> <span class="ow">or</span> <span class="n">b_at_end</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="k">return</span> <span class="n">a_at_end</span> <span class="ow">and</span> <span class="n">b_at_end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">offset</span> <span class="o">+=</span> <span class="mi">1</span>
+</span></span></code></pre></div><p>We compare both the symbol and its S/L type until reaching the next LMS position on both sides. Including the ending LMS character is important: it makes the boundary part of the comparison.</p>
 <h1 id="sorting-the-lms-substrings">Sorting the LMS substrings</h1>
 <p>Now we are back to square 1. If we were to sort the LMS substrings, we are still going to have \( O(n^2 \log n) \) time, we could have at most \( \frac{n}{2} \) LMS substrings!</p>
 <p>Finally we are getting to the crux of the SA-IS paper. The author used the induction sort again for this purpose!</p>
@@ -531,7 +630,7 @@ Sort the S suffixes</p>
 <h1 id="lms-prefix">LMS Prefix</h1>
 <p>Instead of thinking about sorting the suffixes, we can also think of the problem as sorting the LMS prefixes. Earlier, when we were thinking about sorting the suffix array. The suffix array content is an integer that give us the index of where the suffix start, and the suffix always ends at the end of the string. Instead of that, we can think of that string ends at the next earliest LMS character. We call these strings the LMS prefixes.</p>
 <p>Note that LMS prefixes are different from LMS substrings. LMS prefixes are required to end at the LMS character, but it can start anywhere on or after the previous LMS character. So we can still have L type LMS prefix or S type LMS prefix depending on the first character.</p>
-<p>On the other hand, LMS Substring must start from the LMS character, and must stop exactly before the next LMS character.</p>
+<p>On the other hand, an LMS substring must start from an LMS character and include the next LMS character.</p>
 <p>The set of LMS suffixes are all the type S LMS prefixes of length 1.</p>
 <p>Now we wanted to prove, in the L pass, we will sort all the L type LMS prefixes. Bring back our good old proof:</p>
 <ol>
@@ -598,9 +697,405 @@ If both \( \alpha \) and \( \beta \) are S type prefixes, then being a S type pr
 </ol>
 <p>Step 5 is getting in our way, in general, we cannot claim \( \alpha \) or \( \beta \) are not empty string, and that is not great for the proof, so I relaxed the goal of the proof. I would like to show that all length &gt; 1 LMS prefixes are sorted. Now step 5 is obvious, if it is length 1 so that \( \alpha \) or \( \beta \) are empty strings, we don&rsquo;t care that case.</p>
 <h1 id="lms-substrings-again">LMS Substrings again</h1>
-<p>Now we have the LMS prefixes sorted except the length 1 ones. It turns out to be okay because the LMS substrings are those LMS prefix with one less character (in particular, the LMS substring do not contain the last LMS character). So we can regard this as a sorted list of LMS substrings. A linear scan of this list can be used to determine the name of the substrings.</p>
+<p>Now we have the LMS prefixes sorted except the length 1 ones. The induced order lets us extract the LMS positions in sorted order. A linear scan of this list can then determine the names of the LMS substrings.</p>
+<p>First, retain only LMS positions from the result of the initial induced sort:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">first_sa</span> <span class="o">=</span> <span class="n">induced_sort</span><span class="p">(</span><span class="n">lms_positions</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">sorted_lms</span> <span class="o">=</span> <span class="p">[</span><span class="n">pos</span> <span class="k">for</span> <span class="n">pos</span> <span class="ow">in</span> <span class="n">first_sa</span> <span class="k">if</span> <span class="n">is_lms</span><span class="p">(</span><span class="n">pos</span><span class="p">)]</span>
+</span></span></code></pre></div><p>Then assign the same integer to equal adjacent LMS substrings and increment it whenever the substring changes:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">name_at_position</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">n</span>
+</span></span><span class="line"><span class="cl"><span class="n">name</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+</span></span><span class="line"><span class="cl"><span class="n">previous</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">for</span> <span class="n">pos</span> <span class="ow">in</span> <span class="n">sorted_lms</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">previous</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">same_lms_substring</span><span class="p">(</span><span class="n">previous</span><span class="p">,</span> <span class="n">pos</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="n">name</span> <span class="o">+=</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl">    <span class="n">name_at_position</span><span class="p">[</span><span class="n">pos</span><span class="p">]</span> <span class="o">=</span> <span class="n">name</span>
+</span></span><span class="line"><span class="cl">    <span class="n">previous</span> <span class="o">=</span> <span class="n">pos</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">reduced</span> <span class="o">=</span> <span class="p">[</span><span class="n">name_at_position</span><span class="p">[</span><span class="n">pos</span><span class="p">]</span> <span class="k">for</span> <span class="n">pos</span> <span class="ow">in</span> <span class="n">lms_positions</span><span class="p">]</span>
+</span></span></code></pre></div><p>There are two orders here that are easy to mix up:</p>
+<ul>
+<li><code>sorted_lms</code> is lexicographic order. We use it to assign names.</li>
+<li><code>lms_positions</code> is text order. We use it to construct the reduced string.</li>
+</ul>
+<p>The reduced string must describe the original text from left to right. Its suffix array will tell us the lexicographic order of the original LMS suffixes.</p>
+<p>If every LMS substring has a distinct name, those names are already ranks and can be inverted directly:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">if</span> <span class="n">number_of_names</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">lms_positions</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">ordered_lms</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">lms_positions</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">text_order_index</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">reduced</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="n">ordered_lms</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">lms_positions</span><span class="p">[</span><span class="n">text_order_index</span><span class="p">]</span>
+</span></span></code></pre></div><p>Otherwise, recursively construct the suffix array of the reduced string:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">else</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="n">reduced_sa</span> <span class="o">=</span> <span class="n">_sais</span><span class="p">(</span><span class="n">reduced</span><span class="p">,</span> <span class="n">number_of_names</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">ordered_lms</span> <span class="o">=</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">        <span class="n">lms_positions</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">        <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="n">reduced_sa</span>
+</span></span><span class="line"><span class="cl">    <span class="p">]</span>
+</span></span></code></pre></div><p>The reduced string ends in the sentinel&rsquo;s name, <code>0</code>, so it satisfies the same input contract as the original encoded string. It contains at most half as many symbols, giving</p>
+<p>$$ T(n) = T(n/2) + O(n) = O(n). $$</p>
+<p>One final induced sort from <code>ordered_lms</code> produces the complete suffix array.</p>
 <p>This concludes the theory of the SA-IS algorithm.</p>
+<h1 id="tracing-the-algorithm">Tracing the algorithm</h1>
+<p>The command-line program traces by default, displaying each array vertically with one row per position so that the output has the same shape as the tables in this post. Pass <code>--no-trace</code> when only the final suffix array is needed.</p>
+<ol>
+<li>The encoded string and its S, L, and LMS classifications.</li>
+<li>The suffix array after LMS placement.</li>
+<li>The suffix array after L induction.</li>
+<li>The suffix array after S induction.</li>
+<li>The sorted LMS positions, assigned names, and reduced string.</li>
+<li>Any recursive call and the recovered LMS order.</li>
+<li>The three stages of the final induced sort.</li>
+</ol>
+<p>For example:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="gp">$</span> python sais.py banana --verify
+</span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="go">SA-IS call at recursion depth 0
+</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="go">Classify suffixes
+</span></span></span><span class="line"><span class="cl"><span class="go">| position | symbol | type |
+</span></span></span><span class="line"><span class="cl"><span class="go">|----------|--------|------|
+</span></span></span><span class="line"><span class="cl"><span class="go">| 0        | 2      | L    |
+</span></span></span><span class="line"><span class="cl"><span class="go">| 1        | 1      | LMS  |
+</span></span></span><span class="line"><span class="cl"><span class="go">| 2        | 3      | L    |
+</span></span></span><span class="line"><span class="cl"><span class="go">| 3        | 1      | LMS  |
+</span></span></span><span class="line"><span class="cl"><span class="go">| 4        | 3      | L    |
+</span></span></span><span class="line"><span class="cl"><span class="go">| 5        | 1      | L    |
+</span></span></span><span class="line"><span class="cl"><span class="go">| 6        | 0      | LMS  |
+</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="go">...
+</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="go">Suffix array: [5, 3, 1, 0, 4, 2]
+</span></span></span><span class="line"><span class="cl"><span class="go">   5: a
+</span></span></span><span class="line"><span class="cl"><span class="go">   3: ana
+</span></span></span><span class="line"><span class="cl"><span class="go">   1: anana
+</span></span></span><span class="line"><span class="cl"><span class="go">   0: banana
+</span></span></span><span class="line"><span class="cl"><span class="go">   4: na
+</span></span></span><span class="line"><span class="cl"><span class="go">   2: nana
+</span></span></span></code></pre></div><p>The <code>--verify</code> option compares the result with direct suffix sorting for small inputs. That direct method is slow, so it is a useful correctness check during development rather than part of SA-IS itself.</p>
+<h1 id="complete-implementation">Complete implementation</h1>
+<p>The fragments above are shown beside the ideas they implement. Here is the complete runnable program in one place:</p>
+<ul>
+<li><a href="/sais.py">Download <code>sais.py</code></a></li>
+<li>Run <code>python sais.py banana --verify</code> to see every induced-sorting pass.</li>
+<li>Run <code>python sais.py banana --no-trace</code> for just the suffix array.</li>
+</ul>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="s2">&#34;&#34;&#34;A traceable implementation of the SA-IS suffix-array algorithm.&#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">argparse</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Sequence</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">suffix_array</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="o">*</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">trace</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">verify</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">verify_limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;&#34;&#34;Return the starting positions of text&#39;s suffixes in sorted order.&#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">alphabet</span> <span class="o">=</span> <span class="p">{</span><span class="n">ch</span><span class="p">:</span> <span class="n">rank</span> <span class="o">+</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">rank</span><span class="p">,</span> <span class="n">ch</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">text</span><span class="p">)))}</span>
+</span></span><span class="line"><span class="cl">    <span class="n">encoded</span> <span class="o">=</span> <span class="p">[</span><span class="n">alphabet</span><span class="p">[</span><span class="n">ch</span><span class="p">]</span> <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="n">text</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">sa</span> <span class="o">=</span> <span class="n">_sais</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="n">encoded</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">alphabet_size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">alphabet</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">trace</span><span class="o">=</span><span class="n">trace</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">verify</span><span class="o">=</span><span class="n">verify</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">verify_limit</span><span class="o">=</span><span class="n">verify_limit</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">depth</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1"># The sentinel-only suffix is always first and is not part of text.</span>
+</span></span><span class="line"><span class="cl">    <span class="k">assert</span> <span class="n">sa</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">sa</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">_sais</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="n">s</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+</span></span><span class="line"><span class="cl">    <span class="n">alphabet_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="o">*</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">trace</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">verify</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">verify_limit</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">depth</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+</span></span><span class="line"><span class="cl">    <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">indent</span> <span class="o">=</span> <span class="s2">&#34;  &#34;</span> <span class="o">*</span> <span class="n">depth</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">assert</span> <span class="n">n</span> <span class="o">&gt;=</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl">    <span class="k">assert</span> <span class="n">s</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl">    <span class="k">assert</span> <span class="n">s</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl">    <span class="k">assert</span> <span class="nb">all</span><span class="p">(</span><span class="mi">0</span> <span class="o">&lt;</span> <span class="n">symbol</span> <span class="o">&lt;</span> <span class="n">alphabet_size</span> <span class="k">for</span> <span class="n">symbol</span> <span class="ow">in</span> <span class="n">s</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">trace_line</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="ow">not</span> <span class="n">trace</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;</span><span class="se">\n</span><span class="si">{</span><span class="n">indent</span><span class="si">}{</span><span class="n">text</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">show_table</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="n">title</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="o">*</span><span class="n">columns</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">object</span><span class="p">]],</span>
+</span></span><span class="line"><span class="cl">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="ow">not</span> <span class="n">trace</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">lengths</span> <span class="o">=</span> <span class="p">{</span><span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">values</span> <span class="ow">in</span> <span class="n">columns</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">lengths</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">text_columns</span> <span class="o">=</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">            <span class="p">(</span><span class="n">heading</span><span class="p">,</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">values</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">            <span class="k">for</span> <span class="n">heading</span><span class="p">,</span> <span class="n">values</span> <span class="ow">in</span> <span class="n">columns</span>
+</span></span><span class="line"><span class="cl">        <span class="p">]</span>
+</span></span><span class="line"><span class="cl">        <span class="n">widths</span> <span class="o">=</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">            <span class="nb">max</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">heading</span><span class="p">),</span> <span class="o">*</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">values</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">            <span class="k">for</span> <span class="n">heading</span><span class="p">,</span> <span class="n">values</span> <span class="ow">in</span> <span class="n">text_columns</span>
+</span></span><span class="line"><span class="cl">        <span class="p">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;</span><span class="se">\n</span><span class="si">{</span><span class="n">indent</span><span class="si">}{</span><span class="n">title</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">print</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">            <span class="sa">f</span><span class="s2">&#34;</span><span class="si">{</span><span class="n">indent</span><span class="si">}</span><span class="s2">| &#34;</span>
+</span></span><span class="line"><span class="cl">            <span class="o">+</span> <span class="s2">&#34; | &#34;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">                <span class="sa">f</span><span class="s2">&#34;</span><span class="si">{</span><span class="n">heading</span><span class="si">:</span><span class="s2">&lt;</span><span class="si">{</span><span class="n">width</span><span class="si">}}</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl">                <span class="k">for</span> <span class="p">(</span><span class="n">heading</span><span class="p">,</span> <span class="n">_</span><span class="p">),</span> <span class="n">width</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">text_columns</span><span class="p">,</span> <span class="n">widths</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="o">+</span> <span class="s2">&#34; |&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">print</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">            <span class="sa">f</span><span class="s2">&#34;</span><span class="si">{</span><span class="n">indent</span><span class="si">}</span><span class="s2">|-&#34;</span>
+</span></span><span class="line"><span class="cl">            <span class="o">+</span> <span class="s2">&#34;-|-&#34;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&#34;-&#34;</span> <span class="o">*</span> <span class="n">width</span> <span class="k">for</span> <span class="n">width</span> <span class="ow">in</span> <span class="n">widths</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="o">+</span> <span class="s2">&#34;-|&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">row_count</span> <span class="o">=</span> <span class="n">lengths</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="k">for</span> <span class="n">row_index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">row_count</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">            <span class="nb">print</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">                <span class="sa">f</span><span class="s2">&#34;</span><span class="si">{</span><span class="n">indent</span><span class="si">}</span><span class="s2">| &#34;</span>
+</span></span><span class="line"><span class="cl">                <span class="o">+</span> <span class="s2">&#34; | &#34;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">                    <span class="sa">f</span><span class="s2">&#34;</span><span class="si">{</span><span class="n">values</span><span class="p">[</span><span class="n">row_index</span><span class="p">]</span><span class="si">:</span><span class="s2">&lt;</span><span class="si">{</span><span class="n">width</span><span class="si">}}</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl">                    <span class="k">for</span> <span class="p">(</span><span class="n">_</span><span class="p">,</span> <span class="n">values</span><span class="p">),</span> <span class="n">width</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">text_columns</span><span class="p">,</span> <span class="n">widths</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                <span class="p">)</span>
+</span></span><span class="line"><span class="cl">                <span class="o">+</span> <span class="s2">&#34; |&#34;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">show_sa</span><span class="p">(</span><span class="n">title</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">sa</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">suffixes</span> <span class="o">=</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">            <span class="s2">&#34;·&#34;</span> <span class="k">if</span> <span class="n">pos</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span> <span class="k">else</span> <span class="s2">&#34;&#34;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">s</span><span class="p">[</span><span class="n">pos</span><span class="p">:]))</span>
+</span></span><span class="line"><span class="cl">            <span class="k">for</span> <span class="n">pos</span> <span class="ow">in</span> <span class="n">sa</span>
+</span></span><span class="line"><span class="cl">        <span class="p">]</span>
+</span></span><span class="line"><span class="cl">        <span class="n">show_table</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">            <span class="n">title</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="p">(</span><span class="s2">&#34;slot&#34;</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">))),</span>
+</span></span><span class="line"><span class="cl">            <span class="p">(</span><span class="s2">&#34;suffix start&#34;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&#34;·&#34;</span> <span class="k">if</span> <span class="n">pos</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span> <span class="k">else</span> <span class="n">pos</span> <span class="k">for</span> <span class="n">pos</span> <span class="ow">in</span> <span class="n">sa</span><span class="p">]),</span>
+</span></span><span class="line"><span class="cl">            <span class="p">(</span><span class="s2">&#34;suffix&#34;</span><span class="p">,</span> <span class="n">suffixes</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">        <span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">show_sa</span><span class="p">(</span><span class="s2">&#34;Base case&#34;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1"># S-type means this suffix is smaller than the suffix immediately after it.</span>
+</span></span><span class="line"><span class="cl">    <span class="n">is_s</span> <span class="o">=</span> <span class="p">[</span><span class="kc">False</span><span class="p">]</span> <span class="o">*</span> <span class="n">n</span>
+</span></span><span class="line"><span class="cl">    <span class="n">is_s</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="n">is_s</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">s</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="ow">or</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">            <span class="n">s</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="n">s</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="ow">and</span> <span class="n">is_s</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">        <span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">is_lms</span><span class="p">(</span><span class="n">i</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">is_s</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">is_s</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">lms_positions</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span> <span class="k">if</span> <span class="n">is_lms</span><span class="p">(</span><span class="n">i</span><span class="p">)]</span>
+</span></span><span class="line"><span class="cl">    <span class="n">types</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&#34;LMS&#34;</span> <span class="k">if</span> <span class="n">is_lms</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">else</span> <span class="s2">&#34;S&#34;</span> <span class="k">if</span> <span class="n">is_s</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">else</span> <span class="s2">&#34;L&#34;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">)]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">trace_line</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;SA-IS call at recursion depth </span><span class="si">{</span><span class="n">depth</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">show_table</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;Classify suffixes&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="p">(</span><span class="s2">&#34;position&#34;</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">))),</span>
+</span></span><span class="line"><span class="cl">        <span class="p">(</span><span class="s2">&#34;symbol&#34;</span><span class="p">,</span> <span class="n">s</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">        <span class="p">(</span><span class="s2">&#34;type&#34;</span><span class="p">,</span> <span class="n">types</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">    <span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">counts</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">alphabet_size</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">symbol</span> <span class="ow">in</span> <span class="n">s</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">counts</span><span class="p">[</span><span class="n">symbol</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">bucket_heads</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">heads</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">alphabet_size</span>
+</span></span><span class="line"><span class="cl">        <span class="n">total</span> <span class="o">=</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl">        <span class="k">for</span> <span class="n">symbol</span><span class="p">,</span> <span class="n">count</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">counts</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">            <span class="n">heads</span><span class="p">[</span><span class="n">symbol</span><span class="p">]</span> <span class="o">=</span> <span class="n">total</span>
+</span></span><span class="line"><span class="cl">            <span class="n">total</span> <span class="o">+=</span> <span class="n">count</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">heads</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">bucket_tails</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">tails</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">alphabet_size</span>
+</span></span><span class="line"><span class="cl">        <span class="n">total</span> <span class="o">=</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl">        <span class="k">for</span> <span class="n">symbol</span><span class="p">,</span> <span class="n">count</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">counts</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">            <span class="n">total</span> <span class="o">+=</span> <span class="n">count</span>
+</span></span><span class="line"><span class="cl">            <span class="n">tails</span><span class="p">[</span><span class="n">symbol</span><span class="p">]</span> <span class="o">=</span> <span class="n">total</span> <span class="o">-</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">tails</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">induced_sort</span><span class="p">(</span><span class="n">lms_order</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">phase</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">sa</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">n</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1"># LMS suffixes are S-type, so seed them at their bucket tails.</span>
+</span></span><span class="line"><span class="cl">        <span class="n">tails</span> <span class="o">=</span> <span class="n">bucket_tails</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="k">for</span> <span class="n">pos</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">lms_order</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">            <span class="n">symbol</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="n">pos</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">            <span class="n">sa</span><span class="p">[</span><span class="n">tails</span><span class="p">[</span><span class="n">symbol</span><span class="p">]]</span> <span class="o">=</span> <span class="n">pos</span>
+</span></span><span class="line"><span class="cl">            <span class="n">tails</span><span class="p">[</span><span class="n">symbol</span><span class="p">]</span> <span class="o">-=</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl">        <span class="n">show_sa</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;</span><span class="si">{</span><span class="n">phase</span><span class="si">}</span><span class="s2">: place LMS suffixes&#34;</span><span class="p">,</span> <span class="n">sa</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1"># Scanning left-to-right discovers L-type predecessors in sorted order.</span>
+</span></span><span class="line"><span class="cl">        <span class="n">heads</span> <span class="o">=</span> <span class="n">bucket_heads</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="k">for</span> <span class="n">slot</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">            <span class="n">pos</span> <span class="o">=</span> <span class="n">sa</span><span class="p">[</span><span class="n">slot</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="n">pos</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="k">continue</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="n">predecessor</span> <span class="o">=</span> <span class="n">pos</span> <span class="o">-</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="ow">not</span> <span class="n">is_s</span><span class="p">[</span><span class="n">predecessor</span><span class="p">]:</span>
+</span></span><span class="line"><span class="cl">                <span class="n">symbol</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="n">predecessor</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">                <span class="n">sa</span><span class="p">[</span><span class="n">heads</span><span class="p">[</span><span class="n">symbol</span><span class="p">]]</span> <span class="o">=</span> <span class="n">predecessor</span>
+</span></span><span class="line"><span class="cl">                <span class="n">heads</span><span class="p">[</span><span class="n">symbol</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl">        <span class="n">show_sa</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;</span><span class="si">{</span><span class="n">phase</span><span class="si">}</span><span class="s2">: induce L suffixes&#34;</span><span class="p">,</span> <span class="n">sa</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1"># The symmetric right-to-left pass discovers S-type predecessors.</span>
+</span></span><span class="line"><span class="cl">        <span class="n">tails</span> <span class="o">=</span> <span class="n">bucket_tails</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="k">for</span> <span class="n">slot</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">            <span class="n">pos</span> <span class="o">=</span> <span class="n">sa</span><span class="p">[</span><span class="n">slot</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="n">pos</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="k">continue</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="n">predecessor</span> <span class="o">=</span> <span class="n">pos</span> <span class="o">-</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="n">is_s</span><span class="p">[</span><span class="n">predecessor</span><span class="p">]:</span>
+</span></span><span class="line"><span class="cl">                <span class="n">symbol</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="n">predecessor</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">                <span class="n">sa</span><span class="p">[</span><span class="n">tails</span><span class="p">[</span><span class="n">symbol</span><span class="p">]]</span> <span class="o">=</span> <span class="n">predecessor</span>
+</span></span><span class="line"><span class="cl">                <span class="n">tails</span><span class="p">[</span><span class="n">symbol</span><span class="p">]</span> <span class="o">-=</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl">        <span class="n">show_sa</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;</span><span class="si">{</span><span class="n">phase</span><span class="si">}</span><span class="s2">: induce S suffixes&#34;</span><span class="p">,</span> <span class="n">sa</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">sa</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">first_sa</span> <span class="o">=</span> <span class="n">induced_sort</span><span class="p">(</span><span class="n">lms_positions</span><span class="p">,</span> <span class="s2">&#34;First induced sort&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">sorted_lms</span> <span class="o">=</span> <span class="p">[</span><span class="n">pos</span> <span class="k">for</span> <span class="n">pos</span> <span class="ow">in</span> <span class="n">first_sa</span> <span class="k">if</span> <span class="n">is_lms</span><span class="p">(</span><span class="n">pos</span><span class="p">)]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">same_lms_substring</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;&#34;&#34;Compare through, and including, the next LMS position.&#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">offset</span> <span class="o">=</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">a_pos</span> <span class="o">=</span> <span class="n">a</span> <span class="o">+</span> <span class="n">offset</span>
+</span></span><span class="line"><span class="cl">            <span class="n">b_pos</span> <span class="o">=</span> <span class="n">b</span> <span class="o">+</span> <span class="n">offset</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="n">s</span><span class="p">[</span><span class="n">a_pos</span><span class="p">]</span> <span class="o">!=</span> <span class="n">s</span><span class="p">[</span><span class="n">b_pos</span><span class="p">]</span> <span class="ow">or</span> <span class="n">is_s</span><span class="p">[</span><span class="n">a_pos</span><span class="p">]</span> <span class="o">!=</span> <span class="n">is_s</span><span class="p">[</span><span class="n">b_pos</span><span class="p">]:</span>
+</span></span><span class="line"><span class="cl">                <span class="k">return</span> <span class="kc">False</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="n">offset</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="n">a_at_end</span> <span class="o">=</span> <span class="n">is_lms</span><span class="p">(</span><span class="n">a_pos</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                <span class="n">b_at_end</span> <span class="o">=</span> <span class="n">is_lms</span><span class="p">(</span><span class="n">b_pos</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">                <span class="k">if</span> <span class="n">a_at_end</span> <span class="ow">or</span> <span class="n">b_at_end</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                    <span class="k">return</span> <span class="n">a_at_end</span> <span class="ow">and</span> <span class="n">b_at_end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="n">offset</span> <span class="o">+=</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1"># Equal adjacent LMS substrings receive the same integer name.</span>
+</span></span><span class="line"><span class="cl">    <span class="n">name_at_position</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">n</span>
+</span></span><span class="line"><span class="cl">    <span class="n">name</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+</span></span><span class="line"><span class="cl">    <span class="n">previous</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">pos</span> <span class="ow">in</span> <span class="n">sorted_lms</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="n">previous</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">same_lms_substring</span><span class="p">(</span><span class="n">previous</span><span class="p">,</span> <span class="n">pos</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">            <span class="n">name</span> <span class="o">+=</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl">        <span class="n">name_at_position</span><span class="p">[</span><span class="n">pos</span><span class="p">]</span> <span class="o">=</span> <span class="n">name</span>
+</span></span><span class="line"><span class="cl">        <span class="n">previous</span> <span class="o">=</span> <span class="n">pos</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1"># Reading names in text order creates the smaller recursive string.</span>
+</span></span><span class="line"><span class="cl">    <span class="n">reduced</span> <span class="o">=</span> <span class="p">[</span><span class="n">name_at_position</span><span class="p">[</span><span class="n">pos</span><span class="p">]</span> <span class="k">for</span> <span class="n">pos</span> <span class="ow">in</span> <span class="n">lms_positions</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">    <span class="n">number_of_names</span> <span class="o">=</span> <span class="n">name</span> <span class="o">+</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">show_table</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;Name LMS substrings in sorted order&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="p">(</span><span class="s2">&#34;rank&#34;</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sorted_lms</span><span class="p">)))),</span>
+</span></span><span class="line"><span class="cl">        <span class="p">(</span><span class="s2">&#34;LMS position&#34;</span><span class="p">,</span> <span class="n">sorted_lms</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">        <span class="p">(</span><span class="s2">&#34;name&#34;</span><span class="p">,</span> <span class="p">[</span><span class="n">name_at_position</span><span class="p">[</span><span class="n">pos</span><span class="p">]</span> <span class="k">for</span> <span class="n">pos</span> <span class="ow">in</span> <span class="n">sorted_lms</span><span class="p">]),</span>
+</span></span><span class="line"><span class="cl">    <span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">show_table</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;Build the reduced string in text order&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="p">(</span><span class="s2">&#34;text index&#34;</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">lms_positions</span><span class="p">)))),</span>
+</span></span><span class="line"><span class="cl">        <span class="p">(</span><span class="s2">&#34;LMS position&#34;</span><span class="p">,</span> <span class="n">lms_positions</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">        <span class="p">(</span><span class="s2">&#34;name&#34;</span><span class="p">,</span> <span class="n">reduced</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">    <span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">number_of_names</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">lms_positions</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="c1"># Distinct names are already ranks, so inversion gives sorted LMS order.</span>
+</span></span><span class="line"><span class="cl">        <span class="n">ordered_lms</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">lms_positions</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">for</span> <span class="n">text_order_index</span><span class="p">,</span> <span class="n">lms_name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">reduced</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">            <span class="n">ordered_lms</span><span class="p">[</span><span class="n">lms_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">lms_positions</span><span class="p">[</span><span class="n">text_order_index</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">        <span class="n">show_table</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">            <span class="s2">&#34;All LMS names are distinct&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="p">(</span><span class="s2">&#34;rank&#34;</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ordered_lms</span><span class="p">)))),</span>
+</span></span><span class="line"><span class="cl">            <span class="p">(</span><span class="s2">&#34;LMS position&#34;</span><span class="p">,</span> <span class="n">ordered_lms</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">        <span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">else</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">reduced_sa</span> <span class="o">=</span> <span class="n">_sais</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">            <span class="n">reduced</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="n">alphabet_size</span><span class="o">=</span><span class="n">number_of_names</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="n">trace</span><span class="o">=</span><span class="n">trace</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="n">verify</span><span class="o">=</span><span class="n">verify</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="n">verify_limit</span><span class="o">=</span><span class="n">verify_limit</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="n">depth</span><span class="o">=</span><span class="n">depth</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">ordered_lms</span> <span class="o">=</span> <span class="p">[</span><span class="n">lms_positions</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="n">reduced_sa</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">        <span class="n">show_table</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">            <span class="s2">&#34;Recover LMS order from recursive suffix array&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="p">(</span><span class="s2">&#34;rank&#34;</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ordered_lms</span><span class="p">)))),</span>
+</span></span><span class="line"><span class="cl">            <span class="p">(</span><span class="s2">&#34;reduced suffix&#34;</span><span class="p">,</span> <span class="n">reduced_sa</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">            <span class="p">(</span><span class="s2">&#34;LMS position&#34;</span><span class="p">,</span> <span class="n">ordered_lms</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">        <span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">final_sa</span> <span class="o">=</span> <span class="n">induced_sort</span><span class="p">(</span><span class="n">ordered_lms</span><span class="p">,</span> <span class="s2">&#34;Final induced sort&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">verify</span> <span class="ow">and</span> <span class="n">n</span> <span class="o">&lt;=</span> <span class="n">verify_limit</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">expected</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">pos</span><span class="p">:</span> <span class="n">s</span><span class="p">[</span><span class="n">pos</span><span class="p">:])</span>
+</span></span><span class="line"><span class="cl">        <span class="k">assert</span> <span class="n">final_sa</span> <span class="o">==</span> <span class="n">expected</span><span class="p">,</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">            <span class="sa">f</span><span class="s2">&#34;SA-IS result differs from direct sorting:</span><span class="se">\n</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl">            <span class="sa">f</span><span class="s2">&#34;actual:   </span><span class="si">{</span><span class="n">final_sa</span><span class="si">}</span><span class="se">\n</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl">            <span class="sa">f</span><span class="s2">&#34;expected: </span><span class="si">{</span><span class="n">expected</span><span class="si">}</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">final_sa</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">main</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="vm">__doc__</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&#34;text&#34;</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="s2">&#34;?&#34;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&#34;banana&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;--trace&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">action</span><span class="o">=</span><span class="n">argparse</span><span class="o">.</span><span class="n">BooleanOptionalAction</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&#34;--verify&#34;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&#34;store_true&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">sa</span> <span class="o">=</span> <span class="n">suffix_array</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">text</span><span class="p">,</span> <span class="n">trace</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">trace</span><span class="p">,</span> <span class="n">verify</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">verify</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;</span><span class="se">\n</span><span class="s2">Suffix array: </span><span class="si">{</span><span class="n">sa</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">pos</span> <span class="ow">in</span> <span class="n">sa</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;</span><span class="si">{</span><span class="n">pos</span><span class="si">:</span><span class="s2">&gt;4</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">text</span><span class="p">[</span><span class="n">pos</span><span class="p">:]</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&#34;__main__&#34;</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="n">main</span><span class="p">()</span>
+</span></span></code></pre></div>
+<h1 id="reference">Reference</h1>
+<p>Ge Nong, Sen Zhang, and Wai Hong Chan, <a href="https://doi.org/10.1109/DCC.2009.12"><em>Linear Suffix Array Construction by Almost Pure Induced-Sorting</em></a>, Data Compression Conference, 2009, pp. 193–202.</p>
 
+</article>
 
         </div><p class="footer text-center">Copyright (c) 2026 Andrew Au</p><script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
@@ -663,33 +1158,215 @@ If both \( \alpha \) and \( \beta \) are S type prefixes, then being a S type pr
     xhr.send();
   }
 
-  function onSearchButtonClicked(e) {
-    e.preventDefault();
-    var query = $("#queryTextField").val();
-    var terms = query.split(' ');
-    
-    var result = {};
-    for (var i = 0; i < terms.length; ++i) {
-      var term = terms[i].toLowerCase();
-      if (term in index.Terms)
-      {
-        for (i = 0; i < index.Terms[term].length; i += 2) {
-          var doc = index.Terms[term][i];
-          var count = index.Terms[term][i + 1];
-          if (doc in result) {
-            result[doc] += count;
-          } else {
-            result[doc] = count;
+  function levenshteinDistance(left, right) {
+    var previous = Array.from(
+      { length: right.length + 1 },
+      (_, index) => index
+    );
+
+    for (var leftIndex = 0; leftIndex < left.length; leftIndex++) {
+      var current = [leftIndex + 1];
+
+      for (var rightIndex = 0; rightIndex < right.length; rightIndex++) {
+        var replacementCost = left[leftIndex] === right[rightIndex] ? 0 : 1;
+        current.push(Math.min(
+          current[rightIndex] + 1,
+          previous[rightIndex + 1] + 1,
+          previous[rightIndex] + replacementCost
+        ));
+      }
+
+      previous = current;
+    }
+
+    return previous[right.length];
+  }
+
+  class BkTreeNode {
+    constructor(word) {
+      this.word = word;
+      this.children = new Map();
+    }
+  }
+
+  class BkTree {
+    constructor(words) {
+      this.root = null;
+
+      for (const word of words) {
+        this.insert(word);
+      }
+    }
+
+    insert(word) {
+      if (this.root === null) {
+        this.root = new BkTreeNode(word);
+        return;
+      }
+
+      var current = this.root;
+
+      while (true) {
+        var distance = levenshteinDistance(word, current.word);
+        var child = current.children.get(distance);
+
+        if (child === undefined) {
+          current.children.set(distance, new BkTreeNode(word));
+          return;
+        }
+
+        current = child;
+      }
+    }
+
+    query(word, maximumDistance) {
+      if (this.root === null) {
+        return [];
+      }
+
+      var results = [];
+      var pending = [this.root];
+
+      while (pending.length > 0) {
+        var node = pending.pop();
+        var distance = levenshteinDistance(word, node.word);
+
+        if (distance <= maximumDistance) {
+          results.push({ word: node.word, distance: distance });
+        }
+
+        var minimumChildDistance = distance - maximumDistance;
+        var maximumChildDistance = distance + maximumDistance;
+
+        for (const [childDistance, child] of node.children) {
+          if (
+            minimumChildDistance <= childDistance &&
+            childDistance <= maximumChildDistance
+          ) {
+            pending.push(child);
           }
         }
       }
+
+      return results;
     }
-    
+  }
+
+  var correctionTree = null;
+
+  function correctQueryTerm(term) {
+    if (Object.prototype.hasOwnProperty.call(index.Terms, term)) {
+      return term;
+    }
+
+    if (correctionTree === null) {
+      correctionTree = new BkTree(Object.keys(index.Terms));
+    }
+
+    for (const maximumDistance of [1, 2]) {
+      var corrections = correctionTree.query(term, maximumDistance);
+
+      if (corrections.length > 0) {
+        corrections.sort((left, right) =>
+          left.distance - right.distance ||
+          index.Terms[right.word].length - index.Terms[left.word].length ||
+          left.word.localeCompare(right.word)
+        );
+        return corrections[0].word;
+      }
+    }
+
+    return null;
+  }
+
+  function onSearchButtonClicked(e) {
+    e.preventDefault();
+    const query = $("#queryTextField").val().trim();
+    const terms = query.toLowerCase().match(/\p{L}+/gu) || [];
+    const queryTermFrequencies = Object.create(null);
+    const correctedTerms = [];
+    const droppedTerms = [];
+
+    for (const term of terms) {
+      const correctedTerm = correctQueryTerm(term);
+
+      if (correctedTerm === null) {
+        droppedTerms.push(term);
+        continue;
+      }
+
+      if (correctedTerm !== term) {
+        correctedTerms.push({ original: term, corrected: correctedTerm });
+      }
+
+      queryTermFrequencies[correctedTerm] =
+        (queryTermFrequencies[correctedTerm] || 0) + 1;
+    }
+
+    const documentNumerators = Object.create(null);
+    let queryLengthSquared = 0;
+
+    for (const [term, queryFrequency] of Object.entries(queryTermFrequencies)) {
+      if (!Object.prototype.hasOwnProperty.call(index.Terms, term)) {
+        continue;
+      }
+
+      queryLengthSquared += queryFrequency * queryFrequency;
+      const postings = index.Terms[term];
+
+      for (let postingIndex = 0; postingIndex < postings.length; postingIndex += 2) {
+        const documentId = postings[postingIndex];
+        const documentFrequency = postings[postingIndex + 1];
+        const contribution = documentFrequency * queryFrequency;
+
+        if (Object.prototype.hasOwnProperty.call(documentNumerators, documentId)) {
+          documentNumerators[documentId] += contribution;
+        } else {
+          documentNumerators[documentId] = contribution;
+        }
+      }
+    }
+
+    const queryLength = Math.sqrt(queryLengthSquared);
+    const results = Object.entries(documentNumerators)
+      .map(([documentId, numerator]) => {
+        const documentLength = Math.sqrt(index.DocumentLength[documentId]);
+        return {
+          documentId,
+          score: numerator / documentLength / queryLength
+        };
+      })
+      .sort((left, right) =>
+        right.score - left.score ||
+        index.Titles[left.documentId].localeCompare(index.Titles[right.documentId])
+      );
+
     $("#content").empty();
-    for (var key in result) {
+
+    if (correctedTerms.length > 0) {
+      $("#content").append($("<p>").text(
+        "Corrected: " + correctedTerms
+          .map(term => `${term.original} → ${term.corrected}`)
+          .join(", ")
+      ));
+    }
+
+    if (droppedTerms.length > 0) {
+      $("#content").append($("<p>").text(
+        "Ignored unknown terms: " + droppedTerms.join(", ")
+      ));
+    }
+
+    if (results.length === 0) {
+      $("#content").append($("<p>").text("No matching posts found."));
+      return;
+    }
+
+    for (const result of results) {
+      const documentId = result.documentId;
       $("#content").append($('<a>', {
-        href: index.Documents[key].replace("../../content","").replace(".md",""),
-        text: index.Titles[key]
+        href: index.Documents[documentId].replace("../../content","").replace(".md",""),
+        text: index.Titles[documentId]
       }));
       $("#content").append($('<br>'));
     }
@@ -712,6 +1389,11 @@ If both \( \alpha \) and \( \beta \) are S type prefixes, then being a S type pr
     });
 
     $("#searchButton").click(onSearchButtonClicked);
+    $("#queryTextField").keydown(function (e) {
+      if (e.key === "Enter") {
+        onSearchButtonClicked(e);
+      }
+    });
 
     var pres = document.getElementsByTagName("pre");
     for (var i = 0; i < pres.length; ++i) {

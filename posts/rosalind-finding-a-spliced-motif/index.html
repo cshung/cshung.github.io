@@ -3,7 +3,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="/css/style.css">
+    <link rel="stylesheet" type="text/css" href="/css/style.css?v=20260828">
     <link rel="stylesheet" type="text/css" href="/css/syntax.css">
     
     
@@ -48,6 +48,7 @@
 
 
 <br><br>
+<article class="post-content">
 <p><strong>Problem:</strong></p>
 <p>Please find the problem <a href="http://rosalind.info/problems/sseq/">here</a>.</p>
 <p><strong>Solution:</strong></p>
@@ -56,6 +57,7 @@
 <pre class="pretty-github-code" data-code-link="https://raw.githubusercontent.com/cshung/Competition/main/rosalind/sseq.py"></pre>
 
 
+</article>
 
         </div><p class="footer text-center">Copyright (c) 2026 Andrew Au</p><script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
@@ -118,33 +120,215 @@
     xhr.send();
   }
 
-  function onSearchButtonClicked(e) {
-    e.preventDefault();
-    var query = $("#queryTextField").val();
-    var terms = query.split(' ');
-    
-    var result = {};
-    for (var i = 0; i < terms.length; ++i) {
-      var term = terms[i].toLowerCase();
-      if (term in index.Terms)
-      {
-        for (i = 0; i < index.Terms[term].length; i += 2) {
-          var doc = index.Terms[term][i];
-          var count = index.Terms[term][i + 1];
-          if (doc in result) {
-            result[doc] += count;
-          } else {
-            result[doc] = count;
+  function levenshteinDistance(left, right) {
+    var previous = Array.from(
+      { length: right.length + 1 },
+      (_, index) => index
+    );
+
+    for (var leftIndex = 0; leftIndex < left.length; leftIndex++) {
+      var current = [leftIndex + 1];
+
+      for (var rightIndex = 0; rightIndex < right.length; rightIndex++) {
+        var replacementCost = left[leftIndex] === right[rightIndex] ? 0 : 1;
+        current.push(Math.min(
+          current[rightIndex] + 1,
+          previous[rightIndex + 1] + 1,
+          previous[rightIndex] + replacementCost
+        ));
+      }
+
+      previous = current;
+    }
+
+    return previous[right.length];
+  }
+
+  class BkTreeNode {
+    constructor(word) {
+      this.word = word;
+      this.children = new Map();
+    }
+  }
+
+  class BkTree {
+    constructor(words) {
+      this.root = null;
+
+      for (const word of words) {
+        this.insert(word);
+      }
+    }
+
+    insert(word) {
+      if (this.root === null) {
+        this.root = new BkTreeNode(word);
+        return;
+      }
+
+      var current = this.root;
+
+      while (true) {
+        var distance = levenshteinDistance(word, current.word);
+        var child = current.children.get(distance);
+
+        if (child === undefined) {
+          current.children.set(distance, new BkTreeNode(word));
+          return;
+        }
+
+        current = child;
+      }
+    }
+
+    query(word, maximumDistance) {
+      if (this.root === null) {
+        return [];
+      }
+
+      var results = [];
+      var pending = [this.root];
+
+      while (pending.length > 0) {
+        var node = pending.pop();
+        var distance = levenshteinDistance(word, node.word);
+
+        if (distance <= maximumDistance) {
+          results.push({ word: node.word, distance: distance });
+        }
+
+        var minimumChildDistance = distance - maximumDistance;
+        var maximumChildDistance = distance + maximumDistance;
+
+        for (const [childDistance, child] of node.children) {
+          if (
+            minimumChildDistance <= childDistance &&
+            childDistance <= maximumChildDistance
+          ) {
+            pending.push(child);
           }
         }
       }
+
+      return results;
     }
-    
+  }
+
+  var correctionTree = null;
+
+  function correctQueryTerm(term) {
+    if (Object.prototype.hasOwnProperty.call(index.Terms, term)) {
+      return term;
+    }
+
+    if (correctionTree === null) {
+      correctionTree = new BkTree(Object.keys(index.Terms));
+    }
+
+    for (const maximumDistance of [1, 2]) {
+      var corrections = correctionTree.query(term, maximumDistance);
+
+      if (corrections.length > 0) {
+        corrections.sort((left, right) =>
+          left.distance - right.distance ||
+          index.Terms[right.word].length - index.Terms[left.word].length ||
+          left.word.localeCompare(right.word)
+        );
+        return corrections[0].word;
+      }
+    }
+
+    return null;
+  }
+
+  function onSearchButtonClicked(e) {
+    e.preventDefault();
+    const query = $("#queryTextField").val().trim();
+    const terms = query.toLowerCase().match(/\p{L}+/gu) || [];
+    const queryTermFrequencies = Object.create(null);
+    const correctedTerms = [];
+    const droppedTerms = [];
+
+    for (const term of terms) {
+      const correctedTerm = correctQueryTerm(term);
+
+      if (correctedTerm === null) {
+        droppedTerms.push(term);
+        continue;
+      }
+
+      if (correctedTerm !== term) {
+        correctedTerms.push({ original: term, corrected: correctedTerm });
+      }
+
+      queryTermFrequencies[correctedTerm] =
+        (queryTermFrequencies[correctedTerm] || 0) + 1;
+    }
+
+    const documentNumerators = Object.create(null);
+    let queryLengthSquared = 0;
+
+    for (const [term, queryFrequency] of Object.entries(queryTermFrequencies)) {
+      if (!Object.prototype.hasOwnProperty.call(index.Terms, term)) {
+        continue;
+      }
+
+      queryLengthSquared += queryFrequency * queryFrequency;
+      const postings = index.Terms[term];
+
+      for (let postingIndex = 0; postingIndex < postings.length; postingIndex += 2) {
+        const documentId = postings[postingIndex];
+        const documentFrequency = postings[postingIndex + 1];
+        const contribution = documentFrequency * queryFrequency;
+
+        if (Object.prototype.hasOwnProperty.call(documentNumerators, documentId)) {
+          documentNumerators[documentId] += contribution;
+        } else {
+          documentNumerators[documentId] = contribution;
+        }
+      }
+    }
+
+    const queryLength = Math.sqrt(queryLengthSquared);
+    const results = Object.entries(documentNumerators)
+      .map(([documentId, numerator]) => {
+        const documentLength = Math.sqrt(index.DocumentLength[documentId]);
+        return {
+          documentId,
+          score: numerator / documentLength / queryLength
+        };
+      })
+      .sort((left, right) =>
+        right.score - left.score ||
+        index.Titles[left.documentId].localeCompare(index.Titles[right.documentId])
+      );
+
     $("#content").empty();
-    for (var key in result) {
+
+    if (correctedTerms.length > 0) {
+      $("#content").append($("<p>").text(
+        "Corrected: " + correctedTerms
+          .map(term => `${term.original} → ${term.corrected}`)
+          .join(", ")
+      ));
+    }
+
+    if (droppedTerms.length > 0) {
+      $("#content").append($("<p>").text(
+        "Ignored unknown terms: " + droppedTerms.join(", ")
+      ));
+    }
+
+    if (results.length === 0) {
+      $("#content").append($("<p>").text("No matching posts found."));
+      return;
+    }
+
+    for (const result of results) {
+      const documentId = result.documentId;
       $("#content").append($('<a>', {
-        href: index.Documents[key].replace("../../content","").replace(".md",""),
-        text: index.Titles[key]
+        href: index.Documents[documentId].replace("../../content","").replace(".md",""),
+        text: index.Titles[documentId]
       }));
       $("#content").append($('<br>'));
     }
@@ -167,6 +351,11 @@
     });
 
     $("#searchButton").click(onSearchButtonClicked);
+    $("#queryTextField").keydown(function (e) {
+      if (e.key === "Enter") {
+        onSearchButtonClicked(e);
+      }
+    });
 
     var pres = document.getElementsByTagName("pre");
     for (var i = 0; i < pres.length; ++i) {
