@@ -38,6 +38,28 @@
 <h1>Posts</h1>
 
 <p>
+    <h3><a class="title" href="/posts/rosalind-enumerating-oriented-gene-orderings/">Rosalind - Enumerating Oriented Gene Orderings</a></h3>
+    
+
+<i data-feather="calendar"></i>
+<time datetime="2020-07-24">Jul 24, 2020</time>
+
+<i data-feather="tag"></i>
+
+
+<a class="btn btn-sm btn-outline-dark tag-btn" href="https://cshung.github.io/tags/rosalind">rosalind</a>
+
+
+    <a class="summary" href="/posts/rosalind-enumerating-oriented-gene-orderings/">
+        <p>Problem:
+Please find the problem here.
+Solution:
+Like the previous problem, we use a recursive routine to generate all permutations. For each permutation, we will use another recursion to give each element a sign.
+Code:</p>
+    </a>
+</p>
+
+<p>
     <h3><a class="title" href="/posts/rosalind-interleaving-two-motifs/">Rosalind - Interleaving Two Motifs</a></h3>
     
 
@@ -216,28 +238,6 @@ Please find the problem here.
 Solution:
 The number of subsets of a set of size \( n \) is \( 2^n \). The following code implements the repeated squaring algorithm. The numbers are computed modulo \( 1000000 \) as soon as we are done with multiplying. This is done to keep the number small, and so that the multiplications are quick.
 Code:</p>
-    </a>
-</p>
-
-<p>
-    <h3><a class="title" href="/posts/rosalind-introduction-to-random-strings/">Rosalind - Introduction to Random Strings</a></h3>
-    
-
-<i data-feather="calendar"></i>
-<time datetime="2019-09-08">Sep 8, 2019</time>
-
-<i data-feather="tag"></i>
-
-
-<a class="btn btn-sm btn-outline-dark tag-btn" href="https://cshung.github.io/tags/rosalind">rosalind</a>
-
-
-    <a class="summary" href="/posts/rosalind-introduction-to-random-strings/">
-        <p>Problem:
-Please find the problem here.
-Solution:
-As we were told in the description, the probability of getting &lsquo;A&rsquo; or &lsquo;T&rsquo; is \( \frac{1-x}{2} \) and the probability of getting &lsquo;G&rsquo; or &lsquo;C&rsquo; is \( \frac{x}{2} \). Assuming independence (sadly the problem does not mention that), the probability of the whole string is the product of these probabilities.
-To make it numerically stable, instead of computing the product and then compute the logarithm, it is better to compute the logarithm and sum them up.</p>
     </a>
 </p>
 

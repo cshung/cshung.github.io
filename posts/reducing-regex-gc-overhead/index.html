@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/style.css?v=20260828">
+    <link rel="stylesheet" type="text/css" href="/css/syntax.css">
+    
+    
+    <title>My Blog | Reducing Regex GC Overhead</title>
+
+
+</head><body class="light-theme"><div id="nav-border" class="container">
+    <nav id="nav" class="nav justify-content-center">
+        
+        <a class="nav-link" href="/">
+        
+        
+        <i data-feather="home"></i> 
+        
+        
+        Home
+        </a>
+        
+        <a class="nav-link" href="/tags/">
+        
+        
+        <i data-feather="tag"></i> 
+        
+        
+        Tags
+        </a>
+        
+        <a class="nav-link" href="#" id="toggleDarkModeButton"><i data-feather="sun"></i></a>
+        <span style="padding:5px"><input type="text" id="queryTextField"></span><a class="nav-link" href="#" id="searchButton"><i data-feather="search"></i></a>
+    </nav>
+</div><div id="content" style="margin:20px">
+<h1>Reducing Regex GC Overhead</h1>
+
+
+<i data-feather="calendar"></i>
+<time datetime="2026-11-20">Nov 20, 2026</time>
+
+<br><br>
+<article class="post-content">
+<p>In this post, I am going to talk about an optimization I made in the .NET regular expression library that reduced full-GC time by 75% or more in node-heavy stress cases.</p>
+<h1 id="scenario">Scenario</h1>
+<p>Back when I was working on the garbage collector, I fixed a bug in the <a href="https://github.com/dotnet/runtime/pull/60646">mark stack overflow handling</a>. That work introduced me to an unusual GC code path.</p>
+<p>During the mark phase, the GC performs a depth-first-like traversal of the object graph to discover live objects. This requires a mark stack to remember objects whose references still need to be examined.</p>
+<p>A sufficiently deep or highly connected object graph can exhaust that stack. The GC must then recover through a retry process to ensure that every live object is eventually marked. Suffice to say, this path is not fast, nor is it a path we intend to optimize for regular use.</p>
+<p>As I remember it, the bug was exposed by a regex stress test. At the time, I thought that this was a situation the library could avoid by using a better representation. Instead of retaining a large graph of individually allocated and linked objects, it might store the same information more compactly.</p>
+<p>I made a mental note to investigate it when I had the opportunity. It took a few years, but eventually I did.</p>
+<h1 id="the-object-graph">The object graph</h1>
+<p>The .NET regular expression library has a <code>NonBacktracking</code> engine. Internally, it converts the expression into a symbolic representation and lazily constructs matching states as it processes input.</p>
+<p>The symbolic expression was represented by <code>SymbolicRegexNode&lt;TSet&gt;</code> objects. Each node contained its data and references to its child nodes.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">SymbolicRegexNode object
+</span></span><span class="line"><span class="cl">|-- Left  -&gt; SymbolicRegexNode object
+</span></span><span class="line"><span class="cl">|-- Right -&gt; SymbolicRegexNode object
+</span></span><span class="line"><span class="cl">`-- Node data
+</span></span></code></pre></div><p>The nodes were interned, so structurally identical expressions shared the same node. This made the representation a directed acyclic graph instead of a tree, which is important for avoiding even more nodes.</p>
+<p>Still, complicated expressions could retain more than 100,000 node objects. During a full GC, the collector had to mark every object and follow every reference between them. Even if the total retained memory was not enormous, the number of objects and edges made the graph expensive to traverse.</p>
+<p>This is a case where the shape of the retained data matters in addition to its size.</p>
+<h1 id="the-arena-idea">The arena idea</h1>
+<p>The nodes are immutable once constructed, and they already belong to a <code>SymbolicRegexBuilder&lt;TSet&gt;</code>. That makes them a good fit for an arena.</p>
+<p>Instead of allocating every node as a separate object, the builder can store the node data in an array. References between nodes can then be represented by integer indexes.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">SymbolicRegexBuilder
+</span></span><span class="line"><span class="cl">`-- NodeData[]
+</span></span><span class="line"><span class="cl">    |-- NodeData { LeftId, RightId, ... }
+</span></span><span class="line"><span class="cl">    |-- NodeData { LeftId, RightId, ... }
+</span></span><span class="line"><span class="cl">    `-- ...
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">SymbolicRegexNode&lt;TSet&gt; = 4-byte node ID
+</span></span></code></pre></div><p>The new <code>SymbolicRegexNode&lt;TSet&gt;</code> is a four-byte value-type handle. ID 0 represents a null node, and positive IDs locate immutable <code>NodeData</code> records in the builder.</p>
+<p>This replaces a large graph of objects and references with a small number of arrays containing value data and integer links. The GC still needs to retain the arrays, but it no longer needs to visit every symbolic node as a separate object.</p>
+<h1 id="ids-need-an-owner">IDs need an owner</h1>
+<p>An integer by itself is not enough to identify a node. The same ID can refer to different nodes in different builders.</p>
+<p>Operations on a node therefore also need the owning builder. A temporary <code>SymbolicRegexNodeContext&lt;TSet&gt;</code> carries the builder, an array snapshot, and the current node ID.</p>
+<p>The context is used while traversing or operating on the symbolic graph. When it visits a child, it reuses the same array snapshot and changes only the ID. This avoids repeatedly locating the arena for every field access.</p>
+<p>Matching states remain objects because they contain other state needed by the matcher, but they now retain a node ID instead of a node object. Frequently used properties such as nullability and state flags are computed when the state is created, so the warmed matching loop does not need to repeatedly access the arena.</p>
+<h1 id="growing-the-array">Growing the array</h1>
+<p>The symbolic graph is constructed lazily. The arena therefore needs to grow while matching states may already be reading it.</p>
+<p>A normal <code>List&lt;NodeData&gt;</code> is not sufficient for this. It does not expose a stable backing-array snapshot, and its publication order is not designed for concurrent readers.</p>
+<p>The arena publishes a node in this order:</p>
+<ol>
+<li>Construct the complete immutable <code>NodeData</code>.</li>
+<li>Store it in the current or replacement array.</li>
+<li>If the array grew, publish the replacement array.</li>
+<li>Publish the new node count.</li>
+</ol>
+<p>Readers acquire the node count before capturing the array.</p>
+<p>Children are always published before their parent. Therefore, any array containing a parent also contains its complete subtree. If a reader keeps an old array after the arena grows, that old array remains a valid immutable snapshot for every node it could previously observe.</p>
+<p>This publication scheme was one of the less obvious parts of the change. Replacing references with indexes is simple. Making those indexes safe while the arena grows requires preserving the ordering guarantees that the old object graph naturally provided.</p>
+<h1 id="measuring-the-object-heavy-case">Measuring the object-heavy case</h1>
+<p>I used two stress patterns that construct approximately 125,000 symbolic nodes while matching a 50,000-character input.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">(?:a|AA|BCD).{20}$
+</span></span><span class="line"><span class="cl">(?:a.{20}|a.{10})bc$
+</span></span></code></pre></div><p>The regex and input were retained, and I measured 15 forced full GCs in each process. Each result below is the median of three independent processes.</p>
+<h2 id="memory">Memory</h2>
+<table>
+<thead>
+<tr>
+<th>Pattern</th>
+<th style="text-align:right">Metric</th>
+<th style="text-align:right">Objects</th>
+<th style="text-align:right">Arena</th>
+<th style="text-align:right">Change</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Case 1</td>
+<td style="text-align:right">Allocated</td>
+<td style="text-align:right">89.69 MiB</td>
+<td style="text-align:right">80.49 MiB</td>
+<td style="text-align:right">-10.3%</td>
+</tr>
+<tr>
+<td>Case 1</td>
+<td style="text-align:right">Retained</td>
+<td style="text-align:right">30.00 MiB</td>
+<td style="text-align:right">25.32 MiB</td>
+<td style="text-align:right">-15.6%</td>
+</tr>
+<tr>
+<td>Case 2</td>
+<td style="text-align:right">Allocated</td>
+<td style="text-align:right">94.03 MiB</td>
+<td style="text-align:right">83.52 MiB</td>
+<td style="text-align:right">-11.2%</td>
+</tr>
+<tr>
+<td>Case 2</td>
+<td style="text-align:right">Retained</td>
+<td style="text-align:right">27.07 MiB</td>
+<td style="text-align:right">22.53 MiB</td>
+<td style="text-align:right">-16.8%</td>
+</tr>
+</tbody>
+</table>
+<h2 id="forced-full-gc-median">Forced full-GC median</h2>
+<table>
+<thead>
+<tr>
+<th>GC mode</th>
+<th style="text-align:right">Pattern</th>
+<th style="text-align:right">Objects</th>
+<th style="text-align:right">Arena</th>
+<th style="text-align:right">Change</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Workstation GC</td>
+<td style="text-align:right">Case 1</td>
+<td style="text-align:right">14.15 ms</td>
+<td style="text-align:right">2.56 ms</td>
+<td style="text-align:right">-81.9%</td>
+</tr>
+<tr>
+<td>Workstation GC</td>
+<td style="text-align:right">Case 2</td>
+<td style="text-align:right">14.25 ms</td>
+<td style="text-align:right">1.23 ms</td>
+<td style="text-align:right">-91.4%</td>
+</tr>
+<tr>
+<td>Server GC</td>
+<td style="text-align:right">Case 1</td>
+<td style="text-align:right">14.38 ms</td>
+<td style="text-align:right">3.55 ms</td>
+<td style="text-align:right">-75.3%</td>
+</tr>
+<tr>
+<td>Server GC</td>
+<td style="text-align:right">Case 2</td>
+<td style="text-align:right">12.60 ms</td>
+<td style="text-align:right">2.65 ms</td>
+<td style="text-align:right">-79.0%</td>
+</tr>
+</tbody>
+</table>
+<p>The reduction in GC time is much larger than the reduction in retained memory. This is the result I was looking for. The important difference is not only that the arena uses fewer bytes, but that the GC has far fewer objects and reference edges to traverse.</p>
+<h1 id="representative-expressions">Representative expressions</h1>
+<p>The stress cases demonstrate the GC problem, but most regular expressions are much smaller. I also measured representative Email, URL, and IPv4 expressions.</p>
+<table>
+<thead>
+<tr>
+<th>Scenario</th>
+<th style="text-align:right">Constructor</th>
+<th style="text-align:right">Constructor and first match</th>
+<th style="text-align:right">Warmed <code>IsMatch</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Email</td>
+<td style="text-align:right">-0.5%</td>
+<td style="text-align:right">+0.1%</td>
+<td style="text-align:right">-1.9%</td>
+</tr>
+<tr>
+<td>URL</td>
+<td style="text-align:right">-1.7%</td>
+<td style="text-align:right">-1.0%</td>
+<td style="text-align:right">+2.0%</td>
+</tr>
+<tr>
+<td>IPv4</td>
+<td style="text-align:right">-3.4%</td>
+<td style="text-align:right">-17.1%</td>
+<td style="text-align:right">-2.2%</td>
+</tr>
+</tbody>
+</table>
+<p>Negative values indicate improvement.</p>
+<p>Warmed matching remained approximately neutral. Small expressions also do not receive a meaningful memory improvement because they do not retain enough symbolic nodes for the object graph to dominate.</p>
+<h1 id="the-first-surprise">The first surprise</h1>
+<p>Changing the representation exposed a browser WebAssembly stack regression.</p>
+<p>One symbolic operation recursively counted singleton nodes. The old nodes were small object references, while the new traversal carried a larger context containing the builder, array snapshot, and node ID. The algorithm had not changed, but each recursive frame became more expensive.</p>
+<p>The fix was to replace that recursion with an explicit traversal.</p>
+<p>This was an interesting reminder that reducing GC-visible objects does not automatically reduce every kind of memory usage. Moving information from an object reference into a temporary context can change native stack usage even when the logical operation is the same.</p>
+<h1 id="the-second-surprise">The second surprise</h1>
+<p>During review, a benchmark with 12 nullable captures exposed a warmed <code>Match</code> regression.</p>
+<p>After a successful capturing match, the engine applies capture effects from a nullable end state. The implementation recursively followed several tail paths. As with the WebAssembly issue, the larger node context made those recursive calls more expensive.</p>
+<p>The traversal was changed to recurse only for the non-tail left side of a nullable concatenation. It iterates through right children, selected alternatives, loop bodies, and wrapper nodes.</p>
+<p>A same-machine comparison before and after this fix produced:</p>
+<table>
+<thead>
+<tr>
+<th>Input</th>
+<th style="text-align:right">Initial arena change</th>
+<th style="text-align:right">Updated traversal</th>
+<th style="text-align:right">Change</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>&quot;&quot;</code></td>
+<td style="text-align:right">1,377 ns</td>
+<td style="text-align:right">851 ns</td>
+<td style="text-align:right">-38%</td>
+</tr>
+<tr>
+<td><code>&quot;x&quot;</code></td>
+<td style="text-align:right">1,330 ns</td>
+<td style="text-align:right">876 ns</td>
+<td style="text-align:right">-34%</td>
+</tr>
+</tbody>
+</table>
+<p>Allocations remained 968 bytes, and the corresponding warmed <code>IsMatch</code> controls remained approximately neutral.</p>
+<p>This regression would have been easy to miss by measuring only construction, <code>IsMatch</code>, or the node-heavy stress case. Reviewer benchmarks covering a different API found it.</p>
+<h1 id="the-cold-path-tradeoff">The cold-path tradeoff</h1>
+<p>The 125,000-node stress cases showed a variable one-time construction and first-match regression. Across independent processes, the slowdown ranged from approximately neutral to 30-37%, or roughly 100-200 milliseconds.</p>
+<p>CPU traces showed that most of this time was additional JIT compilation and generic code expansion in the symbolic engine, rather than arena resizing or warmed node access.</p>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th style="text-align:right">Objects</th>
+<th style="text-align:right">Arena</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>JIT compilation events</td>
+<td style="text-align:right">approximately 908</td>
+<td style="text-align:right">approximately 3,413</td>
+</tr>
+<tr>
+<td>Generated native code</td>
+<td style="text-align:right">approximately 324 KiB</td>
+<td style="text-align:right">approximately 909 KiB</td>
+</tr>
+</tbody>
+</table>
+<p>This is runtime JIT compilation of the generic symbolic engine. It is not generated or compiled regex code. Repeated constructions in the same process do not continue paying the full cost, and warmed matching remains neutral.</p>
+<p>I experimented with reducing inlining. It reduced generated code size, but it did not improve the end-to-end cold time, so I did not keep that change.</p>
+<p>Regexes are often constructed once and reused. A lexer may retain its regexes throughout parsing, including time spent waiting for I/O. A server may retain validation regexes for its entire serving lifetime. For large symbolic graphs that survive repeated full collections, the additional construction cost is paid once, while the reduced tracing cost benefits every subsequent full GC. That is why I consider this tradeoff worthwhile for long-lived, node-heavy expressions. Small expressions and short-lived, one-shot uses may not benefit.</p>
+<h1 id="scope">Scope</h1>
+<p>The optimization applies only to the symbolic representation used by the <code>NonBacktracking</code> engine.</p>
+<p>It does not change:</p>
+<ul>
+<li>The parser&rsquo;s short-lived <code>RegexNode</code> tree.</li>
+<li>Backtracking regex execution.</li>
+<li>Source-generated or compiled regex output.</li>
+<li>Public APIs or matching behavior.</li>
+</ul>
+<p>The final change is available in <a href="https://github.com/dotnet/runtime/pull/136375">dotnet/runtime#136375</a>.</p>
+<h1 id="conclusion">Conclusion</h1>
+<p>This change started with a GC failure mode I encountered several years ago. The GC must correctly handle an overflowing mark stack, but a library can still avoid creating an unnecessarily difficult object graph for the collector.</p>
+<p>The arena reduced retained memory by about 16%, but reduced forced full-GC time by 75-91% in the node-heavy cases. The difference shows why object count and graph shape can matter much more than byte count alone.</p>
+<p>The work also produced two regressions caused by larger recursive traversal frames and a cold-path JIT tradeoff. Those results were useful. An optimization is not complete when the first benchmark improves; it is complete when we understand where the costs moved.</p>
+<p>It took a few years to return to the regex stress case, but the original idea turned out to be practical: when many immutable nodes share one owner, indexes into an arena can be much friendlier to the GC than a large graph of individually allocated objects.</p>
+
+</article>
+
+        </div><p class="footer text-center">Copyright (c) 2026 Andrew Au</p><script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true });</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/prettify.js"></script>
+<script src="/js/feather.min.js"></script>
+<script src="/index.js"></script>
+<script>
+
+  function getCookie(cname) {
+    let name = cname + "=";
+    let ca = document.cookie.split(';');
+    for (let i = 0; i < ca.length; i++) {
+      let c = ca[i];
+      while (c.charAt(0) == ' ') {
+        c = c.substring(1);
+      }
+      if (c.indexOf(name) == 0) {
+        return c.substring(name.length, c.length);
+      }
+    }
+    return "";
+  }
+
+  function setCookie(cname, cvalue, exdays) {
+    const d = new Date();
+    d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+    let expires = "expires=" + d.toUTCString();
+    document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+  }
+
+  function ensureIcon() {
+    if (document.body.classList.contains("dark-theme")) {
+      toggleDarkModeButton.innerHTML = '<i data-feather="sun"></i>';
+    } else {
+      toggleDarkModeButton.innerHTML = '<i data-feather="moon"></i>';
+    }
+    feather.replace();
+  }
+  function saveCookie() {
+    if (document.body.classList.contains("dark-theme")) {
+      setCookie("darkMode", "true", 365);
+    } else {
+      setCookie("darkMode", "false", 365);
+    }
+  }
+
+  function load(pre) {
+    link = pre.getAttribute("data-code-link");
+    const xhr = new XMLHttpRequest();
+    xhr.onload = () => {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        pre.className = "prettyprint";
+        pre.textContent = xhr.responseText;
+      }
+      prettyPrint();
+    };
+    xhr.open('GET', link);
+    xhr.send();
+  }
+
+  function levenshteinDistance(left, right) {
+    var previous = Array.from(
+      { length: right.length + 1 },
+      (_, index) => index
+    );
+
+    for (var leftIndex = 0; leftIndex < left.length; leftIndex++) {
+      var current = [leftIndex + 1];
+
+      for (var rightIndex = 0; rightIndex < right.length; rightIndex++) {
+        var replacementCost = left[leftIndex] === right[rightIndex] ? 0 : 1;
+        current.push(Math.min(
+          current[rightIndex] + 1,
+          previous[rightIndex + 1] + 1,
+          previous[rightIndex] + replacementCost
+        ));
+      }
+
+      previous = current;
+    }
+
+    return previous[right.length];
+  }
+
+  class BkTreeNode {
+    constructor(word) {
+      this.word = word;
+      this.children = new Map();
+    }
+  }
+
+  class BkTree {
+    constructor(words) {
+      this.root = null;
+
+      for (const word of words) {
+        this.insert(word);
+      }
+    }
+
+    insert(word) {
+      if (this.root === null) {
+        this.root = new BkTreeNode(word);
+        return;
+      }
+
+      var current = this.root;
+
+      while (true) {
+        var distance = levenshteinDistance(word, current.word);
+        var child = current.children.get(distance);
+
+        if (child === undefined) {
+          current.children.set(distance, new BkTreeNode(word));
+          return;
+        }
+
+        current = child;
+      }
+    }
+
+    query(word, maximumDistance) {
+      if (this.root === null) {
+        return [];
+      }
+
+      var results = [];
+      var pending = [this.root];
+
+      while (pending.length > 0) {
+        var node = pending.pop();
+        var distance = levenshteinDistance(word, node.word);
+
+        if (distance <= maximumDistance) {
+          results.push({ word: node.word, distance: distance });
+        }
+
+        var minimumChildDistance = distance - maximumDistance;
+        var maximumChildDistance = distance + maximumDistance;
+
+        for (const [childDistance, child] of node.children) {
+          if (
+            minimumChildDistance <= childDistance &&
+            childDistance <= maximumChildDistance
+          ) {
+            pending.push(child);
+          }
+        }
+      }
+
+      return results;
+    }
+  }
+
+  var correctionTree = null;
+
+  function correctQueryTerm(term) {
+    if (Object.prototype.hasOwnProperty.call(index.Terms, term)) {
+      return term;
+    }
+
+    if (correctionTree === null) {
+      correctionTree = new BkTree(Object.keys(index.Terms));
+    }
+
+    for (const maximumDistance of [1, 2]) {
+      var corrections = correctionTree.query(term, maximumDistance);
+
+      if (corrections.length > 0) {
+        corrections.sort((left, right) =>
+          left.distance - right.distance ||
+          index.Terms[right.word].length - index.Terms[left.word].length ||
+          left.word.localeCompare(right.word)
+        );
+        return corrections[0].word;
+      }
+    }
+
+    return null;
+  }
+
+  function onSearchButtonClicked(e) {
+    e.preventDefault();
+    const query = $("#queryTextField").val().trim();
+    const terms = query.toLowerCase().match(/\p{L}+/gu) || [];
+    const queryTermFrequencies = Object.create(null);
+    const correctedTerms = [];
+    const droppedTerms = [];
+
+    for (const term of terms) {
+      const correctedTerm = correctQueryTerm(term);
+
+      if (correctedTerm === null) {
+        droppedTerms.push(term);
+        continue;
+      }
+
+      if (correctedTerm !== term) {
+        correctedTerms.push({ original: term, corrected: correctedTerm });
+      }
+
+      queryTermFrequencies[correctedTerm] =
+        (queryTermFrequencies[correctedTerm] || 0) + 1;
+    }
+
+    const documentNumerators = Object.create(null);
+    let queryLengthSquared = 0;
+
+    for (const [term, queryFrequency] of Object.entries(queryTermFrequencies)) {
+      if (!Object.prototype.hasOwnProperty.call(index.Terms, term)) {
+        continue;
+      }
+
+      queryLengthSquared += queryFrequency * queryFrequency;
+      const postings = index.Terms[term];
+
+      for (let postingIndex = 0; postingIndex < postings.length; postingIndex += 2) {
+        const documentId = postings[postingIndex];
+        const documentFrequency = postings[postingIndex + 1];
+        const contribution = documentFrequency * queryFrequency;
+
+        if (Object.prototype.hasOwnProperty.call(documentNumerators, documentId)) {
+          documentNumerators[documentId] += contribution;
+        } else {
+          documentNumerators[documentId] = contribution;
+        }
+      }
+    }
+
+    const queryLength = Math.sqrt(queryLengthSquared);
+    const results = Object.entries(documentNumerators)
+      .map(([documentId, numerator]) => {
+        const documentLength = Math.sqrt(index.DocumentLength[documentId]);
+        return {
+          documentId,
+          score: numerator / documentLength / queryLength
+        };
+      })
+      .sort((left, right) =>
+        right.score - left.score ||
+        index.Titles[left.documentId].localeCompare(index.Titles[right.documentId])
+      );
+
+    $("#content").empty();
+
+    if (correctedTerms.length > 0) {
+      $("#content").append($("<p>").text(
+        "Corrected: " + correctedTerms
+          .map(term => `${term.original} → ${term.corrected}`)
+          .join(", ")
+      ));
+    }
+
+    if (droppedTerms.length > 0) {
+      $("#content").append($("<p>").text(
+        "Ignored unknown terms: " + droppedTerms.join(", ")
+      ));
+    }
+
+    if (results.length === 0) {
+      $("#content").append($("<p>").text("No matching posts found."));
+      return;
+    }
+
+    for (const result of results) {
+      const documentId = result.documentId;
+      $("#content").append($('<a>', {
+        href: index.Documents[documentId].replace("../../content","").replace(".md",""),
+        text: index.Titles[documentId]
+      }));
+      $("#content").append($('<br>'));
+    }
+  }
+
+  $(document).ready(function () {
+    var darkMode = getCookie("darkMode");
+    if (darkMode == "true") {
+      document.body.classList.add("dark-theme");
+      document.body.classList.remove("light-theme");
+    }
+    ensureIcon();
+
+    $("#toggleDarkModeButton").click(function (e) {
+      e.preventDefault();
+      document.body.classList.toggle("dark-theme");
+      document.body.classList.toggle("light-theme");
+      saveCookie();
+      ensureIcon();
+    });
+
+    $("#searchButton").click(onSearchButtonClicked);
+    $("#queryTextField").keydown(function (e) {
+      if (e.key === "Enter") {
+        onSearchButtonClicked(e);
+      }
+    });
+
+    var pres = document.getElementsByTagName("pre");
+    for (var i = 0; i < pres.length; ++i) {
+      var pre = pres[i];
+      if (pre.classList.contains("pretty-github-code")) {
+        load(pre);
+      }
+    }
+  });
+
+  $(window).on("load", function () {
+    $("body").show();
+  });
+</script></body>
+</html>

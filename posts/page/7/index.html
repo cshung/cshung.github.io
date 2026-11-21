@@ -38,6 +38,28 @@
 <h1>Posts</h1>
 
 <p>
+    <h3><a class="title" href="/posts/rosalind-introduction-to-random-strings/">Rosalind - Introduction to Random Strings</a></h3>
+    
+
+<i data-feather="calendar"></i>
+<time datetime="2019-09-08">Sep 8, 2019</time>
+
+<i data-feather="tag"></i>
+
+
+<a class="btn btn-sm btn-outline-dark tag-btn" href="https://cshung.github.io/tags/rosalind">rosalind</a>
+
+
+    <a class="summary" href="/posts/rosalind-introduction-to-random-strings/">
+        <p>Problem:
+Please find the problem here.
+Solution:
+As we were told in the description, the probability of getting &lsquo;A&rsquo; or &lsquo;T&rsquo; is \( \frac{1-x}{2} \) and the probability of getting &lsquo;G&rsquo; or &lsquo;C&rsquo; is \( \frac{x}{2} \). Assuming independence (sadly the problem does not mention that), the probability of the whole string is the product of these probabilities.
+To make it numerically stable, instead of computing the product and then compute the logarithm, it is better to compute the logarithm and sum them up.</p>
+    </a>
+</p>
+
+<p>
     <h3><a class="title" href="/posts/rosalind-genome-assembly-as-shortest-superstring/">Rosalind - Genome Assembly as Shortest Superstring</a></h3>
     
 
@@ -235,28 +257,6 @@ Please find the problem here.
 Solution:
 I attempted to create a solution that processes each character exactly once, and I succeed, here is the state machine that works.
 The diagram should be self-evident - the code is a just a faithful implementation of the diagram.
-Code:</p>
-    </a>
-</p>
-
-<p>
-    <h3><a class="title" href="/posts/rosalind-enumerating-gene-orders/">Rosalind - Enumerating Gene Orders</a></h3>
-    
-
-<i data-feather="calendar"></i>
-<time datetime="2019-08-10">Aug 10, 2019</time>
-
-<i data-feather="tag"></i>
-
-
-<a class="btn btn-sm btn-outline-dark tag-btn" href="https://cshung.github.io/tags/rosalind">rosalind</a>
-
-
-    <a class="summary" href="/posts/rosalind-enumerating-gene-orders/">
-        <p>Problem:
-Please find the problem here.
-Solution:
-A simple recursive solution is to pick one out of the list, and compute the permutation of the rest. The problem is, how do we represent &rsquo;the rest&rsquo;? My approach is that we make sure the suffix of the list is &rsquo;the rest&rsquo;, and therefore we can simply use an integer to represent the rest.
 Code:</p>
     </a>
 </p>

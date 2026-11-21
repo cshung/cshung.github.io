@@ -6,8 +6,15 @@
     <description>Recent content in Posts on My Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 28 Aug 2026 15:13:57 -0700</lastBuildDate>
+    <lastBuildDate>Fri, 20 Nov 2026 10:17:10 -0800</lastBuildDate>
     <atom:link href="https://cshung.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Reducing Regex GC Overhead</title>
+      <link>https://cshung.github.io/posts/reducing-regex-gc-overhead/</link>
+      <pubDate>Fri, 20 Nov 2026 10:17:10 -0800</pubDate>
+      <guid>https://cshung.github.io/posts/reducing-regex-gc-overhead/</guid>
+      <description>In this post, I am going to talk about an optimization I made in the .NET regular expression library that reduced full-GC time by 75% or more in node-heavy stress cases.&#xA;Scenario Back when I was working on the garbage collector, I fixed a bug in the mark stack overflow handling. That work introduced me to an unusual GC code path.&#xA;During the mark phase, the GC performs a depth-first-like traversal of the object graph to discover live objects.</description>
+    </item>
     <item>
       <title>A Story of One Byte</title>
       <link>https://cshung.github.io/posts/one-byte-story/</link>

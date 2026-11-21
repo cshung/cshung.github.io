@@ -38,6 +38,26 @@
 <h1>Posts</h1>
 
 <p>
+    <h3><a class="title" href="/posts/rosalind-k-mer-composition/">Rosalind - k-Mer Composition</a></h3>
+    
+
+<i data-feather="calendar"></i>
+<time datetime="2021-01-30">Jan 30, 2021</time>
+
+<i data-feather="tag"></i>
+
+
+<a class="btn btn-sm btn-outline-dark tag-btn" href="https://cshung.github.io/tags/rosalind">rosalind</a>
+
+
+    <a class="summary" href="/posts/rosalind-k-mer-composition/">
+        <p>Problem:
+Please find the problem here. Solution:
+To produce the array, slide a window of width 4 from the leftmost to the rightmost of the string. When processing a window, we quickly compute the k-mer index as a base 4 number. Code:</p>
+    </a>
+</p>
+
+<p>
     <h3><a class="title" href="/posts/debug-info-debugging/">Debug Info Debugging</a></h3>
     
 
@@ -166,22 +186,6 @@ What is CoreCLR GC - Mono? CoreCLR GC - Mono is an attempt to use CoreCLR&rsquo;
 Please find the problem here. http://rosalind.info/problems/inod/
 Solution:
 We knew that a rooted binary tree with n leaves has \( n - 1 \) internal nodes. An unrooted binary tree is simply a rooted binary tree with an extra leaf attached to the root. Therefore, the number of leaves increased by \( 1 \) but the number of internal nodes left unchanged. So an unrooted binary tree with \( n + 1 \) leaves has \( n - 1 \) internal nodes.</p>
-    </a>
-</p>
-
-<p>
-    <h3><a class="title" href="/posts/rosalind-catalan-numbers-and-rna-secondary-structures/">Rosalind - Catalan Numbers and RNA Secondary Structures</a></h3>
-    
-
-<i data-feather="calendar"></i>
-<time datetime="2020-11-14">Nov 14, 2020</time>
-
-    <a class="summary" href="/posts/rosalind-catalan-numbers-and-rna-secondary-structures/">
-        <p>Problem:
-Please find the problem here.
-Analysis:
-In order to produce a non-crossing matching, we need to pair the first nucleotide with a matching one, and then we match the rest. In order to be non-crossing, the one covered within the pairing must be independent of the one outside of the covering, that produces to independent sub-problems. Solution:
-That observation immediately suggests a dynamic programming approach where sub-problems are computed in a memoized fashion.</p>
     </a>
 </p>
 
